@@ -6,3 +6,6 @@
   * HTML: YES
   * EPS: NO
 * Carla shared link to <https://github.com/Botnar-MSK-Atlas/hamstring_atlas>.
+* 10X Visium
+  * Overview <https://www.10xgenomics.com/products/spatial-gene-expression>
+  * Software <https://support.10xgenomics.com/spatial-gene-expression/software/overview/welcome>
