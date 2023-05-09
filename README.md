@@ -21,3 +21,7 @@
 * Wrote job script processing an arbitrary sample.
 * Created own symbolic links to updated path to FASTQ files.
 * Job successfully completed overnight (04 May 2023).
+
+## 09 May 2023
+
+* Create a Conda environment for `cell2location` following instructions at <https://pypi.org/project/cell2location/>.
