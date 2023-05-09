@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 envs/
+.ipynb_checkpoints/
