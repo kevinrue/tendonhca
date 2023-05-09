@@ -1,0 +1,6 @@
+*.err
+*.out
+data.dir/
+OMB*
+sps-*
+!*.sh
