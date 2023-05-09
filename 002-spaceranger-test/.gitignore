@@ -4,3 +4,4 @@ data.dir/
 OMB*
 sps-*
 !*.sh
+__pycache__/

@@ -25,3 +25,4 @@
 ## 09 May 2023
 
 * Create a Conda environment for `cell2location` following instructions at <https://pypi.org/project/cell2location/>.
+* Learn to load Visium data following tutorial at <https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_short_demo.html#1.-Loading-Visium-data>.
