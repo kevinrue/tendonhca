@@ -17,7 +17,7 @@ rule spaceranger:
         "--transcriptome=/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/ "
         "--fastqs={input.fastqs} "
         "--sample={wildcards.sample} "
-        "--image=/project/tendonhca/shared/spatial/analysis/achilles/images/OMB1556_Ach_Enth.jpeg "
+        "--image={input.image} "
         "--slide=V12J03-133 "
         "--area=C1 "
         "--localcores=6 "
