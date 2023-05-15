@@ -9,6 +9,7 @@ rule spaceranger:
     threads: 6
     resources:
         mem_mb=25000,
+        runtime="12h",
     shell:
         "module load spaceranger/1.3.1 && "
         "spaceranger count --id={wildcards.sample} "
