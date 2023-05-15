@@ -1,2 +1,10 @@
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
 samples: config/samples.tsv
+
+transcriptome: transcriptome/refdata-gex-GRCh38-2020-A/
+
+localcores: 6
+
+localmem: 25
+
+runtime: "12h"

@@ -7,20 +7,26 @@ rule spaceranger:
         filtered_feature_bc_matrix="results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     log:
         "logs/spaceranger_count/{sample}.log",
+    params:
+        slide=lambda wildcards, output: get_slide(wildcards),
+        area=lambda wildcards, output: get_area(wildcards),
+        transcriptome=config["transcriptome"],
+        localcores=config["localcores"],
+        localmem=config["localmem"],
     threads: 6
     resources:
-        mem_mb=25000,
-        runtime="12h",
+        mem_mb=config["localmem"] * 1000,
+        runtime=config["runtime"],
     shell:
         "module load spaceranger/1.3.1 && "
         "spaceranger count --id={wildcards.sample} "
-        "--transcriptome=/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/ "
+        "--transcriptome={params.transcriptome} "
         "--fastqs={input.fastqs} "
         "--sample={wildcards.sample} "
         "--image={input.image} "
-        "--slide=V12J03-133 "
-        "--area=C1 "
-        "--localcores=6 "
-        "--localmem=25 &&"
+        "--slide={params.slide} "
+        "--area={params.area} "
+        "--localcores={params.localcores} "
+        "--localmem={params.localmem} &&"
         "mkdir -p results/spaceranger_count &&"
         "mv {wildcards.sample} results/spaceranger_count/"

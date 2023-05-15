@@ -1,2 +1,2 @@
-sample_name	fastqs	image
-OMB1556_Ach_Enth_H	fastqs/OMB1556_Ach_Enth_H	images/OMB1556_Ach_Enth.jpeg
+sample_name	fastqs	image	slide	area
+OMB1556_Ach_Enth_H	fastqs/OMB1556_Ach_Enth_H	images/OMB1556_Ach_Enth.jpeg	V12J03-133	C1

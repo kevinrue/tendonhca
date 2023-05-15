@@ -20,3 +20,11 @@ def get_fastqs(wildcards):
 def get_image(wildcards):
     u = samples.loc[wildcards.sample]
     return {"image": u["image"]}
+
+def get_slide(wildcards):
+    u = samples.loc[wildcards.sample]
+    return u["slide"]
+
+def get_area(wildcards):
+    u = samples.loc[wildcards.sample]
+    return u["area"]
