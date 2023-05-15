@@ -1,0 +1,14 @@
+sample_name	fastq1	fastq2
+OMB0793_Quad_Enth2_tear	fastqs/OMB0793-Quad-Enth2-tear-date20221006_R1_001.fastq.gz	fastqs/OMB0793-Quad-Enth2-tear-date20221006_R2_001.fastq.gz
+OMB0793_Quad_Enth_tear	fastqs/OMB0793-Quad-Enth-tear-date20220930_R1_001.fastq.gz	fastqs/OMB0793-Quad-Enth-tear-date20220930_R2_001.fastq.gz
+OMB1250_Quad_MB_H	fastqs/OMB1250-Quad-MB-H-date20220930_R1_001.fastq.gz	fastqs/OMB1250-Quad-MB-H-date20220930_R2_001.fastq.gz
+OMB1277_SSP_Enth_H	fastqs/OMB1277-SSP-Enth-H-date20221006_R1_001.fastq.gz	fastqs/OMB1277-SSP-Enth-H-date20221006_R2_001.fastq.gz
+OMB1530_LHBT_MB2_H	fastqs/OMB1530-LHBT-MB2-H-date20221006_R1_001.fastq.gz	fastqs/OMB1530-LHBT-MB2-H-date20221006_R2_001.fastq.gz
+OMB1530_LHBT_MB_H	fastqs/OMB1530-LHBT-MB-H-date20220930_R1_001.fastq.gz	fastqs/OMB1530-LHBT-MB-H-date20220930_R2_001.fastq.gz
+OMB1541_GluMed_Enth_H	fastqs/OMB1541-GluMed-Enth-H-date20221006_R1_001.fastq.gz	fastqs/OMB1541-GluMed-Enth-H-date20221006_R2_001.fastq.gz
+OMB1541_GluMed_MTJ_H	fastqs/OMB1541-GluMed-MTJ-H-date20221006_R1_001.fastq.gz	fastqs/OMB1541-GluMed-MTJ-H-date20221006_R2_001.fastq.gz
+OMB1556_Ach_Enth_H	fastqs/OMB1556-Ach-Enth-H-date20220930_R1_001.fastq.gz	fastqs/OMB1556-Ach-Enth-H-date20220930_R2_001.fastq.gz
+OMB1556_Ach_MB2_H	fastqs/OMB1556-Ach-MB2-H-date20221006_R1_001.fastq.gz	fastqs/OMB1556-Ach-MB2-H-date20221006_R2_001.fastq.gz
+OMB1556_Ach_MB_H	fastqs/OMB1556-Ach-MB-H-date20220930_R1_001.fastq.gz	fastqs/OMB1556-Ach-MB-H-date20220930_R2_001.fastq.gz
+OMB1556_Ach_MTJ_H	fastqs/OMB1556-Ach-MTJ-H-date20220930_R1_001.fastq.gz	fastqs/OMB1556-Ach-MTJ-H-date20220930_R2_001.fastq.gz
+OMB1574_SSP_Enth_tear	fastqs/OMB1574-SSP-Enth-tear-date20221006_R1_001.fastq.gz	fastqs/OMB1574-SSP-Enth-tear-date20221006_R2_001.fastq.gz
