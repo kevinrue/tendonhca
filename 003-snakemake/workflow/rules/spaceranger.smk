@@ -8,15 +8,15 @@ rule spaceranger:
         "logs/spaceranger_count/{sample}.log",
     threads: 6
     resources:
-        mem_mb: 25000
+        mem_mb=25000,
     shell:
-        "module load spaceranger/1.3.1 &&"
-        "spaceranger count --id={wildcard.sample}"
-        "--transcriptome=/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/"
-        "--fastqs={fastqs}"
-        "--sample={wildcard.sample}"
-        "--image=/project/tendonhca/shared/spatial/analysis/achilles/images/OMB1556_Ach_Enth.jpeg"
-        "--slide=V12J03-133"
-        "--area=C1"
-        "--localcores=6"
+        "module load spaceranger/1.3.1 && "
+        "spaceranger count --id={wildcards.sample} "
+        "--transcriptome=/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/ "
+        "--fastqs={input.fastqs} "
+        "--sample={wildcards.sample} "
+        "--image=/project/tendonhca/shared/spatial/analysis/achilles/images/OMB1556_Ach_Enth.jpeg "
+        "--slide=V12J03-133 "
+        "--area=C1 "
+        "--localcores=6 "
         "--localmem=25"

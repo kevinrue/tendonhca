@@ -11,6 +11,7 @@ def get_final_output():
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
         sample=samples["sample_name"],
     )
+    return final_output
 
 def get_fastqs(wildcards):
     u = samples.loc[wildcards.sample]

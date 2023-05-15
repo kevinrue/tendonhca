@@ -4,3 +4,7 @@
 .Ruserdata
 envs/
 .ipynb_checkpoints/
+fastqs/
+.snakemake/
+*.lock
+*backup*
