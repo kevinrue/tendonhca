@@ -16,3 +16,7 @@ def get_final_output():
 def get_fastqs(wildcards):
     u = samples.loc[wildcards.sample]
     return {"fastqs": u["fastqs"]}
+
+def get_image(wildcards):
+    u = samples.loc[wildcards.sample]
+    return {"image": u["image"]}
