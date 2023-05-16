@@ -8,6 +8,9 @@ envs/
 # inputs
 fastqs/
 images/
+transcriptome/
+# spaceranger
+*.mro
 # temporary files
 *.lock
 *backup*

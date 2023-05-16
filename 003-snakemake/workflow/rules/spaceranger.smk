@@ -17,8 +17,9 @@ rule spaceranger:
     resources:
         mem_mb=config["localmem"] * 1000,
         runtime=config["runtime"],
+    envmodules:
+        "spaceranger/1.3.1",
     shell:
-        "module load spaceranger/1.3.1 && "
         "spaceranger count --id={wildcards.sample} "
         "--transcriptome={params.transcriptome} "
         "--fastqs={input.fastqs} "
@@ -27,6 +28,6 @@ rule spaceranger:
         "--slide={params.slide} "
         "--area={params.area} "
         "--localcores={params.localcores} "
-        "--localmem={params.localmem} &&"
-        "mkdir -p results/spaceranger_count &&"
+        "--localmem={params.localmem} && "
+        "rm -rf results/spaceranger_count/{wildcards.sample} && "
         "mv {wildcards.sample} results/spaceranger_count/"
