@@ -6,6 +6,9 @@ min_version("6.10.0")
 
 configfile: "config/config.yaml"
 
+##### Rules settings #####
+
+localrules: spaceranger_runtime
 
 ##### load rules #####
 

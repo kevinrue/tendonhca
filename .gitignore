@@ -4,6 +4,8 @@
 .Ruserdata
 envs/
 .ipynb_checkpoints/
+# cluster
+sps/
 # snakemake
 .snakemake/
 logs/

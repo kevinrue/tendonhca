@@ -5,6 +5,7 @@ rule spaceranger:
         unpack(get_image),
     output:
         filtered_feature_bc_matrix="results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
+        log="results/spaceranger_count/{sample}/_log",
     log:
         "logs/spaceranger_count/{sample}.log",
     params:
@@ -31,3 +32,15 @@ rule spaceranger:
         "--localmem={params.localmem} && "
         "rm -rf results/spaceranger_count/{wildcards.sample} && "
         "mv {wildcards.sample} results/spaceranger_count/"
+
+rule spaceranger_runtime:
+    input:
+        expand("results/spaceranger_count/{sample}/_log", sample = samples.index.tolist()),
+    output:
+        "results/spaceranger_stats/runtime.tsv",
+    log:
+        "logs/spaceranger_stats/_log",
+    params:
+        samples=config["samples"],
+    script:
+        "../../scripts/spaceranger_runtime.py"

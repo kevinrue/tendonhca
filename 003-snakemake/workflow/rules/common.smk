@@ -1,3 +1,4 @@
+import yaml
 import pandas as pd
 
 samples = (
@@ -7,10 +8,7 @@ samples = (
 )
 
 def get_final_output():
-    final_output = expand(
-        "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
-        sample=samples["sample_name"],
-    )
+    final_output = ["results/spaceranger_stats/runtime.tsv"]
     return final_output
 
 def get_fastqs(wildcards):
