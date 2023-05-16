@@ -4,7 +4,10 @@
 .Ruserdata
 envs/
 .ipynb_checkpoints/
+# snakemake
 .snakemake/
+logs/
+results/
 # inputs
 fastqs/
 images/
