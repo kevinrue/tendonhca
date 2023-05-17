@@ -11,7 +11,7 @@ def get_final_output():
     final_output = ["results/spaceranger_stats/runtime.tsv",
                     "results/spaceranger_stats/total_counts.tsv"]
     final_output.append(expand(
-        "results/jupyter_notebooks/spaceranger_qc/{sample}.html",
+        "results/qc/total_counts_n_genes_by_counts/{sample}.png",
         sample=samples.index.tolist(),
     ))
     return final_output
