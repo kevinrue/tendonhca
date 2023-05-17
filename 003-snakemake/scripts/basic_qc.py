@@ -89,7 +89,10 @@ adata = slides[0].concatenate(
 adata.obsm['mt'] = adata[:, adata.var['mt'].values].X.toarray()
 adata = adata[:, ~adata.var['mt'].values]
 
-# PLOT QC FOR EACH SAMPLE
+##
+# plot quality control metrics for each sample
+##
+
 fig, axs = plt.subplots(len(slides), 4, figsize=(15, 4))
 for i, s in enumerate(adata.obs['sample'].unique()):
     #fig.suptitle('Covariates for filtering')
@@ -118,7 +121,9 @@ for i, s in enumerate(adata.obs['sample'].unique()):
 
 plt.savefig(snakemake.output['total_counts_n_genes_by_counts'])
 
-## plot quality control metrics in spatial coordinates
+##
+# plot quality control metrics in spatial coordinates
+##
 
 slide = select_slide(adata, sample_name)
 
@@ -132,3 +137,14 @@ with mpl.rc_context({'figure.figsize': [6,7],
                   gene_symbols='SYMBOL', show=False, return_fig=True,
                   save=f"-sc_pl_spatial-{sample_name}.png")
     os.rename(f"show-sc_pl_spatial-{sample_name}.png", snakemake.output["total_counts_n_genes_by_counts_spatial"])
+
+##
+# identify most abundant genes
+##
+
+adata_feature_mean = np.array(adata.X.mean(axis=0)).flatten()
+d = {'SYMBOL': adata.var['SYMBOL'], 'mean': adata_feature_mean}
+adata_feature_mean = pd.DataFrame(d, index=adata.var_names).sort_values(by=['mean'], ascending=False)
+
+
+adata_feature_mean.head(100).to_csv(snakemake.output["total_counts_top_100"], sep="\t")

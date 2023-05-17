@@ -3,7 +3,8 @@ rule basic_qc:
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     output:
         total_counts_n_genes_by_counts="results/qc/total_counts_n_genes_by_counts/{sample}.png",
-        total_counts_n_genes_by_counts_spatial = "results/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
+        total_counts_n_genes_by_counts_spatial="results/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
+        total_counts_top_100="results/qc/total_counts_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"
     log:
