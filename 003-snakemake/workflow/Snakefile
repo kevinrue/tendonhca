@@ -8,7 +8,9 @@ configfile: "config/config.yaml"
 
 ##### Rules settings #####
 
-localrules: spaceranger_runtime
+localrules:
+    spaceranger_runtime,
+    spaceranger_total_counts
 
 ##### load rules #####
 

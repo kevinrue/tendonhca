@@ -39,8 +39,23 @@ rule spaceranger_runtime:
     output:
         "results/spaceranger_stats/runtime.tsv",
     log:
-        "logs/spaceranger_stats/_log",
+        "logs/spaceranger_stats/spaceranger_runtime.log",
     params:
         samples=config["samples"],
     script:
         "../../scripts/spaceranger_runtime.py"
+
+
+rule spaceranger_total_counts:
+    input:
+        expand("results/spaceranger_count/{sample}/_log", sample = samples.index.tolist()),
+    output:
+        "results/spaceranger_stats/total_counts.tsv",
+    log:
+        "logs/spaceranger_stats/total_counts.log",
+    params:
+        samples=config["samples"],
+    conda:
+        "../../envs/cell2location-env.yaml"
+    script:
+        "../../scripts/spaceranger_total_counts.py"

@@ -8,7 +8,8 @@ samples = (
 )
 
 def get_final_output():
-    final_output = ["results/spaceranger_stats/runtime.tsv"]
+    final_output = ["results/spaceranger_stats/runtime.tsv",
+                    "results/spaceranger_stats/total_counts.tsv"]
     return final_output
 
 def get_fastqs(wildcards):
