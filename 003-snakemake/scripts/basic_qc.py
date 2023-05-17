@@ -15,6 +15,11 @@ import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 
+# change default output directory for figures
+sc.settings.figdir = './'
+print(sc.settings.figdir)
+
+sample_name = snakemake.wildcards['sample']
 
 def read_and_qc(sample_name):
     r""" This function reads the data for one 10X spatial experiment into the anndata object.
@@ -67,7 +72,7 @@ def select_slide(adata, s, s_col='sample'):
 
 # Read the data into anndata objects
 slides = []
-for i in [snakemake.wildcards['sample']]:
+for i in [sample_name]:
     slides.append(read_and_qc(i))
 
 # Combine anndata objects together
@@ -75,7 +80,7 @@ adata = slides[0].concatenate(
     slides[1:],
     batch_key="sample",
     uns_merge="unique",
-    batch_categories=[snakemake.wildcards['sample']],
+    batch_categories=[sample_name],
     index_unique=None
 )
 #######################
@@ -112,3 +117,18 @@ for i, s in enumerate(adata.obs['sample'].unique()):
     axs[3].set_xlabel(f'n_genes_by_counts | {s}')
 
 plt.savefig(snakemake.output['total_counts_n_genes_by_counts'])
+
+## plot quality control metrics in spatial coordinates
+
+slide = select_slide(adata, sample_name)
+
+with mpl.rc_context({'figure.figsize': [6,7],
+                     'axes.facecolor': 'white'}):
+    print(sc.settings.figdir)
+    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma',
+                  library_id=list(slide.uns['spatial'].keys())[0],
+                  color=['total_counts', 'n_genes_by_counts'], size=1,
+                  vmin=0, vmax='p90.0',
+                  gene_symbols='SYMBOL', show=False, return_fig=True,
+                  save=f"-sc_pl_spatial-{sample_name}.png")
+    os.rename(f"show-sc_pl_spatial-{sample_name}.png", snakemake.output["total_counts_n_genes_by_counts_spatial"])
