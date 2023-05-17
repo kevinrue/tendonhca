@@ -5,6 +5,7 @@
 envs/
 .ipynb_checkpoints/
 # cluster
+sps-*
 sps/
 # snakemake
 .snakemake/
