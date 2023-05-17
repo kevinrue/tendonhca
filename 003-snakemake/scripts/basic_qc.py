@@ -93,7 +93,7 @@ for i, s in enumerate(adata.obs['sample'].unique()):
                  kde=False, ax = axs[0])
     axs[0].set_xlim(0, adata.obs['total_counts'].max())
     axs[0].set_xlabel(f'total_counts | {s}')
-    x_max = np.quantile(slide.obs['total_counts'], .99)
+    x_max = np.quantile(slide.obs['total_counts'], .9)
     sns.distplot(slide.obs['total_counts']\
                  [slide.obs['total_counts']<x_max],
                  kde=False, bins=40, ax = axs[1])
@@ -104,7 +104,7 @@ for i, s in enumerate(adata.obs['sample'].unique()):
                  kde=False, bins=60, ax = axs[2])
     axs[2].set_xlim(0, adata.obs['n_genes_by_counts'].max())
     axs[2].set_xlabel(f'n_genes_by_counts | {s}')
-    x_max = np.quantile(slide.obs['n_genes_by_counts'], .99)
+    x_max = np.quantile(slide.obs['n_genes_by_counts'], .9)
     sns.distplot(slide.obs['n_genes_by_counts']\
                  [slide.obs['n_genes_by_counts']<x_max],
                  kde=False, bins=60, ax = axs[3])
