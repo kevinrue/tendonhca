@@ -4,3 +4,18 @@
 .Ruserdata
 envs/
 .ipynb_checkpoints/
+# cluster
+sps/
+# snakemake
+.snakemake/
+logs/
+results/
+# inputs
+fastqs/
+images/
+transcriptome/
+# spaceranger
+*.mro
+# temporary files
+*.lock
+*backup*

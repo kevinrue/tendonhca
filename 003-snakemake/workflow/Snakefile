@@ -6,14 +6,19 @@ min_version("6.10.0")
 
 configfile: "config/config.yaml"
 
+##### Rules settings #####
 
-# declare https://github.com/snakemake-workflows/snakemake-workflow-template as a module
-module snakemake_workflow_template:
-    snakefile: 
-        github("snakemake-workflows/snakemake-workflow-template", path="workflow/Snakefile", tag="null")
-    config:
-        config
+localrules:
+    spaceranger_runtime,
+    spaceranger_total_counts
 
+##### load rules #####
 
-# use all rules from https://github.com/snakemake-workflows/snakemake-workflow-template
-use rule * from snakemake_workflow_template
+include: "rules/common.smk"
+include: "rules/spaceranger.smk"
+
+##### target rules #####
+
+rule all:
+    input:
+        get_final_output(),

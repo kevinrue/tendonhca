@@ -26,3 +26,14 @@
 
 * Create a Conda environment for `cell2location` following instructions at <https://pypi.org/project/cell2location/>.
 * Learn to load Visium data following tutorial at <https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_short_demo.html#1.-Loading-Visium-data>.
+
+## 12 May 2023
+
+```
+snakemake --slurm --profile default
+```
+
+(snakemake) [albrecht@cbrglogin3 003-snakemake]$ snakemake --slurm --profile default
+SyntaxError:
+Input and output files have to be specified as strings or lists of strings.
+  File "/ceph/project/tendonhca/albrecht/003-snakemake/workflow/Snakefile", line 17, in <module>
