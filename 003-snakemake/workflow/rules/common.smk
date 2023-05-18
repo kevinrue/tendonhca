@@ -11,6 +11,10 @@ def get_final_output():
     final_output = ["results/spaceranger_stats/runtime.tsv",
                     "results/spaceranger_stats/total_counts.tsv"]
     final_output.append(expand(
+        "results/qc/features_mean_top_100/{sample}.tsv",
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
         "results/qc/total_counts_n_genes_by_counts_spatial/{sample}_slide.png",
         sample=samples.index.tolist(),
     ))
