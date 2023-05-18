@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 path = "results/spaceranger_count/"
-sample_name = "OMB1556_Ach_Enth_H"
+
 samples = (
     pd.read_csv(snakemake.config["samples"], sep="\t", dtype={"sample_name": str})
     .set_index("sample_name", drop=False)
