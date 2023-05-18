@@ -17,6 +17,7 @@ localrules:
 include: "rules/common.smk"
 include: "rules/spaceranger.smk"
 include: "rules/qc.smk"
+include: "rules/imagemagick.smk"
 
 ##### target rules #####
 
