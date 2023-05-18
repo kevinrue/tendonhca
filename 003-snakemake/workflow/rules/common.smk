@@ -20,7 +20,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/spatial/most_detected_most_abundant_features/{sample}.png",
+        "figures/spatial/most_detected_most_abundant_features/{sample}_image.png",
         sample=samples.index.tolist(),
     ))
     return final_output
