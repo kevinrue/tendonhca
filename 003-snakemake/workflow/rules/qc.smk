@@ -4,7 +4,7 @@ rule basic_qc:
     output:
         total_counts_n_genes_by_counts="results/qc/total_counts_n_genes_by_counts/{sample}.png",
         total_counts_n_genes_by_counts_spatial="results/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
-        total_counts_top_100="results/qc/total_counts_top_100/{sample}.tsv",
+        features_mean_top_100="results/qc/features_mean_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"
     log:
