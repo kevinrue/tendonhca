@@ -17,7 +17,6 @@ warnings.filterwarnings('ignore')
 
 # change default output directory for figures
 sc.settings.figdir = './'
-print(sc.settings.figdir)
 
 sample_name = snakemake.wildcards['sample']
 
