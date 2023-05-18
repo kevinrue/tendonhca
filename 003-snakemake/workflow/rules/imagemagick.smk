@@ -10,3 +10,17 @@ rule spatial_basic_qc:
         "{input.qc} "
         "-geometry 1000x600\> "
         "{output.png}"
+
+# rule spatial_most_detected:
+#     input:
+#         unpack(get_image),
+#         dir="figures/spatial/most_detected_most_abundant_features/{sample}.png",
+#     output:
+#         dir=directory("figures/spatial/most_detected_most_abundant_features_image/"),
+#     shell:
+#         "for file in $(ls figures/spatial/most_detected_most_abundant_features/); do "
+#         ""
+#         "montage {input.image} {input.qc} -geometry 1000x600\> {output.png}; "
+#         "done"
+
+

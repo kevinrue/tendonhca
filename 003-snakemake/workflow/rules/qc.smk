@@ -26,11 +26,11 @@ rule most_abundant_feature_detection_rate:
     script:
         "../../scripts/most_abundant_feature_detection_rate.py"
 
-rule most_detected_most_abundant_feature:
+rule most_detected_most_abundant_features:
     input:
         "results/qc/features_mean_top_100/_detection_rate.tsv",
     output:
-        dir=directory("figures/spatial/most_detected_most_abundant_features/"),
+        expand("figures/spatial/most_detected_most_abundant_features/{sample}.png", sample = samples.index.tolist()),
     conda:
         "../../envs/scanpy-env.yaml"
     log:

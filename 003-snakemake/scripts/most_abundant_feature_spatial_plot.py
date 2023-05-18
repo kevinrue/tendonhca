@@ -102,18 +102,15 @@ adata = adata[:, ~adata.var['mt'].values]
 
 input_genes_table = pd.read_table("results/qc/features_mean_top_100/_detection_rate.tsv", sep="\t")
 filtered_genes_table = input_genes_table[[not x.startswith(("RPS", "RPL")) for x in input_genes_table['SYMBOL']]]
-gene_symbols = filtered_genes_table['SYMBOL'].tolist()[:1]
-
-os.mkdir(snakemake.output['dir'])
+gene_symbols = filtered_genes_table['SYMBOL'].tolist()[:8]
 
 for sample_name in sample_names:
     slide = select_slide(adata, sample_name)
-    for gene_symbol in gene_symbols:
-        with mpl.rc_context({'figure.figsize': [6,7],
+    with mpl.rc_context({'figure.figsize': [6,7],
                         'axes.facecolor': 'black'}):
-            sc.pl.spatial(slide,
-                        color=gene_symbol, img_key=None, size=1,
-                        vmin=0, cmap='magma', vmax='p90.0',
-                        gene_symbols='SYMBOL', save=f"-{gene_symbol}-{sample_name}.png"
-                        )
-        os.rename(f"show-{gene_symbol}-{sample_name}.png", snakemake.output['dir'] + f"/{gene_symbol}-{sample_name}.png")
+        sc.pl.spatial(slide,
+                    color=gene_symbols, img_key=None, size=1,
+                    vmin=0, cmap='magma', vmax='p90.0',
+                    gene_symbols='SYMBOL', save=f"-{sample_name}.png"
+                    )
+    os.rename(f"show-{sample_name}.png", f"figures/spatial/most_detected_most_abundant_features/{sample_name}.png")
