@@ -145,6 +145,4 @@ with mpl.rc_context({'figure.figsize': [6,7],
 adata_feature_mean = np.array(adata.X.mean(axis=0)).flatten()
 d = {'SYMBOL': adata.var['SYMBOL'], 'mean': adata_feature_mean}
 adata_feature_mean = pd.DataFrame(d, index=adata.var_names).sort_values(by=['mean'], ascending=False)
-
-
 adata_feature_mean.head(100).to_csv(snakemake.output["features_mean_top_100"], sep="\t")
