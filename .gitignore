@@ -9,7 +9,9 @@ sps-*
 sps/
 # snakemake
 .snakemake/
+data/
 logs/
+annotations/
 results/
 figures/
 # inputs
