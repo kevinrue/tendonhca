@@ -27,7 +27,7 @@ rule curated_markers_counts_spatial_full:
         "logs/curated_markers_counts_spatial_full.log"
     threads: 1
     resources:
-        mem_mb=12 * 1000,
+        mem_mb=4 * 1024,
         runtime="30m",
     conda:
         "../../envs/scanpy-env.yaml"
@@ -43,7 +43,7 @@ rule curated_markers_counts_spatial_quantile:
         samples=config["samples"],
     threads: 1
     resources:
-        mem_mb=12 * 1000,
+        mem_mb=4 * 1024,
         runtime="30m",
     log:
         "logs/curated_markers_counts_spatial_quantile.log"
@@ -61,7 +61,7 @@ rule curated_markers_counts_spatial_log1p:
         samples=config["samples"],
     threads: 1
     resources:
-        mem_mb=12 * 1000,
+        mem_mb=4 * 1024,
         runtime="30m",
     log:
         "logs/curated_markers_counts_spatial_log1p.log"

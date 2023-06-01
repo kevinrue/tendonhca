@@ -42,7 +42,7 @@ sample_names = samples.index.tolist()
 # define functions
 ##
 
-def read_and_qc(sample_name):
+def read_and_qc(sample_name, s_col='sample'):
     r""" This function reads the data for one 10X spatial experiment into the anndata object.
     It also calculates QC metrics. Modify this function if required by your workflow.
     
@@ -69,42 +69,12 @@ def read_and_qc(sample_name):
                           + '_' + adata.obs_names
     adata.obs.index.name = 'spot_id'
     
+    s_keys = list(adata.uns['spatial'].keys())
+    s_spatial = np.array(s_keys)[[sample_name in k for k in s_keys]][0]
+    
+    adata.uns['spatial'] = {s_spatial: adata.uns['spatial'][s_spatial]}
+    
     return adata
-
-def select_slide(adata, s, s_col='sample'):
-    r""" This function selects the data for one slide from the spatial anndata object.
-
-    :param adata: Anndata object with multiple spatial experiments
-    :param s: name of selected experiment
-    :param s_col: column in adata.obs listing experiment name for each location
-    """
-    
-    slide = adata[adata.obs[s_col].isin([s]), :]
-    s_keys = list(slide.uns['spatial'].keys())
-    s_spatial = np.array(s_keys)[[s in k for k in s_keys]][0]
-    
-    slide.uns['spatial'] = {s_spatial: slide.uns['spatial'][s_spatial]}
-    
-    return slide
-
-#######################
-
-# TODO: process each sample separately to minimise memory footprint
-
-# Read the data into anndata objects
-slides = []
-for i in sample_names:
-    slides.append(read_and_qc(i))
-
-# Combine anndata objects together
-adata = slides[0].concatenate(
-    slides[1:],
-    batch_key="sample",
-    uns_merge="unique",
-    batch_categories=sample_names,
-    index_unique=None
-)
-#######################
 
 ##
 # Load curated markers
@@ -114,14 +84,11 @@ curated_markers = pd.read_csv(snakemake.input["tsv"], sep="\t")
 curated_markers.head()
 
 ##
-# Plot markers next to total counts
+# Process each sample
 ##
 
-# NOTE: 95% quantile used to cap color scale (i.e., trim outlier spots with high expression)
-
 for sample_name in sample_names:
-    # fetch data for the sample
-    slide = select_slide(adata, sample_name)
+    slide = read_and_qc(sample_name)
     sc.pp.filter_cells(slide, min_counts=100)
     # apply log1p transformation
     sc.pp.log1p(slide)
