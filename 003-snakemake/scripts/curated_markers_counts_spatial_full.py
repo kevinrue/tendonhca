@@ -89,6 +89,8 @@ def select_slide(adata, s, s_col='sample'):
 
 #######################
 
+# TODO: process each sample separately to minimise memory footprint
+
 # Read the data into anndata objects
 slides = []
 for i in sample_names:
@@ -139,4 +141,6 @@ for sample_name in sample_names:
         # move output file to correct location
         if not os.path.exists(snakemake.output["dir"]):
             os.mkdir(snakemake.output["dir"])
-        os.rename(f"show-curated_celltype_markers_full-{sample_name}-{cell_type}.png", snakemake.output["dir"] + f"/{cell_type}_{sample_name}.png")
+        os.rename(
+            f"show-curated_celltype_markers_full-{sample_name}-{cell_type}.png",
+            snakemake.output["dir"] + f"/{sample_name}-{cell_type}.png")
