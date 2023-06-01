@@ -24,6 +24,7 @@ Namely:
 ### Annotations
 
 - Gene information extracted from the input GTF file is stored in `annotations/genes.tsv`.
+- Mitochondrial gene identifiers are stored in `annotations/genes_mitochondrial.tsv`.
 
 ### Quality control
 
@@ -36,8 +37,15 @@ Namely:
 
 #### Plots
 
-- Histograms of quality control metrics for individual samples are stored in `results/qc/total_counts_n_genes_by_counts/{sample}.png`
-- Spatial views of quality control metrics for individual samples are stored in `results/qc/total_counts_n_genes_by_counts_spatial/{sample}.png`.
+- Histograms of quality control metrics for individual samples are stored in `figures/qc/total_counts_n_genes_by_counts/{sample}.png`
+- Spatial views of quality control metrics for individual samples are stored in `figures/qc/total_counts_n_genes_by_counts_spatial/{sample}.png`.
   + The same plots are combined with a view of the stained tissue in `{sample}_slide.png`.
 - Spatial views of the most frequently detected most abundant genes are stored in `figures/spatial/most_detected_most_abundant_features/{sample}.png`.
   + The same plots are combined with a view of the stained tissue in `{sample}_slide.png`.
+
+### Manually curated information
+
+- Spatial views of selected marker genes are stored in:
+  - `figures/spatial/curated_celltype_markers_counts_full` (colour scale fitted to full range of counts per spot)
+  - `figures/spatial/curated_celltype_markers_counts_quantile` (colour scale capped to 95% maximal value of counts per spot)
+  - `figures/spatial/curated_celltype_markers_counts_log1p` (colour scale fitted to log1p-transformed counts per spot)
