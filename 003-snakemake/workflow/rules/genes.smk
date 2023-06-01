@@ -20,7 +20,9 @@ rule curated_markers_counts_spatial:
     input:
         tsv='data/curated_markers.tsv'
     output:
-        dir=directory('figures/spatial/markers_counts/')
+        full=directory('figures/spatial/curated_celltype_markers_counts_full'),
+        quantile=directory('figures/spatial/curated_celltype_markers_counts_quantile'),
+        log1p=directory('figures/spatial/curated_celltype_markers_counts_log1p'),
     params:
         samples=config["samples"],
     log:
