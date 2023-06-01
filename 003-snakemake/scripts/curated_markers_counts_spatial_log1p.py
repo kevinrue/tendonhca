@@ -23,12 +23,8 @@ warnings.filterwarnings('ignore')
 # change default output directory for figures
 sc.settings.figdir = './'
 
-if os.path.exists(snakemake.output["full"]):
-    os.rmdir(snakemake.output["full"])
-if os.path.exists(snakemake.output["quantile"]):
-    os.rmdir(snakemake.output["quantile"])
-if os.path.exists(snakemake.output["log1p"]):
-    os.rmdir(snakemake.output["log1p"])
+if os.path.exists(snakemake.output["dir"]):
+    os.rmdir(snakemake.output["dir"])
 
 ##
 # import information about samples
@@ -124,9 +120,8 @@ curated_markers.head()
 for sample_name in sample_names:
     # fetch data for the sample
     slide = select_slide(adata, sample_name)
-    # make a copy that is log1p-transformed
-    slide_log1p = slide.copy()
-    sc.pp.log1p(slide_log1p)
+    # apply log1p transformation
+    sc.pp.log1p(slide)
     for cell_type in curated_markers['cell_type'].unique():
         # fetch markers for the cell type
         markers_symbols = curated_markers['gene_symbol'][curated_markers['cell_type'] == cell_type].tolist()
@@ -134,43 +129,16 @@ for sample_name in sample_names:
         markers_symbols_available = list(set(markers_symbols).intersection(slide.var['SYMBOL']))
         # remove spaces prior to generating file names
         cell_type = cell_type.replace(" ", "_")
-        ### full ###
         # save png file to current directory (temporarily)
         fig = sc.pl.spatial(
             slide, img_key = "hires", cmap='magma',
-            library_id=list(slide.uns['spatial'].keys())[0],
-            color=['total_counts'] + markers_symbols_available, size=1,
-            vmin=0, vmax=None,
-            gene_symbols='SYMBOL', show=False, return_fig=True,
-            save=f"-curated_celltype_markers-{sample_name}-{cell_type}.png")
-        # move output file to correct location
-        if not os.path.exists(snakemake.output["full"]):
-            os.mkdir(snakemake.output["full"])
-        os.rename(f"show-curated_celltype_markers-{sample_name}-{cell_type}.png", snakemake.output["full"] + f"/{cell_type}_{sample_name}.png")
-        ### quantile ###
-        # save png file to current directory (temporarily)
-        fig = sc.pl.spatial(
-            slide, img_key = "hires", cmap='magma',
-            library_id=list(slide.uns['spatial'].keys())[0],
-            color=['total_counts'] + markers_symbols_available, size=1,
-            vmin=0, vmax='p95.0',
-            gene_symbols='SYMBOL', show=False, return_fig=True,
-            save=f"-curated_celltype_markers-{sample_name}-{cell_type}.png")
-        # move output file to correct location
-        if not os.path.exists(snakemake.output["quantile"]):
-            os.mkdir(snakemake.output["quantile"])
-        os.rename(f"show-curated_celltype_markers-{sample_name}-{cell_type}.png", snakemake.output["quantile"] + f"/{cell_type}_{sample_name}.png")
-        ### log1p ###
-        # save png file to current directory (temporarily)
-        fig = sc.pl.spatial(
-            slide_log1p, img_key = "hires", cmap='magma',
             library_id=list(slide.uns['spatial'].keys())[0],
             color=['log1p_total_counts'] + markers_symbols_available, size=1,
             vmin=0, vmax=None,
             gene_symbols='SYMBOL', show=False, return_fig=True,
-            save=f"-curated_celltype_markers-{sample_name}-{cell_type}.png")
+            save=f"-curated_celltype_markers_log1p-{sample_name}-{cell_type}.png")
         # move output file to correct location
-        if not os.path.exists(snakemake.output["log1p"]):
-            os.mkdir(snakemake.output["log1p"])
-        os.rename(f"show-curated_celltype_markers-{sample_name}-{cell_type}.png", snakemake.output["log1p"] + f"/{cell_type}_{sample_name}.png")
+        if not os.path.exists(snakemake.output["dir"]):
+            os.mkdir(snakemake.output["dir"])
+        os.rename(f"show-curated_celltype_markers_log1p-{sample_name}-{cell_type}.png", snakemake.output["dir"] + f"/{cell_type}_{sample_name}.png")
 

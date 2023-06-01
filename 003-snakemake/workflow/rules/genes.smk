@@ -16,18 +16,45 @@ rule genes_mitochondrial:
     script:
         "../../scripts/mitochondrial_genes.py"
 
-rule curated_markers_counts_spatial:
+rule curated_markers_counts_spatial_full:
     input:
         tsv='data/curated_markers.tsv'
     output:
-        full=directory('figures/spatial/curated_celltype_markers_counts_full'),
-        quantile=directory('figures/spatial/curated_celltype_markers_counts_quantile'),
-        log1p=directory('figures/spatial/curated_celltype_markers_counts_log1p'),
+        dir=directory('figures/spatial/curated_celltype_markers_counts_full'),
     params:
         samples=config["samples"],
     log:
-        "logs/curated_markers_counts_spatial.log"
+        "logs/curated_markers_counts_spatial_full.log"
     conda:
         "../../envs/scanpy-env.yaml"
     script:
-        "../../scripts/curated_markers_counts_spatial.py"
+        "../../scripts/curated_markers_counts_spatial_full.py"
+
+rule curated_markers_counts_spatial_quantile:
+    input:
+        tsv='data/curated_markers.tsv'
+    output:
+        dir=directory('figures/spatial/curated_celltype_markers_counts_quantile'),
+    params:
+        samples=config["samples"],
+    log:
+        "logs/curated_markers_counts_spatial_quantile.log"
+    conda:
+        "../../envs/scanpy-env.yaml"
+    script:
+        "../../scripts/curated_markers_counts_spatial_quantile.py"
+
+rule curated_markers_counts_spatial_log1p:
+    input:
+        tsv='data/curated_markers.tsv'
+    output:
+        dir=directory('figures/spatial/curated_celltype_markers_counts_log1p'),
+    params:
+        samples=config["samples"],
+    log:
+        "logs/curated_markers_counts_spatial_log1p.log"
+    conda:
+        "../../envs/scanpy-env.yaml"
+    script:
+        "../../scripts/curated_markers_counts_spatial_log1p.py"
+
