@@ -10,7 +10,14 @@ configfile: "config/config.yaml"
 
 localrules:
     spaceranger_runtime,
-    spaceranger_total_counts
+    spaceranger_total_counts,
+    gene_table,
+    genes_mitochondrial,
+    basic_qc,
+    most_abundant_feature_detection_rate,
+    most_detected_most_abundant_features,
+    spatial_basic_qc,
+    spatial_most_detected
 
 ##### load rules #####
 

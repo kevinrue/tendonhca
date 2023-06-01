@@ -85,9 +85,9 @@ adata = slides[0].concatenate(
 #######################
 
 # mitochondria-encoded (MT) genes should be removed for spatial mapping
-# but we are not doing that here
-#adata.obsm['mt'] = adata[:, adata.var['mt'].values].X.toarray()
-#adata = adata[:, ~adata.var['mt'].values]
+# we do not do this for this basic quality control, to include everything
+# adata.obsm['mt'] = adata[:, adata.var['mt'].values].X.toarray()
+# adata = adata[:, ~adata.var['mt'].values]
 
 ##
 # plot quality control metrics for each sample

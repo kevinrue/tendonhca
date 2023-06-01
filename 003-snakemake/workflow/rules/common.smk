@@ -11,7 +11,7 @@ def get_final_output():
     final_output = ["results/spaceranger_stats/runtime.tsv",
                     "results/spaceranger_stats/total_counts.tsv",
                     "results/qc/features_mean_top_100/_detection_rate.tsv",
-                    "annotations/genes.tsv"]
+                    "annotations/genes_mitochondrial.tsv"]
     final_output.append(expand(
         "results/qc/features_mean_top_100/{sample}.tsv",
         sample=samples.index.tolist(),

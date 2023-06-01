@@ -2,8 +2,8 @@ rule basic_qc:
     input:
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     output:
-        total_counts_n_genes_by_counts="results/qc/total_counts_n_genes_by_counts/{sample}.png",
-        total_counts_n_genes_by_counts_spatial="results/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
+        total_counts_n_genes_by_counts="figures/qc/total_counts_n_genes_by_counts/{sample}.png",
+        total_counts_n_genes_by_counts_spatial="figures/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
         features_mean_top_100="results/qc/features_mean_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"
@@ -28,9 +28,11 @@ rule most_abundant_feature_detection_rate:
 
 rule most_detected_most_abundant_features:
     input:
-        "results/qc/features_mean_top_100/_detection_rate.tsv",
+        tsv="results/qc/features_mean_top_100/_detection_rate.tsv",
     output:
         expand("figures/spatial/most_detected_most_abundant_features/{sample}.png", sample = samples.index.tolist()),
+    params:
+        samples=config["samples"],
     conda:
         "../../envs/scanpy-env.yaml"
     log:
