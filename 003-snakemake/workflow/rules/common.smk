@@ -20,7 +20,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/qc/total_counts_n_genes_by_counts_spatial/{sample}_slide.png",
+        "figures/basic_qc/spatial/slide/{sample}.png",
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(

@@ -3,7 +3,7 @@ rule basic_qc:
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     output:
         histogram="figures/basic_qc/histogram/{sample}.png",
-        spatial="figures/basic_qc/spatial/{sample}.png",
+        spatial="figures/basic_qc/spatial/metrics/{sample}.png",
         features_mean_top_100="results/qc/features_mean_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"

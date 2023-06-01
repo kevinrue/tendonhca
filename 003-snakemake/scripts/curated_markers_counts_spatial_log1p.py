@@ -89,7 +89,7 @@ curated_markers.head()
 
 for sample_name in sample_names:
     slide = read_and_qc(sample_name)
-    sc.pp.filter_cells(slide, min_counts=100)
+    sc.pp.filter_cells(slide, min_counts=samples['min_counts'][sample_name])
     # apply log1p transformation
     sc.pp.log1p(slide)
     for cell_type in curated_markers['cell_type'].unique():

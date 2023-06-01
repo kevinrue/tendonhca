@@ -40,6 +40,7 @@ def read_and_qc(sample_name):
     
     # identify mitochondria-encoded genes
     adata.var['mt'] = [gene.startswith('MT-') for gene in adata.var['SYMBOL']]
+    # TODO: identify ribosomal genes
     
     # Calculate QC metrics
     sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
@@ -150,7 +151,7 @@ slide = select_slide(adata, sample_name)
 with mpl.rc_context({'figure.figsize': [6,7],
                      'axes.facecolor': 'white'}):
     print(sc.settings.figdir)
-    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma',
+    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma', ncols=2,
                   library_id=list(slide.uns['spatial'].keys())[0],
                   color=['total_counts', 'n_genes_by_counts', 'pct_counts_mt'], size=1,
                   vmin=0, vmax='p90.0',
