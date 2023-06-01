@@ -35,13 +35,18 @@ def read_and_qc(sample_name):
     adata.var_names = adata.var['ENSEMBL']
     adata.var.drop(columns='ENSEMBL', inplace=True)
     
-    # Calculate QC metrics
-    from scipy.sparse import csr_matrix
-    adata.X = adata.X.toarray()
-    sc.pp.calculate_qc_metrics(adata, inplace=True)
-    adata.X = csr_matrix(adata.X)
+    # some filtered matrices have spots with no counts (!), so we need to remove them
+    sc.pp.filter_cells(adata, min_counts=1)
+    
+    # identify mitochondria-encoded genes
     adata.var['mt'] = [gene.startswith('MT-') for gene in adata.var['SYMBOL']]
-    adata.obs['mt_frac'] = adata[:, adata.var['mt'].tolist()].X.sum(1).A.squeeze()/adata.obs['total_counts']
+    
+    # Calculate QC metrics
+    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
+    # from scipy.sparse import csr_matrix
+    # adata.X = adata.X.toarray()
+    # adata.X = csr_matrix(adata.X)
+    # adata.obs['mt_frac'] = adata[:, adata.var['mt'].tolist()].X.sum(1).A.squeeze()/adata.obs['total_counts']
     
     # add sample name to obs names
     adata.obs["sample"] = [str(i) for i in adata.obs['sample']]
@@ -93,33 +98,48 @@ adata = slides[0].concatenate(
 # plot quality control metrics for each sample
 ##
 
-fig, axs = plt.subplots(len(slides), 4, figsize=(15, 4))
+fig, axs = plt.subplots(2, 4, figsize=(15, 8))
 for i, s in enumerate(adata.obs['sample'].unique()):
     #fig.suptitle('Covariates for filtering')
     slide = select_slide(adata, s)
+    
     sns.distplot(slide.obs['total_counts'],
-                 kde=False, ax = axs[0])
-    axs[0].set_xlim(0, adata.obs['total_counts'].max())
-    axs[0].set_xlabel(f'total_counts | {s}')
+                 kde=False, ax = axs[0, 0])
+    axs[0, 0].set_xlim(0, adata.obs['total_counts'].max())
+    axs[0, 0].set_xlabel(f'total_counts | {s}')
+    
     x_max = np.quantile(slide.obs['total_counts'], .9)
     sns.distplot(slide.obs['total_counts']\
                  [slide.obs['total_counts']<x_max],
-                 kde=False, bins=40, ax = axs[1])
-    axs[1].set_xlim(0, x_max)
-    axs[1].set_xlabel(f'total_counts | {s}')
+                 kde=False, bins=40, ax = axs[0, 1])
+    axs[0, 1].set_xlim(0, x_max)
+    axs[0, 1].set_xlabel(f'total_counts | {s}')
 
     sns.distplot(slide.obs['n_genes_by_counts'],
-                 kde=False, bins=60, ax = axs[2])
-    axs[2].set_xlim(0, adata.obs['n_genes_by_counts'].max())
-    axs[2].set_xlabel(f'n_genes_by_counts | {s}')
+                 kde=False, bins=60, ax = axs[0, 2])
+    axs[0, 2].set_xlim(0, adata.obs['n_genes_by_counts'].max())
+    axs[0, 2].set_xlabel(f'n_genes_by_counts | {s}')
+    
     x_max = np.quantile(slide.obs['n_genes_by_counts'], .9)
     sns.distplot(slide.obs['n_genes_by_counts']\
                  [slide.obs['n_genes_by_counts']<x_max],
-                 kde=False, bins=60, ax = axs[3])
-    axs[3].set_xlim(0, x_max)
-    axs[3].set_xlabel(f'n_genes_by_counts | {s}')
+                 kde=False, bins=60, ax = axs[0, 3])
+    axs[0, 3].set_xlim(0, x_max)
+    axs[0, 3].set_xlabel(f'n_genes_by_counts | {s}')
+    
+    sns.distplot(slide.obs['pct_counts_mt'],
+                 kde=False, ax = axs[1, 0])
+    axs[1, 0].set_xlim(0, adata.obs['pct_counts_mt'].max())
+    axs[1, 0].set_xlabel(f'pct_counts_mt | {s}')
+    
+    x_max = np.quantile(slide.obs['pct_counts_mt'], .9)
+    sns.distplot(slide.obs['pct_counts_mt']\
+                 [slide.obs['pct_counts_mt']<x_max],
+                 kde=False, bins=40, ax = axs[1, 1])
+    axs[1, 1].set_xlim(0, adata.obs['pct_counts_mt'].quantile(0.9))
+    axs[1, 1].set_xlabel(f'pct_counts_mt | {s}')
 
-plt.savefig(snakemake.output['total_counts_n_genes_by_counts'])
+plt.savefig(snakemake.output['histogram'])
 
 ##
 # plot quality control metrics in spatial coordinates
@@ -132,11 +152,11 @@ with mpl.rc_context({'figure.figsize': [6,7],
     print(sc.settings.figdir)
     fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma',
                   library_id=list(slide.uns['spatial'].keys())[0],
-                  color=['total_counts', 'n_genes_by_counts'], size=1,
+                  color=['total_counts', 'n_genes_by_counts', 'pct_counts_mt'], size=1,
                   vmin=0, vmax='p90.0',
                   gene_symbols='SYMBOL', show=False, return_fig=True,
                   save=f"-sc_pl_spatial-{sample_name}.png")
-    os.rename(f"show-sc_pl_spatial-{sample_name}.png", snakemake.output["total_counts_n_genes_by_counts_spatial"])
+    os.rename(f"show-sc_pl_spatial-{sample_name}.png", snakemake.output["spatial"])
 
 ##
 # identify most abundant genes

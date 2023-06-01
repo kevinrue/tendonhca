@@ -2,8 +2,8 @@ rule basic_qc:
     input:
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     output:
-        total_counts_n_genes_by_counts="figures/qc/total_counts_n_genes_by_counts/{sample}.png",
-        total_counts_n_genes_by_counts_spatial="figures/qc/total_counts_n_genes_by_counts_spatial/{sample}.png",
+        histogram="figures/basic_qc/histogram/{sample}.png",
+        spatial="figures/basic_qc/spatial/{sample}.png",
         features_mean_top_100="results/qc/features_mean_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"
