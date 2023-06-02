@@ -8,24 +8,35 @@ samples = (
 )
 
 def get_final_output():
-    final_output = ["results/spaceranger_stats/runtime.tsv",
-                    "results/spaceranger_stats/total_counts.tsv",
-                    "results/qc/features_mean_top_100/_detection_rate.tsv",
-                    "annotations/genes_mitochondrial.tsv",
-                    "annotations/genes_ribosomal.tsv",
+    final_output = ["results/spaceranger_stats/runtime.tsv", # spaceranger_runtime
+                    "results/spaceranger_stats/total_counts.tsv", # spaceranger_total_counts
+                    "results/qc_initial/features_mean_top_100/_detection_rate.tsv", # most_abundant_feature_detection_rate
+                    "annotations/genes_mitochondrial.tsv", # genes_mitochondrial
+                    "annotations/genes_ribosomal.tsv", # genes_ribosomal
                     "figures/spatial/curated_celltype_markers_counts_full",
                     "figures/spatial/curated_celltype_markers_counts_quantile",
                     "figures/spatial/curated_celltype_markers_counts_log1p"]
+    # initial quality control
     final_output.append(expand(
-        "results/qc/features_mean_top_100/{sample}.tsv",
+        "results/qc_initial/features_mean_top_100/{sample}.tsv", # qc_initial
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/basic_qc/spatial/slide/{sample}.png",
+        "figures/qc_initial/spatial/slide/{sample}.png", # spatial_basic_qc
+        sample=samples.index.tolist(),
+    ))
+    # quality control after filtering genes
+    final_output.append(expand(
+        "figures/qc_filtered_genes/histogram/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
+    # most abundant features
+    final_output.append(expand(
+        "results/qc_filtered_genes/features_mean_top_100/{sample}.tsv",
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/spatial/most_detected_most_abundant_features/{sample}_image.png",
+        "figures/spatial/most_detected_most_abundant_features/{sample}_image.png", # spatial_most_detected
         sample=samples.index.tolist(),
     ))
     return final_output

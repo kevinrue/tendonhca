@@ -1,9 +1,9 @@
 rule spatial_basic_qc:
     input:
         unpack(get_image),
-        qc="figures/basic_qc/spatial/metrics/{sample}.png",
+        qc="figures/qc_initial/spatial/metrics/{sample}.png",
     output:
-        png="figures/basic_qc/spatial/slide/{sample}.png",
+        png="figures/qc_initial/spatial/slide/{sample}.png",
     shell:
         "montage "
         "{input.image} "
