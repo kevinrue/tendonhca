@@ -41,13 +41,10 @@ def read_and_qc(sample_name):
     # identify mitochondria-encoded genes
     adata.var['mt'] = [gene.startswith('MT-') for gene in adata.var['SYMBOL']]
     # TODO: identify ribosomal genes
+    adata.var['ribosomal'] = [gene.startswith(('RPS', 'RPL')) for gene in adata.var['SYMBOL']]
     
     # Calculate QC metrics
-    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt"], inplace=True)
-    # from scipy.sparse import csr_matrix
-    # adata.X = adata.X.toarray()
-    # adata.X = csr_matrix(adata.X)
-    # adata.obs['mt_frac'] = adata[:, adata.var['mt'].tolist()].X.sum(1).A.squeeze()/adata.obs['total_counts']
+    sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribosomal"], inplace=True)
     
     # add sample name to obs names
     adata.obs["sample"] = [str(i) for i in adata.obs['sample']]
@@ -90,11 +87,6 @@ adata = slides[0].concatenate(
 )
 #######################
 
-# mitochondria-encoded (MT) genes should be removed for spatial mapping
-# we do not do this for this basic quality control, to include everything
-# adata.obsm['mt'] = adata[:, adata.var['mt'].values].X.toarray()
-# adata = adata[:, ~adata.var['mt'].values]
-
 ##
 # plot quality control metrics for each sample
 ##
@@ -109,7 +101,7 @@ for i, s in enumerate(adata.obs['sample'].unique()):
     axs[0, 0].set_xlim(0, adata.obs['total_counts'].max())
     axs[0, 0].set_xlabel(f'total_counts | {s}')
     
-    x_max = np.quantile(slide.obs['total_counts'], .9)
+    x_max = adata.obs['total_counts'].quantile(0.9)
     sns.distplot(slide.obs['total_counts']\
                  [slide.obs['total_counts']<x_max],
                  kde=False, bins=40, ax = axs[0, 1])
@@ -121,7 +113,7 @@ for i, s in enumerate(adata.obs['sample'].unique()):
     axs[0, 2].set_xlim(0, adata.obs['n_genes_by_counts'].max())
     axs[0, 2].set_xlabel(f'n_genes_by_counts | {s}')
     
-    x_max = np.quantile(slide.obs['n_genes_by_counts'], .9)
+    x_max = adata.obs['n_genes_by_counts'].quantile(0.9)
     sns.distplot(slide.obs['n_genes_by_counts']\
                  [slide.obs['n_genes_by_counts']<x_max],
                  kde=False, bins=60, ax = axs[0, 3])
@@ -133,12 +125,24 @@ for i, s in enumerate(adata.obs['sample'].unique()):
     axs[1, 0].set_xlim(0, adata.obs['pct_counts_mt'].max())
     axs[1, 0].set_xlabel(f'pct_counts_mt | {s}')
     
-    x_max = np.quantile(slide.obs['pct_counts_mt'], .9)
+    x_max = adata.obs['pct_counts_mt'].quantile(0.9)
     sns.distplot(slide.obs['pct_counts_mt']\
                  [slide.obs['pct_counts_mt']<x_max],
                  kde=False, bins=40, ax = axs[1, 1])
-    axs[1, 1].set_xlim(0, adata.obs['pct_counts_mt'].quantile(0.9))
+    axs[1, 1].set_xlim(0, x_max)
     axs[1, 1].set_xlabel(f'pct_counts_mt | {s}')
+    
+    sns.distplot(slide.obs['pct_counts_ribosomal'],
+                 kde=False, ax = axs[1, 2])
+    axs[1, 2].set_xlim(0, adata.obs['pct_counts_ribosomal'].max())
+    axs[1, 2].set_xlabel(f'pct_counts_ribosomal | {s}')
+    
+    x_max = adata.obs['pct_counts_ribosomal'].quantile(0.9)
+    sns.distplot(slide.obs['pct_counts_ribosomal']\
+                 [slide.obs['pct_counts_ribosomal']<x_max],
+                 kde=False, bins=40, ax = axs[1, 3])
+    axs[1, 3].set_xlim(0, x_max)
+    axs[1, 3].set_xlabel(f'pct_counts_ribosomal | {s}')
 
 plt.savefig(snakemake.output['histogram'])
 
@@ -153,7 +157,7 @@ with mpl.rc_context({'figure.figsize': [6,7],
     print(sc.settings.figdir)
     fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma', ncols=2,
                   library_id=list(slide.uns['spatial'].keys())[0],
-                  color=['total_counts', 'n_genes_by_counts', 'pct_counts_mt'], size=1,
+                  color=['total_counts', 'n_genes_by_counts', 'pct_counts_mt', 'pct_counts_ribosomal'], size=1,
                   vmin=0, vmax='p90.0',
                   gene_symbols='SYMBOL', show=False, return_fig=True,
                   save=f"-sc_pl_spatial-{sample_name}.png")
