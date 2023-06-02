@@ -14,7 +14,17 @@ rule genes_mitochondrial:
     log:
         "logs/genes/genes_mitochondrial.log"
     script:
-        "../../scripts/mitochondrial_genes.py"
+        "../../scripts/genes_mitochondrial.py"
+
+rule genes_ribosomal:
+    input:
+        tsv='annotations/genes.tsv'
+    output:
+        tsv='annotations/genes_ribosomal.tsv'
+    log:
+        "logs/genes/genes_ribosomal.log"
+    script:
+        "../../scripts/genes_ribosomal.py"
 
 rule curated_markers_counts_spatial_full:
     input:

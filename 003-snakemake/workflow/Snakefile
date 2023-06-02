@@ -13,6 +13,7 @@ localrules:
     spaceranger_total_counts,
     gene_table,
     genes_mitochondrial,
+    genes_ribosomal,
     basic_qc,
     most_abundant_feature_detection_rate,
     most_detected_most_abundant_features,

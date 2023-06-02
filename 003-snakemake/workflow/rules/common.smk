@@ -12,6 +12,7 @@ def get_final_output():
                     "results/spaceranger_stats/total_counts.tsv",
                     "results/qc/features_mean_top_100/_detection_rate.tsv",
                     "annotations/genes_mitochondrial.tsv",
+                    "annotations/genes_ribosomal.tsv",
                     "figures/spatial/curated_celltype_markers_counts_full",
                     "figures/spatial/curated_celltype_markers_counts_quantile",
                     "figures/spatial/curated_celltype_markers_counts_log1p"]
