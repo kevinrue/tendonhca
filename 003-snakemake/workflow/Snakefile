@@ -28,7 +28,7 @@ include: "rules/spaceranger.smk"
 include: "rules/qc.smk"
 include: "rules/imagemagick.smk"
 include: "rules/genes.smk"
-include: "rules/pca.smk"
+include: "rules/dimensionality_reduction.smk"
 
 ##### target rules #####
 
