@@ -56,6 +56,6 @@ rule spaceranger_total_counts:
     params:
         samples=config["samples"],
     conda:
-        "../../envs/cell2location-env.yaml"
+        "../../envs/scanpy-env.yaml"
     script:
         "../../scripts/spaceranger_total_counts.py"

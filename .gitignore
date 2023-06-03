@@ -5,11 +5,15 @@
 envs/
 .ipynb_checkpoints/
 # cluster
+sps-*
 sps/
 # snakemake
 .snakemake/
+data/
 logs/
+annotations/
 results/
+figures/
 # inputs
 fastqs/
 images/

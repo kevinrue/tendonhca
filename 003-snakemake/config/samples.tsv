@@ -1,14 +1,14 @@
-sample_name	fastqs	image	slide	area
-OMB1556_Ach_Enth_H	fastqs/OMB1556_Ach_Enth_H	images/OMB1556_Ach_Enth.jpeg	V12J03-133	C1
-OMB1556_Ach_MB_H	fastqs/OMB1556_Ach_MB_H	images/OMB1556_Ach_MB.jpeg	V12J03-133	B1
-OMB1556_Ach_MB2_H	fastqs/OMB1556_Ach_MB2_H	images/OMB1556_Ach_MB2.jpeg	V12J03-123	D1
-OMB1556_Ach_MTJ_H	fastqs/OMB1556_Ach_MTJ_H	images/OMB1556_Ach_MTJ.jpeg	V12J03-133	A1
-OMB1541_GluMed_Enth_H	fastqs/OMB1541_GluMed_Enth_H	images/OMB1541_glumed_enth.jpeg	V12J03-122	D1
-OMB1541_GluMed_MTJ_H	fastqs/OMB1541_GluMed_MTJ_H	images/OMB1541_glumed_mtj.jpeg	V12J03-122	C1
-OMB1530_LHBT_MB2_H	fastqs/OMB1530_LHBT_MB2_H	images/OMB1530_LHBT_MB2.jpeg	V12J03-123	B1
-OMB1530_LHBT_MB_H	fastqs/OMB1530_LHBT_MB_H	images/OMB1530_LHBT_MB.jpeg	V12J03-133	D1
-OMB0793_Quad_Enth2_T	fastqs/OMB0793_Quad_Enth2_T	images/OMB0793_Quad_Enth2_T.jpeg	V12J03-123	A1
-OMB0793_Quad_Enth_T	fastqs/OMB0793_Quad_Enth_T	images/OMB0793_Quad_Enth1_T.jpeg	V12J03-130	A1
-OMB1250_Quad_MB_H	fastqs/OMB1250_Quad_MB_H	images/OMB1250_Quad_MB_H.jpeg	V12J03-130	B1
-OMB1277_SSP_Enth_H	fastqs/OMB1277_SSP_Enth_H	images/omb1277_ssp_enth_h.jpeg	V12J03-122	A1
-OMB1574_SSP_Enth_T	fastqs/OMB1574_SSP_Enth_T	images/omb1574_ssp_enth_t.jpeg	V12J03-122	B1
+sample_name	fastqs	image	slide	area	min_counts
+OMB1556_Ach_Enth_H	fastqs/OMB1556_Ach_Enth_H	images/OMB1556_Ach_Enth.jpeg	V12J03-133	C1	100
+OMB1556_Ach_MB_H	fastqs/OMB1556_Ach_MB_H	images/OMB1556_Ach_MB.jpeg	V12J03-133	B1	100
+OMB1556_Ach_MB2_H	fastqs/OMB1556_Ach_MB2_H	images/OMB1556_Ach_MB2.jpeg	V12J03-123	D1	100
+OMB1556_Ach_MTJ_H	fastqs/OMB1556_Ach_MTJ_H	images/OMB1556_Ach_MTJ.jpeg	V12J03-133	A1	100
+OMB1541_GluMed_Enth_H	fastqs/OMB1541_GluMed_Enth_H	images/OMB1541_glumed_enth.jpeg	V12J03-122	D1	50
+OMB1541_GluMed_MTJ_H	fastqs/OMB1541_GluMed_MTJ_H	images/OMB1541_glumed_mtj.jpeg	V12J03-122	C1	100
+OMB1530_LHBT_MB2_H	fastqs/OMB1530_LHBT_MB2_H	images/OMB1530_LHBT_MB2.jpeg	V12J03-123	B1	100
+OMB1530_LHBT_MB_H	fastqs/OMB1530_LHBT_MB_H	images/OMB1530_LHBT_MB.jpeg	V12J03-133	D1	50
+OMB0793_Quad_Enth2_T	fastqs/OMB0793_Quad_Enth2_T	images/OMB0793_Quad_Enth2_T.jpeg	V12J03-123	A1	100
+OMB0793_Quad_Enth_T	fastqs/OMB0793_Quad_Enth_T	images/OMB0793_Quad_Enth1_T.jpeg	V12J03-130	A1	50
+OMB1250_Quad_MB_H	fastqs/OMB1250_Quad_MB_H	images/OMB1250_Quad_MB_H.jpeg	V12J03-130	B1	50
+OMB1277_SSP_Enth_H	fastqs/OMB1277_SSP_Enth_H	images/omb1277_ssp_enth_h.jpeg	V12J03-122	A1	1000
+OMB1574_SSP_Enth_T	fastqs/OMB1574_SSP_Enth_T	images/omb1574_ssp_enth_t.jpeg	V12J03-122	B1	100
