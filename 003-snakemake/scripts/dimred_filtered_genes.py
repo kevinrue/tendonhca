@@ -77,18 +77,23 @@ def read_and_qc(sample_name):
 slide = read_and_qc(sample_name)
 
 ##
-# Preprocess data
-##
-
-sc.pp.log1p(slide)
-sc.pp.scale(slide)
-sc.tl.pca(slide, svd_solver='arpack')
-
-##
 # plot PCA
 ##
 
+sc.pp.normalize_total(slide) # target_sum = median of counts per cell
+sc.pp.log1p(slide)
+sc.pp.highly_variable_genes(slide, flavor="seurat", n_top_genes=2000) # TODO: set n_top_genes per sample
+sc.pp.pca(slide)
+sc.pp.neighbors(slide)
+sc.tl.umap(slide)
+sc.tl.leiden(slide, key_added="clusters")
+
 with mpl.rc_context({'figure.figsize': [6,6],
                      'axes.facecolor': 'white'}):
-    fig = sc.pl.pca(slide)
-    plt.savefig(snakemake.output['png'])
+    fig = sc.pl.pca(slide, color=["total_counts", "n_genes_by_counts", "clusters"], wspace=0.4)
+    plt.savefig(snakemake.output['pca'])
+
+with mpl.rc_context({'figure.figsize': [6,6],
+                     'axes.facecolor': 'white'}):
+    fig = sc.pl.umap(slide, color=["total_counts", "n_genes_by_counts", "clusters"], wspace=0.4)
+    plt.savefig(snakemake.output['umap'])

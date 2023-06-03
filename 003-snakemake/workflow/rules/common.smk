@@ -32,15 +32,11 @@ def get_final_output():
     ))
     # dimensionality reduction
     final_output.append(expand(
-        "figures/pca/filtered_genes/counts/{sample}.png",
+        "figures/filtered_genes/{sample}/pca.png",
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/pca/filtered_genes/counts_log1p/{sample}.png",
-        sample=samples.index.tolist(),
-    ))
-    final_output.append(expand(
-        "figures/pca/filtered_genes/counts_log1p_scale/{sample}.png",
+        "figures/filtered_genes/{sample}/umap.png",
         sample=samples.index.tolist(),
     ))
     # most abundant features
