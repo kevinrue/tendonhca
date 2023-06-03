@@ -25,6 +25,8 @@ rule qc_filtered_genes:
         histogram="figures/qc_filtered_genes/histogram/{sample}.png",
         spatial="figures/qc_filtered_genes/spatial/metrics/{sample}.png",
         features_mean_top_100="results/qc_filtered_genes/features_mean_top_100/{sample}.tsv",
+    params:
+        samples=config["samples"],
     conda:
         "../../envs/scanpy-env.yaml"
     log:

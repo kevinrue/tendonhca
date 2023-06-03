@@ -30,6 +30,19 @@ def get_final_output():
         "figures/qc_filtered_genes/histogram/{sample}.png",
         sample=samples.index.tolist(),
     ))
+    # dimensionality reduction
+    final_output.append(expand(
+        "figures/pca/filtered_genes/counts/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
+        "figures/pca/filtered_genes/counts_log1p/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
+        "figures/pca/filtered_genes/counts_log1p_scale/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
     # most abundant features
     final_output.append(expand(
         "results/qc_filtered_genes/features_mean_top_100/{sample}.tsv",

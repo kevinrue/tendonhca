@@ -33,9 +33,7 @@ samples = (
     .sort_index()
 )
 
-##
-# define functions
-##
+sample_names = samples.index.tolist()
 
 def read_and_qc(sample_name):
     r""" This function reads the data for one 10X spatial experiment into the anndata object.
@@ -52,7 +50,7 @@ def read_and_qc(sample_name):
     adata.var_names = adata.var['ENSEMBL']
     adata.var.drop(columns='ENSEMBL', inplace=True)
     
-    # some filtered matrices have spots with no counts (!), so we need to remove them
+    # some filtered matrices have spots with no counts (!), so we need to remove them before computing QC metrics
     sc.pp.filter_cells(adata, min_counts=samples['min_counts'][sample_name])
     # identify mitochondria-encoded genes
     adata.var['mt'] = [symbol in set(mitochondrial_genes['gene_name']) for symbol in adata.var['SYMBOL']]
@@ -79,57 +77,17 @@ def read_and_qc(sample_name):
 slide = read_and_qc(sample_name)
 
 ##
-# plot quality control metrics for each sample
+# Preprocess data
 ##
 
-fig, axs = plt.subplots(1, 4, figsize=(15, 4))
-#fig.suptitle('Covariates for filtering')
-    
-sns.distplot(slide.obs['total_counts'],
-                kde=False, ax = axs[0])
-axs[0].set_xlim(0, slide.obs['total_counts'].max())
-axs[0].set_xlabel(f'total_counts | {sample_name}')
-
-x_max = slide.obs['total_counts'].quantile(0.9)
-sns.distplot(slide.obs['total_counts']\
-                [slide.obs['total_counts']<x_max],
-                kde=False, bins=40, ax = axs[1])
-axs[1].set_xlim(0, x_max)
-axs[1].set_xlabel(f'total_counts | {sample_name}')
-
-sns.distplot(slide.obs['n_genes_by_counts'],
-                kde=False, bins=60, ax = axs[2])
-axs[2].set_xlim(0, slide.obs['n_genes_by_counts'].max())
-axs[2].set_xlabel(f'n_genes_by_counts | {sample_name}')
-
-x_max = slide.obs['n_genes_by_counts'].quantile(0.9)
-sns.distplot(slide.obs['n_genes_by_counts']\
-                [slide.obs['n_genes_by_counts']<x_max],
-                kde=False, bins=60, ax = axs[3])
-axs[3].set_xlim(0, x_max)
-axs[3].set_xlabel(f'n_genes_by_counts | {sample_name}')
-
-plt.savefig(snakemake.output['histogram'])
+sc.pp.log1p(slide)
+sc.tl.pca(slide, svd_solver='arpack')
 
 ##
-# plot quality control metrics in spatial coordinates
+# plot PCA
 ##
 
-with mpl.rc_context({'figure.figsize': [6,3.5],
+with mpl.rc_context({'figure.figsize': [6,6],
                      'axes.facecolor': 'white'}):
-    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma', ncols=2,
-                  library_id=list(slide.uns['spatial'].keys())[0],
-                  color=['total_counts', 'n_genes_by_counts'], size=1,
-                  vmin=0, vmax='p90.0',
-                  gene_symbols='SYMBOL', show=False, return_fig=True,
-                  save=f"-sc_pl_spatial-{sample_name}.png")
-    os.rename(f"show-sc_pl_spatial-{sample_name}.png", snakemake.output["spatial"])
-
-##
-# identify most abundant genes
-##
-
-slide_feature_mean = np.array(slide.X.mean(axis=0)).flatten()
-d = {'SYMBOL': slide.var['SYMBOL'], 'mean': slide_feature_mean}
-slide_feature_mean = pd.DataFrame(d, index=slide.var_names).sort_values(by=['mean'], ascending=False)
-slide_feature_mean.head(100).to_csv(snakemake.output["features_mean_top_100"], sep="\t")
+    fig = sc.pl.pca(slide)
+    plt.savefig(snakemake.output['png'])
