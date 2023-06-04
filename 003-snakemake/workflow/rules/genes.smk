@@ -1,26 +1,28 @@
 rule gene_table:
     input:
-        gtf=config['transcriptome'] + 'genes/genes.gtf'
+        gtf=config['transcriptome'] + 'genes/genes.gtf',
     output:
-        tsv='annotations/genes.tsv'
+        tsv='annotations/genes.tsv',
+    log:
+        "logs/genes/gene_table.log",
     script:
         "../../scripts/gtf2tsv.py"
 
 rule genes_mitochondrial:
     input:
-        tsv='annotations/genes.tsv'
+        tsv='annotations/genes.tsv',
     output:
-        tsv='annotations/genes_mitochondrial.tsv'
+        tsv='annotations/genes_mitochondrial.tsv',
     log:
-        "logs/genes/genes_mitochondrial.log"
+        "logs/genes/genes_mitochondrial.log",
     script:
         "../../scripts/genes_mitochondrial.py"
 
 rule genes_ribosomal:
     input:
-        tsv='annotations/genes.tsv'
+        tsv='annotations/genes.tsv',
     output:
-        tsv='annotations/genes_ribosomal.tsv'
+        tsv='annotations/genes_ribosomal.tsv',
     log:
         "logs/genes/genes_ribosomal.log"
     script:
@@ -28,13 +30,13 @@ rule genes_ribosomal:
 
 rule curated_markers_counts_spatial_full:
     input:
-        tsv='data/curated_markers.tsv'
+        tsv='data/curated_markers.tsv',
     output:
         dir=directory('figures/spatial/curated_celltype_markers_counts_full'),
     params:
         samples=config["samples"],
     log:
-        "logs/curated_markers_counts_spatial_full.log"
+        "logs/curated_markers_counts_spatial_full.log",
     threads: 1
     resources:
         mem_mb=4 * 1024,
@@ -46,7 +48,7 @@ rule curated_markers_counts_spatial_full:
 
 rule curated_markers_counts_spatial_quantile:
     input:
-        tsv='data/curated_markers.tsv'
+        tsv='data/curated_markers.tsv',
     output:
         dir=directory('figures/spatial/curated_celltype_markers_counts_quantile'),
     params:
@@ -56,7 +58,7 @@ rule curated_markers_counts_spatial_quantile:
         mem_mb=4 * 1024,
         runtime="30m",
     log:
-        "logs/curated_markers_counts_spatial_quantile.log"
+        "logs/curated_markers_counts_spatial_quantile.log",
     conda:
         "../../envs/scanpy-env.yaml"
     script:
@@ -64,7 +66,7 @@ rule curated_markers_counts_spatial_quantile:
 
 rule curated_markers_counts_spatial_log1p:
     input:
-        tsv='data/curated_markers.tsv'
+        tsv='data/curated_markers.tsv',
     output:
         dir=directory('figures/spatial/curated_celltype_markers_counts_log1p'),
     params:
@@ -74,7 +76,7 @@ rule curated_markers_counts_spatial_log1p:
         mem_mb=4 * 1024,
         runtime="30m",
     log:
-        "logs/curated_markers_counts_spatial_log1p.log"
+        "logs/curated_markers_counts_spatial_log1p.log",
     conda:
         "../../envs/scanpy-env.yaml"
     script:

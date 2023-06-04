@@ -4,14 +4,14 @@ rule dimred_filtered_genes_counts:
         mitochondrial='annotations/genes_mitochondrial.tsv',
         ribosomal='annotations/genes_ribosomal.tsv',
     output:
-        pca="figures/filtered_genes/{sample}/pca.png",
-        umap="figures/filtered_genes/{sample}/umap.png",
+        pca="figures/filtered_genes/{sample}/dimred/pca.png",
+        umap="figures/filtered_genes/{sample}/dimred/umap.png",
     params:
         samples=config["samples"],
     conda:
         "../../envs/scanpy-env.yaml"
     log:
-        "logs/dimred/filtered_genes_counts/{sample}.log",
+        "logs/dimred_filtered_genes_counts/{sample}.log",
     threads: 1
     resources:
         mem_mb=2 * 1000,
