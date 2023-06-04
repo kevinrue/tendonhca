@@ -6,6 +6,9 @@ rule dimred_filtered_genes_counts:
     output:
         pca="figures/filtered_genes/{sample}/dimred/pca.png",
         umap="figures/filtered_genes/{sample}/dimred/umap.png",
+        spatial_clusters="figures/filtered_genes/{sample}/dimred/spatial_clusters.png",
+        highly_variable_genes="figures/filtered_genes/{sample}/dimred/highly_variable_genes.png",
+        pca_variance_ratio="figures/filtered_genes/{sample}/dimred/pca_variance_ratio.png",
     params:
         samples=config["samples"],
     conda:

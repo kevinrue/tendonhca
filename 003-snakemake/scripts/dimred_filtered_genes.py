@@ -77,16 +77,30 @@ def read_and_qc(sample_name):
 slide = read_and_qc(sample_name)
 
 ##
-# plot PCA
+# Process data
 ##
 
 sc.pp.normalize_total(slide) # target_sum = median of counts per cell
 sc.pp.log1p(slide)
 sc.pp.highly_variable_genes(slide, flavor="seurat", n_top_genes=2000) # TODO: set n_top_genes per sample
-sc.pp.pca(slide)
-sc.pp.neighbors(slide)
+sc.pp.pca(slide, n_comps=50, use_highly_variable=True, svd_solver='arpack')
+sc.pp.neighbors(slide, n_neighbors=15, n_pcs=40)
 sc.tl.umap(slide)
 sc.tl.leiden(slide, key_added="clusters")
+
+##
+# Produce plots
+##
+
+with mpl.rc_context({'figure.figsize': [6,6],
+                     'axes.facecolor': 'white'}):
+    fig = sc.pl.highly_variable_genes(slide)
+    plt.savefig(snakemake.output['highly_variable_genes'])
+
+with mpl.rc_context({'figure.figsize': [6,6],
+                     'axes.facecolor': 'white'}):
+    fig = sc.pl.pca_variance_ratio(slide, log=True)
+    plt.savefig(snakemake.output['pca_variance_ratio'])
 
 with mpl.rc_context({'figure.figsize': [6,6],
                      'axes.facecolor': 'white'}):
@@ -97,3 +111,8 @@ with mpl.rc_context({'figure.figsize': [6,6],
                      'axes.facecolor': 'white'}):
     fig = sc.pl.umap(slide, color=["total_counts", "n_genes_by_counts", "clusters"], wspace=0.4)
     plt.savefig(snakemake.output['umap'])
+
+with mpl.rc_context({'figure.figsize': [6,6],
+                     'axes.facecolor': 'white'}):
+    fig = sc.pl.spatial(slide, img_key="hires", color="clusters", size=1.5)
+    plt.savefig(snakemake.output['spatial_clusters'])
