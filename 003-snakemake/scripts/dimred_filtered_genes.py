@@ -84,9 +84,9 @@ sc.pp.normalize_total(slide) # target_sum = median of counts per cell
 sc.pp.log1p(slide)
 sc.pp.highly_variable_genes(slide, flavor="seurat", n_top_genes=2000) # TODO: set n_top_genes per sample
 sc.pp.pca(slide, n_comps=50, use_highly_variable=True, svd_solver='arpack')
-sc.pp.neighbors(slide, n_neighbors=15, n_pcs=40)
+sc.pp.neighbors(slide, n_neighbors=10, n_pcs=40)
 sc.tl.umap(slide)
-sc.tl.leiden(slide, key_added="clusters")
+sc.tl.leiden(slide, resolution=.5, key_added="clusters")
 
 ##
 # Produce plots
