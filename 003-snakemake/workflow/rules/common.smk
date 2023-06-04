@@ -39,6 +39,10 @@ def get_final_output():
         "figures/filtered_genes/{sample}/dimred/umap.png",
         sample=samples.index.tolist(),
     ))
+    final_output.append(expand(
+        "figures/filtered_genes/{sample}/dimred/spatial_clusters_image.png",
+        sample=samples.index.tolist(),
+    ))
     # most abundant features
     final_output.append(expand(
         "results/qc_filtered_genes/features_mean_top_100/{sample}.tsv",

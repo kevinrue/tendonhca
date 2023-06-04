@@ -1,9 +1,9 @@
 rule spatial_basic_qc:
     input:
         unpack(get_image),
-        qc="figures/qc_initial/spatial/metrics/{sample}.png",
+        qc="figures/initial_qc/spatial/{sample}/metrics.png",
     output:
-        png="figures/qc_initial/spatial/slide/{sample}.png",
+        png="figures/initial_qc/spatial/{sample}/metrics_slide.png",
     shell:
         "montage "
         "{input.image} "
@@ -24,4 +24,15 @@ rule spatial_most_detected:
         "-geometry 600x600\> "
         "{output.png}"
 
-
+rule spatial_clusters:
+    input:
+        unpack(get_image),
+        feature="figures/filtered_genes/{sample}/dimred/spatial_clusters.png",
+    output:
+        png="figures/filtered_genes/{sample}/dimred/spatial_clusters_image.png",
+    shell:
+        "montage "
+        "{input.image} "
+        "{input.feature} "
+        "-geometry 600x600\> "
+        "{output.png}"
