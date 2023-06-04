@@ -120,7 +120,7 @@ with mpl.rc_context({'figure.figsize': [6,6],
     plt.savefig(snakemake.output['spatial_clusters'])
 
 rank_genes_groups_df = sc.get.rank_genes_groups_df(slide, None)
-rank_genes_groups_df = rank_genes_groups_df.loc[rank_genes_groups_df['pvals_adj'] < .1]
-rank_genes_groups_df = genes[['gene_id', 'gene_name']].merge(rank_genes_groups_df, left_on='gene_id', right_on='names', how='right')
+rank_genes_groups_df = rank_genes_groups_df.loc[rank_genes_groups_df['pvals_adj'] < .01]
+rank_genes_groups_df = genes[['gene_id', 'gene_name']].merge(rank_genes_groups_df, left_on='gene_id', right_on='names', how='right', copy=False)
 rank_genes_groups_df.sort_values(by=['group', 'pvals_adj'], ascending=[True, True], inplace=True)
 rank_genes_groups_df.to_csv(snakemake.output['rank_genes_groups'], sep="\t", index=False)
