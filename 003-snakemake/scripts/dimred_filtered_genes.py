@@ -22,6 +22,7 @@ sample_name = snakemake.wildcards['sample']
 
 mitochondrial_genes = pd.read_csv(snakemake.input['mitochondrial'], sep="\t")
 ribosomal_genes = pd.read_csv(snakemake.input['ribosomal'], sep="\t")
+genes = pd.read_csv(snakemake.input['genes'], sep="\t")
 
 ##
 # import information about samples
@@ -87,6 +88,7 @@ sc.pp.pca(slide, n_comps=50, use_highly_variable=True, svd_solver='arpack')
 sc.pp.neighbors(slide, n_neighbors=10, n_pcs=40)
 sc.tl.umap(slide)
 sc.tl.leiden(slide, resolution=.5, key_added="clusters")
+sc.tl.rank_genes_groups(slide, 'clusters', method='t-test')
 
 ##
 # Produce plots
@@ -116,3 +118,9 @@ with mpl.rc_context({'figure.figsize': [6,6],
                      'axes.facecolor': 'white'}):
     fig = sc.pl.spatial(slide, img_key="hires", color="clusters", size=1.5)
     plt.savefig(snakemake.output['spatial_clusters'])
+
+rank_genes_groups_df = sc.get.rank_genes_groups_df(slide, None)
+rank_genes_groups_df = rank_genes_groups_df.loc[rank_genes_groups_df['pvals_adj'] < .1]
+rank_genes_groups_df = genes[['gene_id', 'gene_name']].merge(rank_genes_groups_df, left_on='gene_id', right_on='names', how='right')
+rank_genes_groups_df.sort_values(by=['group', 'pvals_adj'], ascending=[True, True], inplace=True)
+rank_genes_groups_df.to_csv(snakemake.output['rank_genes_groups'], sep="\t", index=False)
