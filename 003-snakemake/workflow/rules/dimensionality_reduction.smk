@@ -10,7 +10,7 @@ rule dimred_filtered_genes_counts:
         spatial_clusters="figures/filtered_genes/{sample}/dimred/spatial_clusters.png",
         highly_variable_genes="figures/filtered_genes/{sample}/dimred/highly_variable_genes.png",
         pca_variance_ratio="figures/filtered_genes/{sample}/dimred/pca_variance_ratio.png",
-        rank_genes_groups="results/filtered_genes/{sample}/markers/rank_genes_groups.tsv",
+        rank_genes_groups="results/filtered_genes/{sample}/markers/rank_genes_groups.tsv.gz",
     params:
         samples=config["samples"],
     conda:
