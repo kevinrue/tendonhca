@@ -30,6 +30,7 @@ include: "rules/qc.smk"
 include: "rules/imagemagick.smk"
 include: "rules/genes.smk"
 include: "rules/dimensionality_reduction.smk"
+include: "rules/genesets.smk"
 
 ##### target rules #####
 

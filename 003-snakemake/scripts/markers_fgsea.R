@@ -3,8 +3,6 @@ library(fgsea)
 
 options(width = 200)
 
-# snakemake@input[[1]]
-
 # prepare C8 gene sets ----
 
 c8_json <- jsonlite::fromJSON("data/c8.all.v2023.1.Hs.json")
@@ -27,10 +25,10 @@ pathways <- lapply(c8_json, extract_symbols)
 
 # prepare feature stats ----
 
-rank_genes_groups <- read.table("results/filtered_genes/OMB1556_Ach_MTJ_H/markers/rank_genes_groups.tsv.gz", sep = "\t", header = TRUE)
+rank_genes_groups <- read.table(snakemake@input[["rank_genes_groups"]], sep = "\t", header = TRUE)
 # head(rank_genes_groups)
 
-file_out <- "results/filtered_genes/OMB1556_Ach_MTJ_H/markers/fgsea.tsv"
+file_out <- snakemake@output[["fgsea"]]
 header <- paste0(c("group", "pathway", "pval", "padj", "log2err", "ES", "NES", "size",  "leadingEdge"), collapse = "\t")
 writeLines(header, file_out)
 
