@@ -36,3 +36,16 @@ rule spatial_clusters:
         "{input.feature} "
         "-geometry 600x600\> "
         "{output.png}"
+
+rule spatial_labels:
+    input:
+        unpack(get_image),
+        feature="figures/filtered_genes/{sample}/dimred/spatial_clusters_labelled.png",
+    output:
+        png="figures/filtered_genes/{sample}/dimred/spatial_clusters_labelled_image.png",
+    shell:
+        "montage "
+        "{input.image} "
+        "{input.feature} "
+        "-geometry x600 "
+        "{output.png}"

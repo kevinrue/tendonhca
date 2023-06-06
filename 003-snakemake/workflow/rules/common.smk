@@ -45,7 +45,7 @@ def get_final_output():
     ))
     # geneset enrichment
     final_output.append(expand(
-        "results/filtered_genes/{sample}/markers/fgsea.tsv",
+        "figures/filtered_genes/{sample}/dimred/spatial_clusters_labelled_image.png",
         sample=samples.index.tolist(),
     ))
     # most abundant features
