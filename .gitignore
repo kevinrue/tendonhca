@@ -4,6 +4,8 @@
 .Ruserdata
 envs/
 .ipynb_checkpoints/
+# Visual Studio Code
+.vscode/settings.json
 # cluster
 sps-*
 sps/

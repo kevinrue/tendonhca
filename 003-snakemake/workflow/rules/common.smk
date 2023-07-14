@@ -10,7 +10,7 @@ samples = (
 def get_final_output():
     final_output = ["results/spaceranger_stats/runtime.tsv", # spaceranger_runtime
                     "results/spaceranger_stats/total_counts.tsv", # spaceranger_total_counts
-                    "results/qc_initial/features_mean_top_100/_detection_rate.tsv", # most_abundant_feature_detection_rate
+                    "results/initial_qc/features_mean_top_100/_detection_rate.tsv", # most_abundant_feature_detection_rate
                     "annotations/genes_mitochondrial.tsv", # genes_mitochondrial
                     "annotations/genes_ribosomal.tsv", # genes_ribosomal
                     "figures/spatial/curated_celltype_markers_counts_full",
@@ -18,11 +18,15 @@ def get_final_output():
                     "figures/spatial/curated_celltype_markers_counts_log1p"]
     # initial quality control
     final_output.append(expand(
-        "results/qc_initial/features_mean_top_100/{sample}.tsv", # qc_initial
+        "figures/qc_raw/spatial/metrics/{sample}_slide.png", # spatial_qc_raw
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/qc_initial/spatial/slide/{sample}.png", # spatial_basic_qc
+        "results/initial_qc/features_mean_top_100/{sample}.tsv", # qc_initial
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
+        "figures/initial_qc/spatial/slide/{sample}.png", # spatial_basic_qc
         sample=samples.index.tolist(),
     ))
     # quality control after filtering genes
@@ -32,11 +36,20 @@ def get_final_output():
     ))
     # dimensionality reduction
     final_output.append(expand(
-        "figures/filtered_genes/{sample}/pca.png",
+        "figures/filtered_genes/{sample}/dimred/pca.png",
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/filtered_genes/{sample}/umap.png",
+        "figures/filtered_genes/{sample}/dimred/umap.png",
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
+        "figures/filtered_genes/{sample}/dimred/spatial_clusters_image.png",
+        sample=samples.index.tolist(),
+    ))
+    # geneset enrichment
+    final_output.append(expand(
+        "figures/filtered_genes/{sample}/dimred/spatial_clusters_labelled_image.png",
         sample=samples.index.tolist(),
     ))
     # most abundant features

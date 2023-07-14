@@ -19,7 +19,8 @@ localrules:
     most_abundant_feature_detection_rate,
     most_detected_most_abundant_features,
     spatial_basic_qc,
-    spatial_most_detected
+    spatial_most_detected,
+    spatial_clusters
 
 ##### load rules #####
 
@@ -29,6 +30,7 @@ include: "rules/qc.smk"
 include: "rules/imagemagick.smk"
 include: "rules/genes.smk"
 include: "rules/dimensionality_reduction.smk"
+include: "rules/genesets.smk"
 
 ##### target rules #####
 
