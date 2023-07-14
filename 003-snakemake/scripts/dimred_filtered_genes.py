@@ -87,7 +87,7 @@ sc.pp.highly_variable_genes(slide, flavor="seurat", n_top_genes=2000) # TODO: se
 sc.pp.pca(slide, n_comps=50, use_highly_variable=True, svd_solver='arpack')
 sc.pp.neighbors(slide, n_neighbors=10, n_pcs=40)
 sc.tl.umap(slide)
-sc.tl.leiden(slide, resolution=.5, key_added="clusters")
+sc.tl.leiden(slide, resolution=samples['resolution'][sample_name], key_added="clusters")
 sc.tl.rank_genes_groups(slide, 'clusters', method='t-test')
 
 ##
