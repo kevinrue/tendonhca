@@ -18,6 +18,10 @@ def get_final_output():
                     "figures/spatial/curated_celltype_markers_counts_log1p"]
     # initial quality control
     final_output.append(expand(
+        "results/qc_raw/features_mean_top_100/{sample}.tsv", # qc_raw
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
         "results/initial_qc/features_mean_top_100/{sample}.tsv", # qc_initial
         sample=samples.index.tolist(),
     ))
