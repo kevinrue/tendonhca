@@ -1,5 +1,4 @@
-
-## Usage
+## Usage
 
 ```bash
 snakemake --slurm --use-envmodules --use-conda
