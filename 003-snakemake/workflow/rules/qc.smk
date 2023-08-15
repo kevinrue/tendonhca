@@ -2,7 +2,7 @@ rule qc_raw:
     input:
         "results/spaceranger_count/{sample}/outs/raw_feature_bc_matrix.h5",
     output:
-        histogram="figures/inqc_rawitial_qc/histogram/{sample}.png",
+        histogram="figures/qc_raw/histogram/{sample}.png",
         spatial="figures/qc_raw/spatial/metrics/{sample}.png",
         features_mean_top_100="results/qc_raw/features_mean_top_100/{sample}.tsv",
     conda:
