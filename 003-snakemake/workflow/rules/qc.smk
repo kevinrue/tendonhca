@@ -77,5 +77,9 @@ rule most_detected_most_abundant_features:
         "../../envs/scanpy-env.yaml"
     log:
         "logs/qc/most_detected_most_abundant_feature.log",
+    threads: 2
+    resources:
+        mem_mb=8 * 1000,
+        runtime="5m",
     script:
         "../../scripts/most_abundant_feature_spatial_plot.py"
