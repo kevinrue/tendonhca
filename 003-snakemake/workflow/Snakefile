@@ -8,19 +8,9 @@ configfile: "config/config.yaml"
 
 ##### Rules settings #####
 
-localrules:
-    spaceranger_runtime,
-    spaceranger_total_counts,
-    gene_table,
-    genes_mitochondrial,
-    genes_ribosomal,
-    qc_initial,
-    qc_filtered_genes,
-    most_abundant_feature_detection_rate,
-    most_detected_most_abundant_features,
-    spatial_basic_qc,
-    spatial_most_detected,
-    spatial_clusters
+# localrules:
+#     spaceranger_runtime,
+#     spaceranger_total_counts
 
 ##### load rules #####
 

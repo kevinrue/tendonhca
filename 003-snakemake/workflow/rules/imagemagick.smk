@@ -14,9 +14,9 @@ rule spatial_qc_raw:
 rule spatial_basic_qc:
     input:
         unpack(get_image),
-        qc="figures/initial_qc/spatial/metrics/{sample}.png",
+        qc="figures/qc_initial/spatial/metrics/{sample}.png",
     output:
-        png="figures/initial_qc/spatial/metrics/{sample}_slide.png",
+        png="figures/qc_initial/spatial/metrics/{sample}_slide.png",
     shell:
         "montage "
         "{input.image} "
