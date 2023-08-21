@@ -1,5 +1,6 @@
 library(jsonlite)
 library(fgsea)
+library(BiocParallel)
 
 options(width = 200)
 
@@ -45,7 +46,8 @@ for (for_group in unique(rank_genes_groups$group)) {
     fgsea_res <- fgsea(pathways = pathways, 
         stats    = feature_stats,
         minSize  = 5,
-        maxSize  = 500)
+        maxSize  = 500,
+        BPPARAM  = SerialParam())
     fgsea_hits <- subset(fgsea_res, padj < 0.05 & NES > 0)
     if (nrow(fgsea_hits) == 0) {
         next

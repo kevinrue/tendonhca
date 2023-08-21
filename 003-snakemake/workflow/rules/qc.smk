@@ -2,7 +2,7 @@ rule qc_raw:
     input:
         "results/spaceranger_count/{sample}/outs/raw_feature_bc_matrix.h5",
     output:
-        histogram="figures/inqc_rawitial_qc/histogram/{sample}.png",
+        histogram="figures/qc_raw/histogram/{sample}.png",
         spatial="figures/qc_raw/spatial/metrics/{sample}.png",
         features_mean_top_100="results/qc_raw/features_mean_top_100/{sample}.tsv",
     conda:
@@ -20,9 +20,9 @@ rule qc_initial:
     input:
         "results/spaceranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     output:
-        histogram="figures/initial_qc/histogram/{sample}.png",
-        spatial="figures/initial_qc/spatial/metrics/{sample}.png",
-        features_mean_top_100="results/initial_qc/features_mean_top_100/{sample}.tsv",
+        histogram="figures/qc_initial/histogram/{sample}.png",
+        spatial="figures/qc_initial/spatial/metrics/{sample}.png",
+        features_mean_top_100="results/qc_initial/features_mean_top_100/{sample}.tsv",
     conda:
         "../../envs/scanpy-env.yaml"
     log:
@@ -40,9 +40,9 @@ rule qc_filtered_genes:
         mitochondrial='annotations/genes_mitochondrial.tsv',
         ribosomal='annotations/genes_ribosomal.tsv',
     output:
-        histogram="figures/filtered_genes_qc/histogram/{sample}.png",
-        spatial="figures/filtered_genes_qc/spatial/metrics/{sample}.png",
-        features_mean_top_100="results/filtered_genes_qc/features_mean_top_100/{sample}.tsv",
+        histogram="figures/qc_filtered_genes/histogram/{sample}.png",
+        spatial="figures/qc_filtered_genes/spatial/metrics/{sample}.png",
+        features_mean_top_100="results/qc_filtered_genes/features_mean_top_100/{sample}.tsv",
     params:
         samples=config["samples"],
     conda:
@@ -58,9 +58,9 @@ rule qc_filtered_genes:
 
 rule most_abundant_feature_detection_rate:
     input:
-        expand("results/initial_qc/features_mean_top_100/{sample}.tsv", sample = samples.index.tolist()),
+        expand("results/qc_initial/features_mean_top_100/{sample}.tsv", sample = samples.index.tolist()),
     output:
-        tsv="results/initial_qc/features_mean_top_100/_detection_rate.tsv",
+        tsv="results/qc_initial/features_mean_top_100/_detection_rate.tsv",
     log:
         "logs/qc/most_abundant_feature_detection_rate.log",
     script:
@@ -68,7 +68,7 @@ rule most_abundant_feature_detection_rate:
 
 rule most_detected_most_abundant_features:
     input:
-        tsv="results/initial_qc/features_mean_top_100/_detection_rate.tsv",
+        tsv="results/qc_initial/features_mean_top_100/_detection_rate.tsv",
     output:
         expand("figures/spatial/most_detected_most_abundant_features/{sample}.png", sample = samples.index.tolist()),
     params:
@@ -77,5 +77,9 @@ rule most_detected_most_abundant_features:
         "../../envs/scanpy-env.yaml"
     log:
         "logs/qc/most_detected_most_abundant_feature.log",
+    threads: 2
+    resources:
+        mem_mb=8 * 1000,
+        runtime="5m",
     script:
         "../../scripts/most_abundant_feature_spatial_plot.py"

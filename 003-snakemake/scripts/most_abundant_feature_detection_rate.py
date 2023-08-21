@@ -2,7 +2,9 @@ import glob
 import os
 import pandas as pd
 
-input_files = glob.glob("results/qc/features_mean_top_100/*.tsv")
+print(snakemake.input)
+input_files = snakemake.input
+print(input_files)
 
 input_tables = []
 for input_file in input_files:

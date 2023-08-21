@@ -5,10 +5,10 @@ rule markers_fgsea:
         fgsea="results/filtered_genes/{sample}/markers/fgsea.tsv",
     log:
         "logs/genesets/markers_fgsea_{sample}.log",
-    threads: 6
+    threads: 1
     resources:
         mem_mb=4 * 1024,
-        runtime="30m",
+        runtime=30,
     conda:
         "../../envs/r-env.yaml",
     script:
@@ -27,7 +27,7 @@ rule spatial_clusters_labelled:
     threads: 1
     resources:
         mem_mb=4 * 1024,
-        runtime="10m",
+        runtime=10,
     conda:
         "../../envs/scanpy-env.yaml",
     script:
