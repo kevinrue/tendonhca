@@ -18,6 +18,10 @@ def get_final_output():
                     "figures/spatial/curated_celltype_markers_counts_log1p"]
     # initial quality control
     final_output.append(expand(
+        "figures/qc_raw/histogram/{sample}.png", # spatial_qc_raw
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
         "figures/qc_raw/spatial/metrics/{sample}_slide.png", # spatial_qc_raw
         sample=samples.index.tolist(),
     ))
