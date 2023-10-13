@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - pip
+  - python=3.11.3
+  - snakemake=7.25.3
+  - leidenalg=0.9.1
+  - pip:
+    - ipykernel # needed for jupyter notebook
+    - scanpy
