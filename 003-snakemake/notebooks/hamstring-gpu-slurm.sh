@@ -43,4 +43,10 @@
 #SBATCH --output=%j_%x.out
 #SBATCH --error=%j_%x.err
 
-jupyter nbconvert --execute --to notebook --inplace ./hamstring-gpu.ipynb
+cd /ceph/project/tendonhca/albrecht/003-snakemake/
+
+eval "$(/project/sims-lab/albrecht/miniforge3/bin/conda shell.bash hook)" && conda activate base
+conda activate envs/cell2location-nb
+
+#jupyter nbconvert --to notebook --execute ./hamstring-gpu.ipynb
+jupyter nbconvert --to notebook --inplace --execute notebooks/hamstring-gpu.ipynb
