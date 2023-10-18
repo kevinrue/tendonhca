@@ -4,7 +4,7 @@ channels:
 dependencies:
   - pip
   - python=3.11.3
-  - nbconvert=6.5.4
+  - nbconvert=7.9.2
   - pip:
     - ipykernel # needed for jupyter notebook
     - anndata==0.9.1

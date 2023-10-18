@@ -1,0 +1,21 @@
+---
+title: "Fetch gene annotations"
+author: "Author name goes here"
+date: "2023-10-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(org.Hs.eg.db)
+```
+
+```{r}
+gene_data <- select(org.Hs.eg.db, keys = keys(org.Hs.eg.db, "ENSEMBL"), columns = c("SYMBOL"), keytype = "ENSEMBL")
+head(gene_data)
+```
+
+```{r}
+write.table(gene_data, "gene_data.tsv", sep = "\t", quote = FALSE, row.names = FALSE, col.names = FALSE)
+```
+
