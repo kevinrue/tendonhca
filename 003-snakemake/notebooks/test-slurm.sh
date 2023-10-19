@@ -48,5 +48,5 @@ cd /ceph/project/tendonhca/albrecht/003-snakemake/
 eval "$(/project/sims-lab/albrecht/miniforge3/bin/conda shell.bash hook)" && conda activate base
 conda activate envs/cell2location-nb
 
-PYTORCH_ENABLE_MPS_FALLBACK=1 jupyter nbconvert --to notebook --allow-errors --execute notebooks/hamstring-gpu.ipynb
-#jupyter nbconvert --to notebook --inplace --allow-errors --execute notebooks/hamstring-gpu.ipynb
+jupyter nbconvert --to notebook --execute ./hamstring-gpu.ipynb
+#jupyter nbconvert --to notebook --inplace --execute notebooks/test.ipynb
