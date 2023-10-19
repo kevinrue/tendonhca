@@ -1,0 +1,146 @@
+---
+title: "Load Visium data using Seurat"
+author: "Kevin Rue"
+---
+
+```{r, message=FALSE}
+library(Seurat)
+library(ggplot2)
+library(patchwork)
+library(org.Hs.eg.db)
+library(magrittr)
+library(dplyr)
+```
+
+```{r}
+workdir <- "/ceph/project/tendonhca/albrecht/003-snakemake/"
+```
+
+
+```{r}
+.libPaths()
+```
+
+```{r}
+seurat <- Load10X_Spatial(file.path(workdir, "results/spaceranger_count/OMB1541_GluMed_MTJ_H/outs"))
+seurat
+```
+
+```{r}
+seurat@meta.data
+```
+
+```{r}
+ggplot(seurat[[]]) +
+  geom_histogram(aes(nCount_Spatial))
+```
+
+```{r}
+seurat <- subset(seurat, nCount_Spatial > 50)
+```
+
+```{r, eval=FALSE}
+plot1 <- VlnPlot(seurat, features = "nCount_Spatial", pt.size = 0.1) + NoLegend()
+plot2 <- SpatialFeaturePlot(seurat, features = "nCount_Spatial", alpha = c(0.5, 0.5)) + theme(legend.position = "right")
+wrap_plots(plot1, plot2)
+```
+
+```{r}
+seurat <- SCTransform(seurat, assay = "Spatial", verbose = TRUE)
+seurat
+```
+
+```{r, eval=FALSE}
+SpatialFeaturePlot(seurat, features = c("ACTA1" , "MYL2"))
+```
+
+```{r}
+seurat <- RunPCA(seurat, assay = "SCT", verbose = FALSE)
+```
+
+```{r}
+ElbowPlot(seurat, ndims = 50)
+```
+
+```{r}
+use_pcs <- 15
+```
+
+```{r}
+seurat <- FindNeighbors(seurat, reduction = "pca", dims = 1:use_pcs)
+seurat <- FindClusters(seurat, resolution = 0.3, verbose = FALSE)
+seurat <- RunUMAP(seurat, reduction = "pca", dims = 1:use_pcs)
+```
+
+```{r}
+p1 <- DimPlot(seurat, reduction = "umap", label = TRUE)
+p2 <- SpatialDimPlot(seurat, label = TRUE, label.size = 3, alpha = c(0.5, 0.5))
+p1 + p2
+```
+
+```{r}
+SpatialDimPlot(brain, cells.highlight = CellsByIdentities(object = brain, idents = c(2, 1, 4, 3,
+    5, 8)), facet.highlight = TRUE, ncol = 3)
+```
+
+## Integration with single-cell data
+
+```{r}
+reference <- readRDS("/ceph/project/tendonhca/albrecht/003-snakemake/data/HAMSTRING_singlets_ambRNA0.2_res0.15.RDS")
+reference
+```
+
+```{r}
+features_tsv <- read.table("/ceph/project/tendonhca/albrecht/003-snakemake/results/spaceranger_count/OMB1541_GluMed_MTJ_H/outs/filtered_feature_bc_matrix/features.tsv.gz", sep = "\t")
+features_tsv <- features_tsv[, 1:2]
+colnames(features_tsv) <- c("ENSEMBL", "SYMBOL")
+rownames(features_tsv) <- features_tsv$ENSEMBL
+head(features_tsv)
+```
+
+```{r}
+reference_counts <- reference@assays$RNA@counts
+reference_counts <- reference_counts[intersect(rownames(reference_counts), features_tsv$ENSEMBL), ]
+rownames(reference_counts) <- features_tsv[rownames(reference_counts), "SYMBOL"]
+reference_symbols <- CreateSeuratObject(reference_counts)
+reference_symbols
+```
+
+```{r}
+# note that setting ncells=3000 normalizes the full dataset but learns noise models on 3k
+# cells this speeds up SCTransform dramatically with no loss in performance
+reference_symbols <- SCTransform(reference_symbols, ncells = 3000, verbose = FALSE)
+reference_symbols <- RunPCA(reference_symbols, verbose = FALSE)
+reference_symbols <- RunUMAP(reference_symbols, dims = 1:30)
+```
+
+```{r}
+table(Idents(reference))
+```
+
+
+```{r}
+reference_symbols$cell_type <- Idents(reference)
+Idents(reference_symbols) <- "cell_type"
+DimPlot(reference_symbols, label = TRUE)
+```
+
+```{r}
+nrow(reference_symbols)
+nrow(seurat)
+length(intersect(rownames(reference_symbols), rownames(seurat)))
+```
+
+```{r}
+anchors <- FindTransferAnchors(reference = reference_symbols, query = seurat, normalization.method = "SCT")
+predictions.assay <- TransferData(anchorset = anchors, refdata = Idents(reference_symbols),
+                                  prediction.assay = TRUE,
+                                  weight.reduction = seurat[["pca"]], dims = 1:30)
+seurat[["predictions"]] <- predictions.assay
+```
+
+```{r, fig.width=12, fig.height=16}
+DefaultAssay(seurat) <- "predictions"
+SpatialFeaturePlot(seurat, features = c("Fast-twitch skeletal muscle cells", "PDGFRA+ Fibroblasts",  "MKX+ Fibroblasts", "Transitional skeletal muscle cells", "Slow-twitch skeletal muscle cells",  "Vascular endothelium", "Satellite cells", "Mural cells", "Lymphatic endothelium",  "Adipocytes", "Immune cells", "Nerve cells"), pt.size.factor = 1.6, alpha = c(0.5, 0.75), ncol = 3, crop = TRUE, min.cutoff = 0, max.cutoff = 1)
+```
+
