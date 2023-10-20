@@ -1,4 +1,9 @@
 library(Seurat)
+library(ggplot2)
+library(patchwork)
+library(org.Hs.eg.db)
+library(magrittr)
+library(dplyr)
 
 # === Inputs ===
 spaceranger_h5_file <- snakemake@input
