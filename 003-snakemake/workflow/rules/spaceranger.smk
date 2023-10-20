@@ -42,6 +42,10 @@ rule spaceranger_runtime:
         "logs/spaceranger_stats/spaceranger_runtime.log",
     params:
         samples=config["samples"],
+    threads: 6
+    resources:
+        mem_mb=8 * 1024,
+        runtime="15m",
     script:
         "../../scripts/spaceranger_runtime.py"
 
@@ -55,6 +59,10 @@ rule spaceranger_total_counts:
         "logs/spaceranger_stats/total_counts.log",
     params:
         samples=config["samples"],
+    threads: 6
+    resources:
+        mem_mb=8 * 1024,
+        runtime="15m",
     conda:
         "../../envs/scanpy-env.yaml"
     script:

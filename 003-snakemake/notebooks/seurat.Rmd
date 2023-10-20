@@ -79,8 +79,8 @@ p1 + p2
 ```
 
 ```{r}
-SpatialDimPlot(brain, cells.highlight = CellsByIdentities(object = brain, idents = c(2, 1, 4, 3,
-    5, 8)), facet.highlight = TRUE, ncol = 3)
+#SpatialDimPlot(seurat, cells.highlight = CellsByIdentities(object = seurat, idents = c(2, 1, 4, 3,
+#    5, 8)), facet.highlight = TRUE, ncol = 3)
 ```
 
 ## Integration with single-cell data
@@ -118,9 +118,27 @@ reference_symbols <- RunUMAP(reference_symbols, dims = 1:30)
 table(Idents(reference))
 ```
 
+```{r}
+reference_label <- Idents(reference)
+levels(reference_label)[c(3, 4, 5)] <- levels(reference_label)[c(2, 1, 1)]
+levels(reference_label)[c(1, 2)] <- c("Muscle cells", "Fibroblasts")
+```
 
 ```{r}
-reference_symbols$cell_type <- Idents(reference)
+# cross_table <- tibble(
+#   original_label = Idents(reference),
+#   combined_label = reference_label
+# )
+# table(cross_table) %>% 
+#   as_tibble() %>% 
+#   tidyr::pivot_wider(names_from = combined_label, values_from = n) %>% 
+#   View()
+```
+
+
+
+```{r}
+reference_symbols$cell_type <- reference_label
 Idents(reference_symbols) <- "cell_type"
 DimPlot(reference_symbols, label = TRUE)
 ```
@@ -141,6 +159,6 @@ seurat[["predictions"]] <- predictions.assay
 
 ```{r, fig.width=12, fig.height=16}
 DefaultAssay(seurat) <- "predictions"
-SpatialFeaturePlot(seurat, features = c("Fast-twitch skeletal muscle cells", "PDGFRA+ Fibroblasts",  "MKX+ Fibroblasts", "Transitional skeletal muscle cells", "Slow-twitch skeletal muscle cells",  "Vascular endothelium", "Satellite cells", "Mural cells", "Lymphatic endothelium",  "Adipocytes", "Immune cells", "Nerve cells"), pt.size.factor = 1.6, alpha = c(0.5, 0.75), ncol = 3, crop = TRUE, min.cutoff = 0, max.cutoff = 1)
+SpatialFeaturePlot(seurat, features = levels(reference_label), pt.size.factor = 1.6, alpha = c(0.25, 0.5), ncol = 3, crop = TRUE, min.cutoff = 0, max.cutoff = 1)
 ```
 

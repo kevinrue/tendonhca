@@ -8,15 +8,16 @@ configfile: "config/config.yaml"
 
 ##### Rules settings #####
 
-# localrules:
-#     spaceranger_runtime,
-#     spaceranger_total_counts
+localrules:
+    spaceranger_runtime,
+    spaceranger_total_counts
 
 ##### load rules #####
 
 include: "rules/common.smk"
 include: "rules/spaceranger.smk"
 include: "rules/qc.smk"
+include: "rules/seurat.smk"
 include: "rules/imagemagick.smk"
 include: "rules/genes.smk"
 include: "rules/dimensionality_reduction.smk"
