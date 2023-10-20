@@ -78,6 +78,11 @@ levels(reference_label)[c(1, 2)] <- c("Muscle cells", "Fibroblasts")
 reference_symbols$label <- reference_label
 Idents(reference_symbols) <- "cell_type"
 
+message("=== Run standard workflow on reference sample ===")
+reference_symbols <- SCTransform(reference_symbols, ncells = 3000, verbose = FALSE)
+reference_symbols <- RunPCA(reference_symbols, verbose = FALSE)
+reference_symbols <- RunUMAP(reference_symbols, dims = 1:30)
+
 message("=== Transfer data (make predictions) ===")
 anchors <- FindTransferAnchors(reference = reference_symbols, query = seurat_slide, normalization.method = "SCT")
 predictions.assay <- TransferData(anchorset = anchors, refdata = Idents(reference_symbols),
