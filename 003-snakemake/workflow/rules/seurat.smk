@@ -7,7 +7,7 @@ rule seurat_transfer:
         "../../envs/r-env.yaml"
     log:
         "logs/seurat_transfer/{sample}.log",
-    threads: 1
+    threads: 2
     resources:
         mem_mb=20 * 1024,
         runtime="20m",

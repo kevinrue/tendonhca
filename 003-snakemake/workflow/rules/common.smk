@@ -38,6 +38,11 @@ def get_final_output():
         "figures/qc_filtered_genes/histogram/{sample}.png",
         sample=samples.index.tolist(),
     ))
+    # Seurat transfer learning
+    final_output.append(expand(
+        "figures/seurat_transfer/predictions/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
     # dimensionality reduction
     final_output.append(expand(
         "figures/filtered_genes/{sample}/dimred/pca.png",
