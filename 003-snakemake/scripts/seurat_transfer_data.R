@@ -1,11 +1,11 @@
 library(Seurat)
 library(ggplot2)
 library(patchwork)
-library(org.Hs.eg.db)
 library(magrittr)
 library(dplyr)
 
 # === Inputs ===
+message("=== Process inputs ===")
 spaceranger_h5_file <- snakemake@input
 spaceranger_out_dir <- gsub("/raw_feature_bc_matrix.h5", "", spaceranger_h5_file)
 sample_name <- basename(dirname(spaceranger_out_dir))
