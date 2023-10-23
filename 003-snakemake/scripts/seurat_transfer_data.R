@@ -20,13 +20,14 @@ out_dir <- dirname(predictions_png)
 # Fixed for now
 use_pcs <- 15
 use_resolution <- 0.3
+min_umi <- 100
 
 message("=== Load the slide as a Seurat object ===")
 seurat_slide <- Load10X_Spatial(spaceranger_out_dir)
 seurat_slide
 
 message("=== Remove spots with fewer than 50 UMI ===")
-seurat_slide <- subset(seurat_slide, nCount_Spatial > 50)
+seurat_slide <- subset(seurat_slide, nCount_Spatial >= min_umi)
 seurat_slide
 
 message("=== Run SCT on the slide data ===")

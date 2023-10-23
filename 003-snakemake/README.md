@@ -91,15 +91,18 @@ The sp package is now running under evolution status 2
 - Quadriceps tendon:
   Thick, strong tendon that connects the quadriceps muscles to the patella (kneecap)
   Essential for the extension of the knee joint.
-- Supraspinatus:
+- Supraspinatus tendon:
   One of the four muscles that make up the rotator cuff in the shoulder.
   Located in the upper part of the shoulder, above the spine of the scapula (shoulder blade)
   Plays a key role in the movement and stability of the shoulder joint.
-- Long head of the biceps brachii:
-  One of the two heads that make up the biceps brachii muscle, a muscle in the upper arm.
-  The biceps brachii has a short head and a long head, each with its own origin, but they share a common insertion point.
-- Gluteus medius:
+- Long head of the biceps brachii tendon:
+  Part of the biceps brachii muscle located in the upper arm.
+  The biceps brachii is a two-headed muscle, and the long head is one of those heads.
+  It has a distinct tendon that plays a significant role in shoulder and elbow movements.
+- Gluteus medius tendon:
   One of the three major muscles in the buttocks, commonly referred to as the glutes.
   Situated on the lateral side of the hip and plays a crucial role in hip stability and movement.
-- Achilles:
+  The gluteus medius tendon plays a crucial role in attaching the muscle to the greater trochanter, a bony prominence on the femur (thigh bone).
+- Achilles tendon:
   Thick and strong tendon that connects the calf muscles to the heel bone (calcaneus).
+
