@@ -7,4 +7,5 @@ dependencies:
   - r-hdf5r
   - r-jsonlite
   - r-languageserver
+  - r-magick
   - r-seurat
