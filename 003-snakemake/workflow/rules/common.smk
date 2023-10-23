@@ -40,7 +40,7 @@ def get_final_output():
     ))
     # Seurat transfer learning
     final_output.append(expand(
-        "figures/seurat_transfer/predictions/{sample}.png",
+        "figures/seurat_transfer/predictions_montage/{sample}.png",
         sample=samples.index.tolist(),
     ))
     # dimensionality reduction

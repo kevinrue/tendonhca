@@ -69,3 +69,37 @@ package maintainers should consider adding sf to Suggests:.
 The sp package is now running under evolution status 2
      (status 2 uses the sf package in place of rgdal)
 ```
+
+## Samples
+
+- OMB0793_Quad_Enth_T
+- OMB0793_Quad_Enth2_T
+- OMB1250_Quad_MB_H
+- OMB1277_SSP_Enth_H
+- OMB1530_LHBT_MB_H
+- OMB1530_LHBT_MB2_H
+- OMB1541_GluMed_Enth_H
+- OMB1541_GluMed_MTJ_H
+- OMB1556_Ach_Enth_H
+- OMB1556_Ach_MB_H
+- OMB1556_Ach_MB2_H
+- OMB1556_Ach_MTJ_H
+- OMB1574_SSP_Enth_T
+
+### Locations
+
+- Quadriceps tendon:
+  Thick, strong tendon that connects the quadriceps muscles to the patella (kneecap)
+  Essential for the extension of the knee joint.
+- Supraspinatus:
+  One of the four muscles that make up the rotator cuff in the shoulder.
+  Located in the upper part of the shoulder, above the spine of the scapula (shoulder blade)
+  Plays a key role in the movement and stability of the shoulder joint.
+- Long head of the biceps brachii:
+  One of the two heads that make up the biceps brachii muscle, a muscle in the upper arm.
+  The biceps brachii has a short head and a long head, each with its own origin, but they share a common insertion point.
+- Gluteus medius:
+  One of the three major muscles in the buttocks, commonly referred to as the glutes.
+  Situated on the lateral side of the hip and plays a crucial role in hip stability and movement.
+- Achilles:
+  Thick and strong tendon that connects the calf muscles to the heel bone (calcaneus).

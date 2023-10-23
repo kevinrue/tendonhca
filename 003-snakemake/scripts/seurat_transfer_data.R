@@ -100,7 +100,7 @@ p <- SpatialFeaturePlot(
   alpha = c(1, 1),
   ncol = 3,
   crop = TRUE,
-  min.cutoff = 0, max.cutoff = 1
+  min.cutoff = 0, max.cutoff = 0.5
 )
 
 ggsave(predictions_png, p, width=12, height=16)
