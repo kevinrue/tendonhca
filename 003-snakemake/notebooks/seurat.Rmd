@@ -12,6 +12,11 @@ library(dplyr)
 ```
 
 ```{r}
+sample_name <- "OMB1277_SSP_Enth_H"
+```
+
+
+```{r}
 workdir <- "/ceph/project/tendonhca/albrecht/003-snakemake/"
 ```
 
@@ -21,7 +26,7 @@ workdir <- "/ceph/project/tendonhca/albrecht/003-snakemake/"
 ```
 
 ```{r}
-seurat <- Load10X_Spatial(file.path(workdir, "results/spaceranger_count/OMB1541_GluMed_MTJ_H/outs"))
+seurat <- Load10X_Spatial(file.path(workdir, sprintf("results/spaceranger_count/%s/outs", sample_name)))
 seurat
 ```
 
@@ -90,7 +95,7 @@ reference
 ```
 
 ```{r}
-features_tsv <- read.table("/ceph/project/tendonhca/albrecht/003-snakemake/results/spaceranger_count/OMB1541_GluMed_MTJ_H/outs/filtered_feature_bc_matrix/features.tsv.gz", sep = "\t")
+features_tsv <- read.table(sprintf("/ceph/project/tendonhca/albrecht/003-snakemake/results/spaceranger_count/%s/outs/filtered_feature_bc_matrix/features.tsv.gz", sample_name), sep = "\t")
 features_tsv <- features_tsv[, 1:2]
 colnames(features_tsv) <- c("ENSEMBL", "SYMBOL")
 rownames(features_tsv) <- features_tsv$ENSEMBL
@@ -151,6 +156,7 @@ length(intersect(rownames(reference_symbols), rownames(seurat)))
 ```{r}
 anchors <- FindTransferAnchors(reference = reference_symbols, query = seurat, normalization.method = "SCT")
 predictions.assay <- TransferData(anchorset = anchors, refdata = Idents(reference_symbols),
+                                  k.weight = 40,
                                   prediction.assay = TRUE,
                                   weight.reduction = seurat[["pca"]], dims = 1:30)
 seurat[["predictions"]] <- predictions.assay
@@ -158,6 +164,7 @@ seurat[["predictions"]] <- predictions.assay
 
 ```{r, fig.width=12, fig.height=16}
 DefaultAssay(seurat) <- "predictions"
-SpatialFeaturePlot(seurat, features = levels(reference_label), pt.size.factor = 1.6, alpha = c(0.25, 0.5), ncol = 3, crop = TRUE, min.cutoff = 0, max.cutoff = 1)
+p <- SpatialFeaturePlot(seurat, features = levels(reference_label), pt.size.factor = 1.6, alpha = c(0.25, 0.5), ncol = 3, crop = TRUE, min.cutoff = 0, max.cutoff = 1)
+print(p)
 ```
 

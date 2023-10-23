@@ -76,7 +76,7 @@ reference_label <- Idents(reference)
 levels(reference_label)[c(3, 4, 5)] <- levels(reference_label)[c(2, 1, 1)]
 levels(reference_label)[c(1, 2)] <- c("Muscle cells", "Fibroblasts")
 reference_symbols$label <- reference_label
-Idents(reference_symbols) <- "cell_type"
+Idents(reference_symbols) <- "label"
 
 message("=== Run standard workflow on reference sample ===")
 reference_symbols <- SCTransform(reference_symbols, ncells = 3000, verbose = FALSE)
@@ -87,6 +87,7 @@ message("=== Transfer data (make predictions) ===")
 anchors <- FindTransferAnchors(reference = reference_symbols, query = seurat_slide, normalization.method = "SCT")
 predictions.assay <- TransferData(anchorset = anchors, refdata = Idents(reference_symbols),
                                   prediction.assay = TRUE,
+                                  k.weight = 40, # default 50 is too high for some samples
                                   weight.reduction = seurat_slide[["pca"]], dims = 1:30)
 seurat_slide[["predictions"]] <- predictions.assay
 
@@ -96,9 +97,10 @@ p <- SpatialFeaturePlot(
   seurat_slide,
   features = levels(reference_label),
   pt.size.factor = 1.6,
-  alpha = c(0.25, 0.5),
+  alpha = c(1, 1),
   ncol = 3,
   crop = TRUE,
   min.cutoff = 0, max.cutoff = 1
 )
-ggsave(p, predictions_png, width=12, height=16)
+
+ggsave(predictions_png, p, width=12, height=16)
