@@ -154,7 +154,7 @@ slide = select_slide(adata, sample_name)
 
 with mpl.rc_context({'figure.figsize': [6,7],
                      'axes.facecolor': 'white'}):
-    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma', ncols=2,
+    fig = sc.pl.spatial(slide, img_key = "hires", cmap='magma', ncols=4,
                   library_id=list(slide.uns['spatial'].keys())[0],
                   color=['total_counts', 'n_genes_by_counts', 'pct_counts_mt', 'pct_counts_ribosomal'], size=1,
                   vmin=0, vmax='p90.0',
