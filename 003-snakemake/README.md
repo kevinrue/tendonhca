@@ -72,6 +72,8 @@ The sp package is now running under evolution status 2
 
 ## Samples
 
+### Names
+
 - OMB0793_Quad_Enth_T
 - OMB0793_Quad_Enth2_T
 - OMB1250_Quad_MB_H
@@ -87,6 +89,8 @@ The sp package is now running under evolution status 2
 - OMB1574_SSP_Enth_T
 
 ### Locations
+
+Tendon types:
 
 - Quadriceps tendon:
   Thick, strong tendon that connects the quadriceps muscles to the patella (kneecap)
@@ -106,3 +110,8 @@ The sp package is now running under evolution status 2
 - Achilles tendon:
   Thick and strong tendon that connects the calf muscles to the heel bone (calcaneus).
 
+Tendon location:
+
+- Enthesis:
+  Point where a tendon or ligament attaches to the bone.
+- MB
