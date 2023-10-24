@@ -33,6 +33,10 @@ def get_final_output():
         "figures/qc_initial/spatial/metrics/{sample}_slide.png", # spatial_basic_qc
         sample=samples.index.tolist(),
     ))
+    final_output.append(expand(
+        "figures/seurat_qc/{sample}_histogram.png",
+        sample=samples.index.tolist(),
+    ))
     # quality control after filtering genes
     final_output.append(expand(
         "figures/qc_filtered_genes/histogram/{sample}.png",
@@ -40,7 +44,7 @@ def get_final_output():
     ))
     # Seurat transfer learning
     final_output.append(expand(
-        "figures/seurat_transfer/predictions_montage/{sample}.png",
+        "figures/seurat/predictions_montage/{sample}.png",
         sample=samples.index.tolist(),
     ))
     # dimensionality reduction
