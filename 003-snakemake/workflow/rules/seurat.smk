@@ -36,6 +36,7 @@ rule seurat_transfer_montage:
         lowres_png="results/spaceranger_count/{sample}/outs/spatial/tissue_lowres_image.png",
         predictions_png="figures/seurat_transfer/predictions/{sample}.png",
         qcmetrics_png="figures/seurat_qc/{sample}_histogram.png",
+        slide_top_prediction_png="figures/seurat_transfer/top_prediction/{sample}.png",
     output:
         montage_png="figures/seurat/predictions_montage/{sample}.png",
     conda:
