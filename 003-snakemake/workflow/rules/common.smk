@@ -44,6 +44,10 @@ def get_final_output():
     ))
     # Seurat transfer learning
     final_output.append(expand(
+        "figures/seurat_transfer/top_prediction/{sample}.png",
+        sample=samples.index.tolist(),
+    ))
+    final_output.append(expand(
         "figures/seurat/predictions_montage/{sample}.png",
         sample=samples.index.tolist(),
     ))

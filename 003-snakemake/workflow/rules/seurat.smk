@@ -3,6 +3,7 @@ rule seurat_transfer:
         "results/spaceranger_count/{sample}/outs/raw_feature_bc_matrix.h5",
     output:
         predictions_png="figures/seurat_transfer/predictions/{sample}.png",
+        top_prediction_png="figures/seurat_transfer/top_prediction/{sample}.png",
     conda:
         "../../envs/r-env.yaml"
     log:

@@ -15,6 +15,7 @@ reference_rds <- "/ceph/project/tendonhca/albrecht/003-snakemake/data/HAMSTRING_
 # === Outputs ===
 message("=== Process outputs ===")
 predictions_png <- snakemake@output[["predictions_png"]]
+top_prediction_png <- snakemake@output[["top_prediction_png"]]
 out_dir <- dirname(predictions_png)
 
 # Fixed for now
@@ -105,3 +106,32 @@ p <- SpatialFeaturePlot(
 )
 
 ggsave(predictions_png, p, width=12, height=16)
+
+##
+# Custom plot #
+##
+
+# For each spot,
+# display the prediction associated with the highest probability,
+# using alpha to indicate its probability (i.e., confidence).
+
+image.use <- seurat_slide@images$slice1
+coordinates <- GetTissueCoordinates(object = image.use)
+plot_data <- data.frame(
+  coordinates,
+  max_celltype = rownames(seurat_slide@assays$predictions@data)[apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = which.max)],
+  max_probability = apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = max)
+)
+# head(plot_data)
+
+p <- SingleSpatialPlot(
+  data = plot_data,
+  image = seurat_slide@images$slice1,
+  image.alpha = 0.3,
+  pt.size.factor = 1,
+  col.by = "max_celltype",
+  alpha.by = "max_probability"
+) +
+  scale_alpha(limits = c(0, 1))
+
+ggsave(top_prediction_png, p, width=12, height=16)
