@@ -122,7 +122,24 @@ plot_data <- data.frame(
   max_celltype = rownames(seurat_slide@assays$predictions@data)[apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = which.max)],
   max_probability = apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = max)
 )
-# head(plot_data)
+
+cell_types <- c(
+  "Muscle cells",
+  "Fibroblasts",
+  "MKX+ Fibroblasts",
+  "Vascular endothelium",
+  "Satellite cells",
+  "Mural cells",
+  "Lymphatic endothelium",
+  "Adipocytes",
+  "Immune cells",
+  "Nerve cells"
+)
+
+n <- length(cell_types)
+hues <- seq(15, 375, length=(n + 1))
+fixed_colors <- hcl(h=hues, l=65, c=100)[seq_len(n)]
+names(fixed_colors) <- cell_types
 
 p <- SingleSpatialPlot(
   data = plot_data,
@@ -132,6 +149,13 @@ p <- SingleSpatialPlot(
   col.by = "max_celltype",
   alpha.by = "max_probability"
 ) +
-  scale_alpha(limits = c(0, 1))
+  scale_alpha(limits = c(0, 0.5)) +
+  scale_fill_manual(values = fixed_colors) +
+  guides(fill = guide_legend(override.aes = list(size = 5))) +
+  theme(
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    legend.key.size = unit(2, "lines")
+  )
 
-ggsave(top_prediction_png, p, width=12, height=16)
+ggsave(top_prediction_png, p, width=16, height=12)
