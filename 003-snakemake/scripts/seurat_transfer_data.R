@@ -76,7 +76,11 @@ reference_symbols <- CreateSeuratObject(reference_counts)
 
 # Merge certain groups of cell type labels
 reference_label <- Idents(reference)
-levels(reference_label)[c(3, 4, 5, 7, 8, 9, 11)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6, 6)]
+# fibroblasts = *fibroblasts {3 => 2}
+# muscle = *muscle + satellite {4, 5, 7 => 1}
+# vessel = mural + vascular + lymphatic + immune {8, 9, 11 => 6, 6, 6}
+# levels(reference_label)[c(3, 4, 5, 7, 8, 9, 11)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6, 6)]
+levels(reference_label)[c(3, 4, 5, 7, 8, 9)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6)]
 levels(reference_label)[c(1, 2, 3)] <- c("Muscle cells", "Fibroblasts", "Vessel")
 reference_symbols$label <- reference_label
 Idents(reference_symbols) <- "label"
