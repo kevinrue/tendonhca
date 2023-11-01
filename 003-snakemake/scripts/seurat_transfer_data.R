@@ -76,10 +76,15 @@ reference_symbols <- CreateSeuratObject(reference_counts)
 
 # Merge certain groups of cell type labels
 reference_label <- Idents(reference)
-levels(reference_label)[c(3, 4, 5, 7, 8, 9)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6)]
+levels(reference_label)[c(3, 4, 5, 7, 8, 9, 11)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6, 6)]
 levels(reference_label)[c(1, 2, 3)] <- c("Muscle cells", "Fibroblasts", "Vessel")
 reference_symbols$label <- reference_label
 Idents(reference_symbols) <- "label"
+
+# table(
+#   old_label=Idents(reference),
+#   new_label=reference_label
+# )
 
 message("=== Run standard workflow on reference sample ===")
 reference_symbols <- SCTransform(reference_symbols, ncells = 3000, verbose = FALSE)
@@ -102,11 +107,11 @@ p <- SpatialFeaturePlot(
   pt.size.factor = 1.6,
   alpha = c(1, 1),
   ncol = 3,
-  crop = TRUE,
+  crop = FALSE,
   min.cutoff = 0, max.cutoff = 0.5
 )
 
-ggsave(predictions_png, p, width=12, height=16)
+ggsave(predictions_png, p, width=8, height=6)
 
 ##
 # Custom plot #
@@ -116,13 +121,42 @@ ggsave(predictions_png, p, width=12, height=16)
 # display the prediction associated with the highest probability,
 # using alpha to indicate its probability (i.e., confidence).
 
+which.max.n <- function(x, n=1) {
+  xo <- order(x, decreasing = TRUE)
+  xo[n]
+}
+
+max.n <- function(x, n=1) {
+  xo <- order(x, decreasing = TRUE)
+  x[xo[n]]
+}
+
+# remove row "max"
+prediction_data <- seurat_slide@assays$predictions@data[rownames(seurat_slide@assays$predictions@data) != "max", ]
+
 image.use <- seurat_slide@images$slice1
 coordinates <- GetTissueCoordinates(object = image.use)
 plot_data <- data.frame(
   coordinates,
-  max_celltype = rownames(seurat_slide@assays$predictions@data)[apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = which.max)],
-  max_probability = apply(seurat_slide@assays$predictions@data, MARGIN = 2, FUN = max)
+  max_celltype = rownames(prediction_data)[apply(prediction_data, MARGIN = 2, FUN = which.max.n, n = 1)],
+  max_probability = apply(prediction_data, MARGIN = 2, FUN = max.n, n = 1),
+  max2_celltype = rownames(prediction_data)[apply(prediction_data, MARGIN = 2, FUN = which.max.n, n = 2)],
+  max2_probability = apply(prediction_data, MARGIN = 2, FUN = max.n, n = 2)
 )
+plot_data$diff_max_max2 <- plot_data$max_probability - plot_data$max2_probability
+
+p <- ggplot(plot_data) +
+  geom_histogram(aes(x = diff_max_max2), fill = "grey", color = "black", bins = 50) +
+  scale_x_continuous(limits = c(0, 1)) +
+  theme_bw()
+ggsave(
+  file.path(out_dir, sprintf("histogram_probability_diff_%s.png", sample_name)),
+  p,
+  width = 12,
+  height = 6
+)
+
+plot_data <- subset(plot_data, diff_max_max2 > 0.5 & max_probability > 0.5)
 
 cell_types <- c(
   "Muscle cells",
@@ -145,7 +179,8 @@ p <- SingleSpatialPlot(
   image.alpha = 0.3,
   pt.size.factor = 1,
   col.by = "max_celltype",
-  alpha.by = "max_probability"
+  alpha.by = "max_probability",
+  crop = FALSE
 ) +
   scale_alpha(limits = c(0, 0.5)) +
   scale_fill_manual(values = fixed_colors) +
