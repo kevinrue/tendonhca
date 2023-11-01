@@ -74,9 +74,10 @@ reference_counts <- reference_counts[intersect(rownames(reference_counts), featu
 rownames(reference_counts) <- features_tsv[rownames(reference_counts), "SYMBOL"]
 reference_symbols <- CreateSeuratObject(reference_counts)
 
+# Merge certain groups of cell type labels
 reference_label <- Idents(reference)
-levels(reference_label)[c(3, 4, 5)] <- levels(reference_label)[c(2, 1, 1)]
-levels(reference_label)[c(1, 2)] <- c("Muscle cells", "Fibroblasts")
+levels(reference_label)[c(3, 4, 5, 7, 8, 9)] <- levels(reference_label)[c(2, 1, 1, 1, 6, 6)]
+levels(reference_label)[c(1, 2, 3)] <- c("Muscle cells", "Fibroblasts", "Vessel")
 reference_symbols$label <- reference_label
 Idents(reference_symbols) <- "label"
 
@@ -126,11 +127,8 @@ plot_data <- data.frame(
 cell_types <- c(
   "Muscle cells",
   "Fibroblasts",
-  "MKX+ Fibroblasts",
-  "Vascular endothelium",
+  "Vessel",
   "Satellite cells",
-  "Mural cells",
-  "Lymphatic endothelium",
   "Adipocytes",
   "Immune cells",
   "Nerve cells"
