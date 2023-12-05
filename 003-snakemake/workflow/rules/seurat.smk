@@ -50,3 +50,23 @@ rule seurat_transfer_montage:
         runtime="5m",
     script:
         "../../scripts/cowplot_seurat_predictions.R"
+
+# different reference for each sample
+rule seurat_transfer_reference:
+    input:
+        "results/spaceranger_count/{sample}/outs/raw_feature_bc_matrix.h5",
+    output:
+        predictions_png="figures/seurat/transfer_reference/predictions/{sample}.png",
+        top_prediction_png="figures/seurat/transfer_reference/top_prediction/{sample}.png",
+    conda:
+        "../../envs/r-env.yaml"
+    log:
+        "logs/seurat_transfer_reference/{sample}.log",
+    params:
+        samples=config["samples"],
+    threads: 2
+    resources:
+        mem_mb=20 * 1024,
+        runtime="20m",
+    script:
+        "../../scripts/seurat_transfer_data_reference.R"
