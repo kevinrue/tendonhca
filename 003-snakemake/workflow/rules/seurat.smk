@@ -70,3 +70,23 @@ rule seurat_transfer_reference:
         runtime="20m",
     script:
         "../../scripts/seurat_transfer_data_reference.R"
+
+rule seurat_transfer_montage_reference:
+    input:
+        lowres_png="results/spaceranger_count/{sample}/outs/spatial/tissue_lowres_image.png",
+        predictions_png="figures/seurat/transfer_reference/predictions/{sample}.png",
+        probabilities_diff_png="figures/seurat/transfer_reference/predictions/histogram_probability_diff_{sample}.png",
+        qcmetrics_png="figures/seurat_qc/{sample}_histogram.png",
+        slide_top_prediction_png="figures/seurat/transfer_reference/top_prediction/{sample}.png",
+    output:
+        montage_png="figures/seurat/transfer_reference/montage/{sample}.png",
+    conda:
+        "../../envs/r-env.yaml"
+    log:
+        "logs/seurat_transfer_montage_reference/{sample}.log",
+    threads: 1
+    resources:
+        mem_mb=2 * 1024,
+        runtime="5m",
+    script:
+        "../../scripts/cowplot_seurat_predictions_reference.R"

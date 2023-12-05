@@ -52,7 +52,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "figures/seurat/transfer_reference/top_prediction/{sample}.png",
+        "figures/seurat/transfer_reference/montage/{sample}.png",
         sample=samples.index.tolist(),
     ))
     # dimensionality reduction
