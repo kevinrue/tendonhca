@@ -1,5 +1,20 @@
 ## Usage
 
+### Environment
+
+```bash
+miniforge_activate_base # alias
+conda activate envs/snakemake
+```
+
+### Dry-run
+
+```bash
+snakemake --dry-run
+```
+
+### Running
+
 ```bash
 snakemake --slurm --use-envmodules --use-conda
 ```

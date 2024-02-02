@@ -4,6 +4,7 @@ rule seurat_transfer:
     output:
         predictions_png="figures/seurat/transfer/predictions/{sample}.png",
         top_prediction_png="figures/seurat/transfer/top_prediction/{sample}.png",
+        probabilities_diff_png="figures/seurat/transfer/predictions/histogram_probability_diff_{sample}.png",
     conda:
         "../../envs/r-env.yaml"
     log:
@@ -58,6 +59,7 @@ rule seurat_transfer_reference:
     output:
         predictions_png="figures/seurat/transfer_reference/predictions/{sample}.png",
         top_prediction_png="figures/seurat/transfer_reference/top_prediction/{sample}.png",
+        probabilities_diff_png="figures/seurat/transfer_reference/predictions/histogram_probability_diff_{sample}.png",
     conda:
         "../../envs/r-env.yaml"
     log:
@@ -66,7 +68,7 @@ rule seurat_transfer_reference:
         samples=config["samples"],
     threads: 2
     resources:
-        mem_mb=20 * 1024,
+        mem_mb=80 * 1024,
         runtime="20m",
     script:
         "../../scripts/seurat_transfer_data_reference.R"

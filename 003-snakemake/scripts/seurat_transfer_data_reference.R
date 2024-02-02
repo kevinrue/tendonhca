@@ -4,6 +4,8 @@ library(patchwork)
 library(magrittr)
 library(dplyr)
 
+sessionInfo()
+
 # === Inputs ===
 message("=== Process inputs ===")
 spaceranger_h5_file <- snakemake@input
@@ -16,10 +18,14 @@ rownames(samples) <- samples[["sample_name"]]
 reference_rds <- samples[sample_name, "reference_rds", drop = TRUE]
 message("Using reference: ", reference_rds)
 
+annotation_metadata_column <- samples[sample_name, "annotation_metadata_column", drop = TRUE]
+message("Using annotation metadata column: ", annotation_metadata_column)
+
 # === Outputs ===
 message("=== Process outputs ===")
 predictions_png <- snakemake@output[["predictions_png"]]
 top_prediction_png <- snakemake@output[["top_prediction_png"]]
+probabilities_diff_png <- snakemake@output[["probabilities_diff_png"]]
 out_dir <- dirname(predictions_png)
 
 # Fixed for now
@@ -61,13 +67,16 @@ reference <- readRDS(reference_rds)
 reference
 
 message("=== Move cell type annotations to Idents() ===")
-reference_label <- reference[["cluster_id"]][[1]]
+message("* annotation_metadata_column: ", annotation_metadata_column)
+reference_label <- reference[[annotation_metadata_column]][[1]]
+reference_label <- as.factor(reference_label)
 reference$label <- reference_label
 Idents(reference) <- "label"
+table(Idents(reference))
 
 message("=== Run standard workflow on reference sample ===")
-reference <- SCTransform(reference, ncells = 3000, verbose = FALSE)
-reference <- RunPCA(reference, verbose = FALSE)
+reference <- SCTransform(reference, ncells = 3000, verbose = TRUE)
+reference <- RunPCA(reference, verbose = TRUE)
 reference <- RunUMAP(reference, dims = 1:30)
 
 message("=== Transfer data (make predictions) ===")
@@ -131,7 +140,7 @@ p <- ggplot(plot_data) +
   scale_x_continuous(limits = c(0, 1)) +
   theme_bw()
 ggsave(
-  file.path(out_dir, sprintf("histogram_probability_diff_%s.png", sample_name)),
+  probabilities_diff_png,
   p,
   width = 12,
   height = 6
@@ -150,12 +159,54 @@ plot_data <- subset(plot_data, diff_max_max2 > 0.5 & max_probability > 0.5)
 #   "Nerve cells"
 # )
 
-cell_types <- c("Fibroblasts", "Macrophages", "Vascular endothelial cells",  "Mural cells", "Adipocytes", "T cells", "Nervous system cells",  "Lymphatic endothelial cells", "Dividing fibroblasts / mural cells",  "Dendritic cells", "Osteoblasts", "Granulocytes", "Osteoclasts",  "Dividing macrophages")
+# fibroblasts = *fibroblasts {3 => 2}
+# muscle = *muscle + satellite {4, 5, 7 => 1}
+# vessel = mural + vascular + lymphatic + immune {8, 9, 11 => 6, 6, 6}
 
-n <- length(cell_types)
-hues <- seq(15, 375, length=(n + 1))
-fixed_colors <- hcl(h=hues, l=65, c=100)[seq_len(n)]
-names(fixed_colors) <- cell_types
+# Fibroblasts: 
+
+# cell_types <- c(
+#   "Fibroblasts",
+#   "Macrophages",
+#   "Vascular endothelial cells",
+#   "Mural cells",
+#   "Adipocytes",
+#   "T cells",
+#   "Nervous system cells",
+#   "Lymphatic endothelial cells",
+#   "Dividing fibroblasts / mural cells",
+#   "Dendritic cells",
+#   "Osteoblasts",
+#   "Granulocytes",
+#   "Osteoclasts",
+#   "Dividing macrophages"
+# )
+
+# n <- length(cell_types)
+# hues <- seq(15, 375, length=(n + 1))
+# fixed_colors <- hcl(h=hues, l=65, c=100)[seq_len(n)]
+# names(fixed_colors) <- cell_types
+# names = LETTERS[1:n]
+
+fixed_colors <- c(
+  "Adipocytes" = "#F3C300", # D
+  "Endothelial cells" = "#888888", # E
+  "Immune cells" = "#E68FAC", # red
+  "Fibroblasts" = "#E25822", # C
+  "Lymphatic endothelial cells" = "#888888", # F
+  "Macrophages" = "#E68FAC", # A
+  "Muscle cells" = "#4E79A7", # B
+  "Nervous system cells" = "#8DB600", # G
+  "Vascular endothelial cells" = "#888888", # E
+  "Mural cells" = "#00BC56", # F
+  "T cells" = "#E68FAC", # N
+  "Dividing fibroblasts / mural cells" = "#00BC56", # F
+  "Dendritic cells" = "#E68FAC", # L
+  "Osteoblasts" = "grey70",
+  "Granulocytes" = "#E68FAC", # K
+  "Osteoclasts" = "grey40", 
+  "Dividing macrophages" = "#E68FAC" # A
+)
 
 p <- SingleSpatialPlot(
   data = plot_data,

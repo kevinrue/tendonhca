@@ -10,12 +10,13 @@ spaceranger_h5_file <- snakemake@input
 spaceranger_out_dir <- gsub("/raw_feature_bc_matrix.h5", "", spaceranger_h5_file)
 sample_name <- basename(dirname(spaceranger_out_dir))
 
-reference_rds <- "/ceph/project/tendonhca/albrecht/003-snakemake/data/HAMSTRING_singlets_ambRNA0.2_res0.15.RDS"
+reference_rds <- "/ceph/project/tendonhca/albrecht/003-snakemake/data/references/HAMSTRING_singlets_ambRNA0.2_res0.15.RDS"
 
 # === Outputs ===
 message("=== Process outputs ===")
 predictions_png <- snakemake@output[["predictions_png"]]
 top_prediction_png <- snakemake@output[["top_prediction_png"]]
+probabilities_diff_png <- snakemake@output[["probabilities_diff_png"]]
 out_dir <- dirname(predictions_png)
 
 # Fixed for now
@@ -46,7 +47,7 @@ message("=== Plot clusters in spatial layout ===")
 p1 <- DimPlot(seurat_slide, reduction = "umap", label = TRUE)
 p2 <- SpatialDimPlot(seurat_slide, label = TRUE, label.size = 3, alpha = c(0.5, 0.5))
 ggsave(
-  file.path(out_dir, sprintf("dimplot_spatialplot_cluster_%s.png", sample_name)),
+  top_prediction_png,
   p1 + p2,
   width = 12,
   height = 6
@@ -154,7 +155,7 @@ p <- ggplot(plot_data) +
   scale_x_continuous(limits = c(0, 1)) +
   theme_bw()
 ggsave(
-  file.path(out_dir, sprintf("histogram_probability_diff_%s.png", sample_name)),
+  probabilities_diff_png,
   p,
   width = 12,
   height = 6
