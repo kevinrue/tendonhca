@@ -10,5 +10,5 @@ OMB1530_LHBT_MB_H	fastqs/OMB1530_LHBT_MB_H	images/OMB1530_LHBT_MB.jpeg	V12J03-13
 OMB0793_Quad_Enth2_T	fastqs/OMB0793_Quad_Enth2_T	images/OMB0793_Quad_Enth2_T.jpeg	V12J03-123	A1	data/references/20231204_quads_ruptureonly.RDS	cluster_id	100	0.4
 OMB0793_Quad_Enth_T	fastqs/OMB0793_Quad_Enth_T	images/OMB0793_Quad_Enth1_T.jpeg	V12J03-130	A1	data/references/20231204_quads_ruptureonly.RDS	cluster_id	50	0.3
 OMB1250_Quad_MB_H	fastqs/OMB1250_Quad_MB_H	images/OMB1250_Quad_MB_H.jpeg	V12J03-130	B1	data/references/20231204_quads_healthyonly_no1250.RDS	cluster_id	50	0.3
-OMB1277_SSP_Enth_H	fastqs/OMB1277_SSP_Enth_H	images/omb1277_ssp_enth_h.jpeg	V12J03-122	A1	data/references/20231204_quads_healthyonly_no1250.RDS	cluster_id	1000	0.5
-OMB1574_SSP_Enth_T	fastqs/OMB1574_SSP_Enth_T	images/omb1574_ssp_enth_t.jpeg	V12J03-122	B1	data/references/20231204_quads_healthyonly_no1250.RDS	cluster_id	100	0.3
+OMB1277_SSP_Enth_H	fastqs/OMB1277_SSP_Enth_H	images/omb1277_ssp_enth_h.jpeg	V12J03-122	A1	data/references/SSP_integrated_res0.2final.RDS	NA	1000	0.5
+OMB1574_SSP_Enth_T	fastqs/OMB1574_SSP_Enth_T	images/omb1574_ssp_enth_t.jpeg	V12J03-122	B1	data/references/SSP_integrated_res0.2final.RDS	NA	100	0.3
