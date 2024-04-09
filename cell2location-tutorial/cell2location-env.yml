@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - python=3.9
+  - pip:
+    - ipykernel # needed for jupyter notebook
+    #- jax==0.2.16
+    #- jaxlib==0.1.68
+    #- optax==0.1.2
+    #- chex==0.1.2
+    - cell2location[tutorials]
