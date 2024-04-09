@@ -68,7 +68,12 @@ reference
 
 message("=== Move cell type annotations to Idents() ===")
 message("* annotation_metadata_column: ", annotation_metadata_column)
-reference_label <- reference[[annotation_metadata_column]][[1]]
+if (!is.na(annotation_metadata_column)) {
+  reference_label <- reference[[annotation_metadata_column]][[1]]
+} else {
+  message("fetching cell type annotations from Idents()")
+  reference_label <- Idents(reference)
+}
 reference_label <- as.factor(reference_label)
 reference$label <- reference_label
 Idents(reference) <- "label"
@@ -146,7 +151,9 @@ ggsave(
   height = 6
 )
 
-plot_data <- subset(plot_data, diff_max_max2 > 0.5 & max_probability > 0.5)
+plot_data <- subset(plot_data, diff_max_max2 > 0.5 & max_probability > 0.25)
+
+print(summary(plot_data))
 
 # Abbreviated:
 # cell_types <- c(
@@ -205,7 +212,23 @@ fixed_colors <- c(
   "Osteoblasts" = "grey70",
   "Granulocytes" = "#E68FAC", # K
   "Osteoclasts" = "grey40", 
-  "Dividing macrophages" = "#E68FAC" # A
+  "Dividing macrophages" = "#E68FAC", # A
+  # SSP
+  "NEGR1+ Fibroblast" = "#E25822", # C
+  "Macrophage" = "#E68FAC", # A
+  "IL2RA+/NXPH1+ Fibroblast" = "#E25822", # C
+  "Adipocyte" = "#F3C300", # D
+  "COL1A1+/SPARC+ Fibroblast" = "#E25822", # C
+  "CRTAC1+/CD55+ Fibroblast" = "#E25822", # C
+  "Vascular Endothelial" = "#888888", # E
+  "T cells" = "#E68FAC", # N
+  "Mural" = "#00BC56", # F
+  "TNC+/DELEC1+ Fibroblast" = "#E25822", # C
+  "Granulocytes" = "#E68FAC", # K
+  "Lymphatic Endothelial" = "#888888", # F
+  "Dendritic cells" = "#E68FAC", # L
+  "Skeletal muscle" = "#4E79A7", # B
+  "Neural" = "#8DB600" # G
 )
 
 p <- SingleSpatialPlot(
