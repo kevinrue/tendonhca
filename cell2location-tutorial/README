@@ -1,0 +1,24 @@
+
+Based on <https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html#Cell2location:-spatial-mapping>
+
+Needed to activate the Miniforge installation.
+
+```bash
+miniforge_activate_base
+```
+
+Instructions from cell2location README.
+
+```bash
+export PYTHONNOUSERSITE="literallyanyletters"
+mamba create -y -n cell2loc_env python=3.9
+
+conda activate cell2loc_env
+pip install cell2location[tutorials]
+```
+
+Need to run code in a Jupyter notebook:
+
+```bash
+pip install ipykernel
+```
