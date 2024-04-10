@@ -1,4 +1,4 @@
 sample_name	fastqs
-pool12G	resources/fastqs/12G
-pool14G	resources/fastqs/14G
-pool16G	resources/fastqs/16G
+12G	resources/fastqs/12G
+14G	resources/fastqs/14G
+16G	resources/fastqs/16G

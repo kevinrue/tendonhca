@@ -9,7 +9,7 @@ configfile: "config/config.yaml"
 ##### Rules settings #####
 
 #localrules:
-#    cellranger_count
+#    na
 
 ##### load rules #####
 

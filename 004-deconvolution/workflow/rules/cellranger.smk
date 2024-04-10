@@ -21,7 +21,6 @@ rule cellranger_count:
         "--transcriptome={params.transcriptome} "
         "--fastqs={input.fastqs} "
         "--sample={wildcards.sample} "
-        "--create-bam=true "
         "--localcores={params.localcores} "
         "--localmem={params.localmem} && "
         "rm -rf results/cellranger_count/{wildcards.sample} && "

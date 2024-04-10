@@ -37,11 +37,11 @@ conda activate envs/snakemake
 ### Dry-run
 
 ```bash
-snakemake --dry-run
+snakemake --dry-run --profile slurm
 ```
 
 ### Running
 
 ```bash
-snakemake --slurm --use-envmodules --use-conda
+snakemake --use-envmodules --profile slurm
 ```
