@@ -1,0 +1,23 @@
+from snakemake.utils import min_version
+
+
+min_version("6.15.5")
+
+
+configfile: "config/config.yaml"
+
+##### Rules settings #####
+
+#localrules:
+#    cellranger_count
+
+##### load rules #####
+
+include: "rules/common.smk"
+include: "rules/cellranger.smk"
+
+##### target rules #####
+
+rule all:
+    input:
+        get_final_output(),
