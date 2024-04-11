@@ -1,3 +1,9 @@
+## Overview
+
+* Run [Cell Ranger][cellranger-github] to prepare the BAM file for Cellsnp-lite.
+* Run [Cellsnp-lite][cellsnp-lite-github] to prepare input data for Vireo.
+* Run [Vireo][vireo-github] for Demultiplexing pooled scRNA-seq data with or without genotype reference.
+
 ## Conda
 
 Activate Miniforge.
@@ -45,3 +51,7 @@ snakemake --dry-run --profile slurm
 ```bash
 snakemake --use-envmodules --profile slurm
 ```
+
+[cellranger-github]: https://github.com/10XGenomics/cellranger
+[cellsnp-lite-github]: https://github.com/single-cell-genetics/cellsnp-lite
+[vireo-github]: https://github.com/single-cell-genetics/vireo
