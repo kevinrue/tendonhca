@@ -2,6 +2,7 @@
 
 * Run [Cell Ranger][cellranger-github] to prepare the BAM file for Cellsnp-lite.
 * Run [Cellsnp-lite][cellsnp-lite-github] to prepare input data for Vireo.
+  * [Mode 2a: droplet based single cells without given SNPs][cellsnp-lite-mode2a]
 * Run [Vireo][vireo-github] for Demultiplexing pooled scRNA-seq data with or without genotype reference.
 
 ## Conda
@@ -52,6 +53,16 @@ snakemake --dry-run --profile slurm
 snakemake --use-envmodules --profile slurm
 ```
 
+## Notes
+
+### Issue with Snakemake and Slurm
+
+See:
+
+* https://github.com/snakemake/snakemake/issues/2802
+* https://github.com/snakemake/snakemake-executor-plugin-slurm/issues/63
+
 [cellranger-github]: https://github.com/10XGenomics/cellranger
 [cellsnp-lite-github]: https://github.com/single-cell-genetics/cellsnp-lite
 [vireo-github]: https://github.com/single-cell-genetics/vireo
+[cellsnp-lite-mode2a]: https://cellsnp-lite.readthedocs.io/en/latest/main/manual.html#mode-2a-droplet-based-single-cells-without-given-snps
