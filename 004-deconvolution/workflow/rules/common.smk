@@ -10,7 +10,7 @@ samples = (
 def get_final_output():
     final_output = []
     final_output.append(expand(
-        "results/cellsnp-lite/{sample}/cellSNP.base.vcf.gz",
+        "results/vireo_qc/{sample}/donor_umi.pdf",
         sample=samples.index.tolist(),
     ))
     return final_output

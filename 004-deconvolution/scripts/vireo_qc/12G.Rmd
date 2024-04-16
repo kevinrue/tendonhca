@@ -1,0 +1,59 @@
+---
+title: "12G"
+output: html_document
+date: "2024-04-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DropletUtils)
+library(ggplot2)
+library(tidyverse)
+sample_name <- "12G"
+```
+
+## Objective
+
+Compare barcodes assigned to a genotype to those not assigned:
+
+* Total UMI
+* Number of genes detected
+
+```{r}
+sce <- read10xCounts(
+  samples = sprintf("../../results/cellranger_count/%s/outs/filtered_feature_bc_matrix.h5", sample_name),
+  sample.names = sample_name,
+  col.names = TRUE
+)
+sce
+```
+
+```{r}
+donor_ids_data <- read_delim(
+  file = sprintf("../../results/vireo/%s/donor_ids.tsv", sample_name),
+  delim = "\t"
+)
+head(donor_ids_data)
+```
+
+```{r}
+ggplot(donor_ids_data, aes(prob_max)) +
+  geom_histogram(bins = 100, color = "black", fill = "grey", linewidth = 0.1) +
+  geom_rug() +
+  facet_wrap(~donor_id, ncol = 1) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank())
+```
+
+
+```{r}
+donor_ids_data %>% 
+  mutate(
+    total_umi = colSums(assay(sce[, donor_ids_data$cell], "counts"))
+  ) %>% 
+  ggplot(aes(donor_id, total_umi)) +
+  geom_jitter(width = 0.1) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank())
+```
+

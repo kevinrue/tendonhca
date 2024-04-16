@@ -15,6 +15,9 @@ configfile: "config/config.yaml"
 
 include: "rules/common.smk"
 include: "rules/cellranger.smk"
+include: "rules/cellsnp_lite.smk"
+include: "rules/vireo.smk"
+include: "rules/qc.smk"
 
 ##### target rules #####
 

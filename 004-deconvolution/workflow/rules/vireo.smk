@@ -1,4 +1,4 @@
-rule cellsnp_lite:
+rule vireo:
     input:
         dir="results/cellsnp-lite/{sample}",
     output:

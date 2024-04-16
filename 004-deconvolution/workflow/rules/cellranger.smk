@@ -3,6 +3,7 @@ rule cellranger_count:
         unpack(get_fastqs),
     output:
         bam="results/cellranger_count/{sample}/outs/possorted_genome_bam.bam",
+        h5="results/cellranger_count/{sample}/outs/filtered_feature_bc_matrix.h5",
     log:
         "results/cellranger_count/{sample}.log",
     params:

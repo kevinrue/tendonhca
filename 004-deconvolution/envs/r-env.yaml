@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconductor-dropletutils
+  - r-base
+  - r-ggplot2
+  - r-jsonlite
+  - r-languageserver
+  - r-tidyverse
+
