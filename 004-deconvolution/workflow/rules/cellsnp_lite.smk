@@ -3,14 +3,14 @@ rule cellsnp_lite:
         bam="results/cellsnp_lite/{sample}/outs/possorted_genome_bam.bam",
         barcode="results/cellsnp_lite/{sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz",
     output:
-        vcf="results/cellsnp-lite/{sample}/cellSNP.base.vcf.gz",
+        dir=directory("results/cellsnp-lite/{sample}"),
     log:
-        "results/cellranger_count/{sample}.log",
+        "results/cellsnp_lite/{sample}.log",
     shell:
         "cellsnp-lite "
         "-s {input.bam}"
         "-b {input.barcode}"
-        "-O results/cellsnp-lite/{wildcards.sample} "
+        "-O results/cellsnp-lite/{output.dir} "
         "-p 10"
         "--minMAF 0.1"
         "--minCOUNT 100"

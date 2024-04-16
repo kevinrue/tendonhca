@@ -18,3 +18,7 @@ def get_final_output():
 def get_fastqs(wildcards):
     u = samples.loc[wildcards.sample]
     return {"fastqs": u["fastqs"]}
+
+def get_n_donors(wildcards):
+    u = samples.loc[wildcards.sample]
+    return {"n_donors": u["n_donors"]}

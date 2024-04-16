@@ -1,4 +1,4 @@
-sample_name	fastqs
-12G	resources/fastqs/12G
-14G	resources/fastqs/14G
-16G	resources/fastqs/16G
+sample_name	fastqs	n_donors
+12G	resources/fastqs/12G	8
+14G	resources/fastqs/14G	8
+16G	resources/fastqs/16G	7
