@@ -9,9 +9,8 @@ samples = (
 
 def get_final_output():
     final_output = []
-    # initial quality control
     final_output.append(expand(
-        "results/cellranger_count/{sample}/outs/possorted_genome_bam.bam",
+        "results/cellsnp-lite/{sample}/cellSNP.base.vcf.gz",
         sample=samples.index.tolist(),
     ))
     return final_output

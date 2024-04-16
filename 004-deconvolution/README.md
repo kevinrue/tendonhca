@@ -5,6 +5,34 @@
   * [Mode 2a: droplet based single cells without given SNPs][cellsnp-lite-mode2a]
 * Run [Vireo][vireo-github] for Demultiplexing pooled scRNA-seq data with or without genotype reference.
 
+## Snakemake
+
+### Environment
+
+```bash
+miniforge_activate_base # alias
+conda activate envs/snakemake
+```
+
+### Dry-run
+
+```bash
+snakemake --dry-run
+```
+
+### Running
+
+```bash
+snakemake --use-envmodules
+```
+
+Workaround to avoid issue #1 (below):
+
+```bash
+module load cellranger/7.2.0
+snakemake
+```
+
 ## Conda
 
 Activate Miniforge.
@@ -32,30 +60,9 @@ Activate the `cellsnp_lite` environment.
 conda activate cellsnp_lite
 ```
 
-## Snakemake
-
-### Environment
-
-```bash
-miniforge_activate_base # alias
-conda activate envs/snakemake
-```
-
-### Dry-run
-
-```bash
-snakemake --dry-run --profile slurm
-```
-
-### Running
-
-```bash
-snakemake --use-envmodules --profile slurm
-```
-
 ## Notes
 
-### Issue with Snakemake and Slurm
+### Issue #1: Snakemake and Slurm
 
 See:
 

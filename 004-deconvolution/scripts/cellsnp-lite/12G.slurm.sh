@@ -4,7 +4,7 @@
 #SBATCH --error=results/cellsnp-lite/12G.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=1
 #SBATCH --mem=16G
 #SBATCH --time=23:00:00
 
