@@ -5,6 +5,8 @@ rule vireo_qc:
     output:
         donor_umi="results/vireo_qc/{sample}/donor_umi.pdf",
         donor_n_vars="results/vireo_qc/{sample}/donor_n_vars.pdf",
+    params:
+        sample="{sample}"
     conda:
         "../../envs/r-env.yaml"
     log:

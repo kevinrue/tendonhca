@@ -19,7 +19,12 @@ gg <- donor_ids_data %>%
   ggplot(aes(donor_id, total_umi)) +
   geom_jitter(width = 0.1) +
   theme_minimal() +
-  theme(panel.grid.minor.y = element_blank())
+  theme(panel.grid.minor.y = element_blank()) +
+  labs(
+    title = snakemake@params[["sample"]],
+    y = "Total UMI",
+    x = "Donor ID"
+  )
 
 ggsave(
   filename = snakemake@output[["donor_umi"]],
@@ -35,7 +40,12 @@ gg <- donor_ids_data %>%
   ggplot(aes(donor_id, n_vars)) +
   geom_jitter(width = 0.1) +
   theme_minimal() +
-  theme(panel.grid.minor.y = element_blank())
+  theme(panel.grid.minor.y = element_blank()) +
+  labs(
+    title = snakemake@params[["sample"]],
+    y = "Number of variants",
+    x = "Donor ID"
+  )
 
 ggsave(
   filename = snakemake@output[["donor_n_vars"]],
