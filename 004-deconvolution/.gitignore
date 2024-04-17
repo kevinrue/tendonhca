@@ -1,3 +1,5 @@
 resources/
 results/
 *.Rproj
+*.png
+*.pdf

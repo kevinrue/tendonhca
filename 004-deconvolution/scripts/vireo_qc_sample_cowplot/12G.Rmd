@@ -1,0 +1,28 @@
+---
+title: "12G"
+output: html_document
+date: "2024-04-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(cowplot)
+```
+
+```{r}
+gg_1 <- ggdraw() +
+  draw_image(image = "../../results/vireo_qc/12G/donor_umi.png")
+gg_2 <- ggdraw() +
+  draw_image(image = "../../results/vireo_qc/12G/donor_n_vars.png")
+gg_3 <- ggdraw() +
+  draw_image(image = "../../results/vireo_qc/12G/prob_donor_doublet.png")
+gg_123 <- plot_grid(
+  gg_1,
+  gg_2,
+  gg_3,
+  ncol = 1
+)
+ggsave("12G.png", gg_123, width = 7, height = 15)
+```
+

@@ -15,3 +15,14 @@ rule vireo_qc:
     script:
         "../../scripts/vireo_qc.R"
 
+rule vireo_qc_sample_cowplot:
+    input:
+        donor_umi="results/vireo_qc/{sample}/donor_umi.pdf",
+        donor_n_vars="results/vireo_qc/{sample}/donor_n_vars.pdf",
+        prob_donor_doublet="results/vireo_qc/{sample}/prob_donor_doublet.pdf"
+    output:
+        montage="results/vireo_qc_cowplot/{sample}.pdf"
+    conda:
+        "../../envs/r-env.yaml"
+    script:
+        "../../scripts/vireo_qc_sample_cowplot.R"

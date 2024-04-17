@@ -4,8 +4,10 @@ channels:
 dependencies:
   - bioconductor-dropletutils
   - r-base
+  - r-cowplot
   - r-ggplot2
   - r-jsonlite
   - r-languageserver
+  - r-magick
   - r-tidyverse
 

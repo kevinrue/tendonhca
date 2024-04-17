@@ -10,7 +10,8 @@ samples = (
 def get_final_output():
     final_output = []
     final_output.append(expand(
-        "results/vireo_qc/{sample}/donor_umi.pdf",
+        # "results/vireo_qc/{sample}/donor_umi.pdf",
+        "results/vireo_qc_cowplot/{sample}.pdf",
         sample=samples.index.tolist(),
     ))
     return final_output
