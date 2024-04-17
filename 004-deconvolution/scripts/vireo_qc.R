@@ -34,9 +34,6 @@ ggsave(
 )
 
 gg <- donor_ids_data %>% 
-  mutate(
-    total_umi = colSums(assay(sce[, donor_ids_data$cell], "counts"))
-  ) %>% 
   ggplot(aes(donor_id, n_vars)) +
   geom_jitter(width = 0.1) +
   theme_minimal() +
@@ -52,4 +49,23 @@ ggsave(
   plot = gg,
   width = 7,
   height = 5
+)
+
+gg <- donor_ids_data %>%
+  ggplot(aes(prob_doublet, prob_max)) +
+  geom_point() +
+  facet_wrap(~donor_id) +
+  theme_bw() +
+  theme(panel.grid.minor.y = element_blank()) +
+  labs(
+    title = snakemake@params[["sample"]],
+    y = "Probability of assigned donor",
+    x = "Probability of doublet"
+  )
+
+ggsave(
+  filename = snakemake@output[["prob_donor_doublet"]],
+  plot = gg,
+  width = 7,
+  height = 7
 )

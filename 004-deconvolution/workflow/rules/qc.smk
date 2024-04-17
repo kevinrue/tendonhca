@@ -5,6 +5,7 @@ rule vireo_qc:
     output:
         donor_umi="results/vireo_qc/{sample}/donor_umi.pdf",
         donor_n_vars="results/vireo_qc/{sample}/donor_n_vars.pdf",
+        prob_donor_doublet="results/vireo_qc/{sample}/prob_donor_doublet.pdf",
     params:
         sample="{sample}"
     conda:
