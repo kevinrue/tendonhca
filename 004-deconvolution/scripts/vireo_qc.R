@@ -22,7 +22,23 @@ gg <- donor_ids_data %>%
   theme(panel.grid.minor.y = element_blank())
 
 ggsave(
-  filename = snakemake@output[["pdf"]],
+  filename = snakemake@output[["donor_umi"]],
+  plot = gg,
+  width = 7,
+  height = 5
+)
+
+gg <- donor_ids_data %>% 
+  mutate(
+    total_umi = colSums(assay(sce[, donor_ids_data$cell], "counts"))
+  ) %>% 
+  ggplot(aes(donor_id, n_vars)) +
+  geom_jitter(width = 0.1) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank())
+
+ggsave(
+  filename = snakemake@output[["donor_n_vars"]],
   plot = gg,
   width = 7,
   height = 5
