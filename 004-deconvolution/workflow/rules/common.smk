@@ -25,7 +25,7 @@ def get_fastqs(wildcards):
 
 def get_n_donors(wildcards):
     u = samples.loc[wildcards.sample]
-    return {"n_donor": u["n_donor"]}
+    return {"n_donors": u["n_donors"]}
 
 def get_umi_min_cutoff(wildcards):
     u = samples.loc[wildcards.sample]
