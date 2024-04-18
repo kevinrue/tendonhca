@@ -14,7 +14,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "results/cellranger_filter_barcodes/{sample}.txt",
+        "results/cellranger_filter_barcodes/{sample}.tsv.gz",
         sample=samples.index.tolist(),
     ))
     return final_output
