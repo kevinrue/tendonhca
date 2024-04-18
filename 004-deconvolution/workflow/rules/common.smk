@@ -14,7 +14,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "results/cellranger_filter_barcodes/{sample}.tsv.gz",
+        "results/vireo_filtered_barcodes/{sample}/summary.tsv",
         sample=samples.index.tolist(),
     ))
     return final_output
@@ -25,7 +25,7 @@ def get_fastqs(wildcards):
 
 def get_n_donors(wildcards):
     u = samples.loc[wildcards.sample]
-    return {"n_donors": u["n_donors"]}
+    return {"n_donor": u["n_donor"]}
 
 def get_umi_min_cutoff(wildcards):
     u = samples.loc[wildcards.sample]

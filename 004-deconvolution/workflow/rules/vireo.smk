@@ -4,12 +4,30 @@ rule vireo:
     output:
         summary="results/vireo/{sample}/summary.tsv",
     log:
-        "results/cellranger_count/{sample}.log",
+        "results/vireo/{sample}.log",
     params:
-        slide=lambda wildcards, output: get_n_donors(wildcards),
+        n_donors=lambda wildcards, output: get_n_donors(wildcards),
+    conda:
+        "../../envs/vireo.yaml"
     shell:
-        "vireo -c $CELL_DATA -N $n_donor -o $OUT_DIR"
+        "vireo "
         "-c {input.dir}"
-        "-N {params.n_donor}"
+        "-N {params.n_donors}"
         "-o {output.summary}"
 
+rule vireo_filtered_barcodes:
+    input:
+        dir="results/cellsnp-lite_filtered_barcodes/{sample}",
+    output:
+        summary="results/vireo_filtered_barcodes/{sample}/summary.tsv",
+    log:
+        "results/vireo_filtered_barcodes/{sample}.log",
+    params:
+        n_donors=lambda wildcards, output: get_n_donors(wildcards),
+    conda:
+        "../../envs/vireo.yaml"
+    shell:
+        "vireo "
+        "-c {input.dir} "
+        "-N {params.n_donors} "
+        "-o {output.summary} "
