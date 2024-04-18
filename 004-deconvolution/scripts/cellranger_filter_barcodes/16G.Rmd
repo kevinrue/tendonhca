@@ -1,0 +1,26 @@
+---
+title: "16G"
+output: html_document
+date: "2024-04-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DropletUtils)
+count_min_cutoff <- 1E3
+```
+
+```{r}
+sce <- read10xCounts("../../results/cellranger_count/16G/outs/filtered_feature_bc_matrix.h5", sample.names = "16G", col.names = TRUE)
+sce
+```
+
+```{r}
+sce <- sce[, colSums(assay(sce, "counts")) > count_min_cutoff]
+sce
+```
+
+```{r}
+write(x = colnames(sce), file = "16G_barcodes.txt")
+```
+

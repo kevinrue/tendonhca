@@ -18,6 +18,7 @@ include: "rules/cellranger.smk"
 include: "rules/cellsnp_lite.smk"
 include: "rules/vireo.smk"
 include: "rules/qc.smk"
+include: "rules/filters.smk"
 
 ##### target rules #####
 

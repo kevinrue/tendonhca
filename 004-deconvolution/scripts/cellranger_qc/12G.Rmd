@@ -1,0 +1,53 @@
+---
+title: "12G"
+output: html_document
+date: "2024-04-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(DropletUtils)
+library(scuttle)
+library(tidyverse)
+```
+
+```{r}
+sce <- read10xCounts(samples = "../../results/cellranger_count/12G/outs/filtered_feature_bc_matrix.h5", sample.names = "12G", col.names = TRUE)
+sce
+```
+
+```{r}
+mito_genes <- grep(pattern = "MT-", x = rowData(sce)[["Symbol"]])
+rowData(sce)[["Symbol"]][mito_genes]
+```
+
+```{r}
+sce <- addPerCellQC(x = sce, subsets = list(MT = mito_genes))
+colnames(colData(sce))
+```
+
+```{r}
+sce %>% 
+  colData() %>% 
+  as_data_frame() %>% 
+  as_tibble() %>% 
+  ggplot(aes(Sample, total)) +
+  geom_violin() +
+  geom_jitter(width = 0.1)
+```
+
+```{r}
+barcode_rank_table <- DropletUtils::barcodeRanks(sce)
+head(barcode_rank_table)
+```
+
+```{r}
+barcode_rank_table %>% 
+  as_data_frame() %>% 
+  as_tibble() %>% 
+  ggplot(aes(rank, total)) +
+  geom_point() +
+  scale_y_log10(limits = c(1, NA)) +
+  scale_x_log10()
+```
+

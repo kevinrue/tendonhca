@@ -1,0 +1,65 @@
+---
+title: "Compare VCF files"
+output: html_document
+date: "2024-04-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# library(VariantAnnotation)
+library(tidyverse)
+```
+
+```{r}
+data_12G <- read_delim("../../results/vireo/12G/GT_donors.vireo.vcf.gz", delim = "\t", comment = "##") %>% 
+  rename(CHROM = "#CHROM") %>% 
+  unite("CHROM_POS_REF_ALT", CHROM, POS, REF, ALT, sep = "_")
+head(data_12G)
+```
+
+```{r}
+data_14G <- read_delim("../../results/vireo/14G/GT_donors.vireo.vcf.gz", delim = "\t", comment = "##") %>% 
+  rename(CHROM = "#CHROM") %>% 
+  unite("CHROM_POS_REF_ALT", CHROM, POS, REF, ALT, sep = "_")
+head(data_14G)
+```
+
+```{r}
+data_16G <- read_delim("../../results/vireo/16G/GT_donors.vireo.vcf.gz", delim = "\t", comment = "##") %>% 
+  rename(CHROM = "#CHROM") %>% 
+  unite("CHROM_POS_REF_ALT", CHROM, POS, REF, ALT, sep = "_")
+head(data_16G)
+```
+
+```{r}
+length(intersect(data_12G$CHROM_POS_REF_ALT, data_14G$CHROM_POS_REF_ALT))
+length(intersect(data_14G$CHROM_POS_REF_ALT, data_16G$CHROM_POS_REF_ALT))
+```
+
+```{r}
+genotype_table <- inner_join(
+  x = data_14G %>% rename_with(~ paste0(.x, "_14G"), starts_with("donor")) %>% dplyr::select(CHROM_POS_REF_ALT, starts_with("donor")),
+  y = data_16G %>% rename_with(~ paste0(.x, "_16G"), starts_with("donor")) %>% dplyr::select(CHROM_POS_REF_ALT, starts_with("donor")),
+  by = "CHROM_POS_REF_ALT"
+  ) %>% 
+  mutate(across(starts_with("donor"), gsub, pattern = "([01/]):.*", replacement = "\\1")) %>% 
+  dplyr::select(-CHROM_POS_REF_ALT)
+head(genotype_table)
+```
+
+```{r}
+# dist(genotype_table)
+genotype_numeric <- genotype_table %>% 
+  mutate(across(everything(), function(x) c("0/0" = 0, "1/0" = 1, "1/1" = 2)[x] ))
+head(genotype_numeric)
+```
+
+```{r}
+ComplexHeatmap::Heatmap(as.matrix(genotype_numeric), name = "Genotype\n0/0:0\n1/0:1\n1/1:2")
+```
+
+
+```{r}
+plot(hclust(dist(t(genotype_numeric), method = "manhattan")))
+```
+
