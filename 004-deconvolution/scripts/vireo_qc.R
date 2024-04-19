@@ -2,17 +2,22 @@ library(DropletUtils)
 library(ggplot2)
 library(tidyverse)
 
+cellranger_filtered <- snakemake@input[["cellranger_filtered"]]
+vireo_donor_ids <- file.path(
+  snakemake@input[["vireo_dir"]], "donor_ids.tsv"
+)
+
 sce <- read10xCounts(
-  samples = snakemake@input[["cellranger_filtered"]],
+  samples = cellranger_filtered,
   col.names = TRUE
 )
 
 donor_ids_data <- read_delim(
-  file = snakemake@input[["vireo_donor_ids"]],
+  file = vireo_donor_ids,
   delim = "\t"
 )
 
-gg <- donor_ids_data %>% 
+gg <- donor_ids_data %>%
   mutate(
     total_umi = colSums(assay(sce[, donor_ids_data$cell], "counts"))
   ) %>% 

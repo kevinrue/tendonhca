@@ -14,7 +14,7 @@ def get_final_output():
         sample=samples.index.tolist(),
     ))
     final_output.append(expand(
-        "results/vireo_filtered_barcodes/{sample}/summary.tsv",
+        "results/vireo_filtered_barcodes_qc_cowplot/{sample}.pdf",
         sample=samples.index.tolist(),
     ))
     return final_output
@@ -25,8 +25,8 @@ def get_fastqs(wildcards):
 
 def get_n_donors(wildcards):
     u = samples.loc[wildcards.sample]
-    return {"n_donors": u["n_donors"]}
+    return u["n_donors"]
 
 def get_umi_min_cutoff(wildcards):
     u = samples.loc[wildcards.sample]
-    return {"umi_cutoff_min": u["umi_cutoff_min"]}
+    return u["umi_cutoff_min"]

@@ -2,7 +2,7 @@ rule vireo:
     input:
         dir="results/cellsnp-lite/{sample}",
     output:
-        summary="results/vireo/{sample}/summary.tsv",
+        dir=directory("results/vireo/{sample}"),
     log:
         "results/vireo/{sample}.log",
     params:
@@ -13,13 +13,13 @@ rule vireo:
         "vireo "
         "-c {input.dir}"
         "-N {params.n_donors}"
-        "-o {output.summary}"
+        "-o {output.dir}"
 
 rule vireo_filtered_barcodes:
     input:
         dir="results/cellsnp-lite_filtered_barcodes/{sample}",
     output:
-        summary="results/vireo_filtered_barcodes/{sample}/summary.tsv",
+        dir=directory("results/vireo_filtered_barcodes/{sample}"),
     log:
         "results/vireo_filtered_barcodes/{sample}.log",
     params:
@@ -30,4 +30,4 @@ rule vireo_filtered_barcodes:
         "vireo "
         "-c {input.dir} "
         "-N {params.n_donors} "
-        "-o {output.summary} "
+        "-o {output.dir} "
