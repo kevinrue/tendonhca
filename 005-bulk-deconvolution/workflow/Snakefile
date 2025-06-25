@@ -35,4 +35,5 @@ rule all:
     input:
         ##"results/multiqc/multiqc_report.html",
         "results/get_genome/genome.fna",
+        "results/get_genome_gtf/genome.gtf",
     default_target: True
