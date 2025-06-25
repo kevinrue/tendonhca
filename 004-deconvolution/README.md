@@ -5,6 +5,10 @@
   * [Mode 2a: droplet based single cells without given SNPs][cellsnp-lite-mode2a]
 * Run [Vireo][vireo-github] for Demultiplexing pooled scRNA-seq data with or without genotype reference.
 
+Other ideas:
+
+- <https://github.com/jon-xu/scSplit>
+
 ## Snakemake
 
 ### Environment
