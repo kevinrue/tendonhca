@@ -34,6 +34,5 @@ onerror:
 rule all:
     input:
         ##"results/multiqc/multiqc_report.html",
-        "results/get_genome/genome.fna",
-        "results/get_genome_gtf/genome.gtf",
+        "results/star_index",
     default_target: True

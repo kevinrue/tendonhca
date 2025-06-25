@@ -40,20 +40,24 @@ rule get_genome_gtf:
 
 # index genome sequence with STAR
 # -----------------------------------------------------
-# rule star_index:
-#     input:
-#         fasta="results/get_genome/genome.fna",
-#     output:
-#         directory("results/star_index"),
-#     message:
-#         "Testing STAR index"
-#     threads: 1
-#     params:
-#         extra="",
-#     log:
-#         "logs/star_index_{genome}.log",
-#     wrapper:
-#         "v3.3.0/bio/star/index"
+rule star_index:
+    input:
+        fasta="results/get_genome/genome.fna",
+        gtf="results/get_genome_gtf/genome.gtf",
+    output:
+        directory("results/star_index"),
+    message:
+        "Testing STAR index"
+    threads: 16
+    resources:
+        mem=lookup(within=config, dpath="star_index/mem"),
+    params:
+        sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
+        extra="",
+    log:
+        "logs/star_index/star_index.log",
+    wrapper:
+        "v3.3.0/bio/star/index"
 
 # validate genome sequence file
 # -----------------------------------------------------

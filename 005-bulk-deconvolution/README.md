@@ -91,4 +91,17 @@ conda config --set channel_priority strict
 
 Extend workflow to download the genome annotation from Ensembl.
 
-Run again.
+Note that the 'patch hapl scaff' annotations are used, as per recommendations in the [STAR manual](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf).
+Specifically, they recommend using the most comprehensive annotation available, and I thought it was better to have annotations for sequences that are not part of the primary assembly, rather than missing annotations for sequences that are part of the primary assembly.
+
+Run workflow again to download the genome annotation.
+
+Extend workflow to index the genome using STAR.
+
+Note that STAR needs to know the read length for the `--sjdbOverhang` option.
+I don't have read access to the FASTA files, so I provisionally assumed 150bp while sending an email to get the number (and access to the files).
+
+## Resources
+
+- GATK best practices for RNAseq: <https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels>
+- STAR manual <https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf>

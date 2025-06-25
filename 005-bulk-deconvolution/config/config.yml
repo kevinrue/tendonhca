@@ -5,3 +5,7 @@ get_genome:
 
 get_genome_gtf:
   ensembl_ftp: https://ftp.ensembl.org/pub/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh38.114.chr_patch_hapl_scaff.gtf.gz
+
+star_index:
+  sjdbOverhang: 149
+  mem: 64G
