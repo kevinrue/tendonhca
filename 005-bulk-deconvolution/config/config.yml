@@ -13,4 +13,4 @@ star_index:
 
 star_pe:
   mem: 45G
-  runtime: 1h
+  runtime: 2h

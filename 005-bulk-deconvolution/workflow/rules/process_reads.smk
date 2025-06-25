@@ -93,12 +93,12 @@ rule star_pe:
         aln="results/star_pe/{sample}/pe_aligned.sam",
         log="results/star_pe/{sample}/Log.out",
         sj="results/star_pe/{sample}/SJ.out.tab",
-        unmapped=["results/star_pe/{sample}/unmapped.1.fastq.gz","star_pe/{sample}/unmapped.2.fastq.gz"],
+        unmapped=["results/star_pe/{sample}/unmapped.1.fastq.gz","results/star_pe/{sample}/unmapped.2.fastq.gz"],
     log:
         "logs/star_pe/{sample}.log",
     params:
         # optional parameters
-        extra="",
+        extra="--outSAMtype BAM SortedByCoordinate --twopassMode Basic",
     threads: 8
     resources:
         mem=lookup(within=config, dpath="star_pe/mem"),
