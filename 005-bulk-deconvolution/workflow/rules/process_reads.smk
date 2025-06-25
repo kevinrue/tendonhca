@@ -3,7 +3,7 @@
 # ----------------------------------------------------- #
 
 
-# fetch genome sequence from NCBI
+# fetch genome sequence from Ensembl
 # -----------------------------------------------------
 rule get_genome:
     output:
@@ -20,6 +20,40 @@ rule get_genome:
         "wget -O results/get_genome/genome.fna.gz {params.ensembl_ftp} > {log} 2>&1 && "
         "gunzip results/get_genome/genome.fna.gz >> {log} 2>&1"
 
+
+# fetch genome annotations from Ensembl
+# -----------------------------------------------------
+rule get_genome_gtf:
+    output:
+        gtf="results/get_genome_gtf/genome.gtf",
+    conda:
+        "../envs/get_genome.yml"
+    message:
+        """--- Downloading genome annotations."""
+    params:
+        ensembl_ftp=lookup(within=config, dpath="get_genome_gtf/ensembl_ftp"),
+    log:
+        "results/get_genome_gtf/genome.log",
+    shell:
+        "wget -O results/get_genome_gtf/genome.gtf.gz {params.ensembl_ftp} > {log} 2>&1 && "
+        "gunzip results/get_genome_gtf/genome.gtf.gz >> {log} 2>&1"
+
+# index genome sequence with STAR
+# -----------------------------------------------------
+# rule star_index:
+#     input:
+#         fasta="results/get_genome/genome.fna",
+#     output:
+#         directory("results/star_index"),
+#     message:
+#         "Testing STAR index"
+#     threads: 1
+#     params:
+#         extra="",
+#     log:
+#         "logs/star_index_{genome}.log",
+#     wrapper:
+#         "v3.3.0/bio/star/index"
 
 # validate genome sequence file
 # -----------------------------------------------------

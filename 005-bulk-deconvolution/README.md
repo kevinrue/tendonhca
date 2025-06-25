@@ -24,7 +24,9 @@ mv snakemake-workflow-template-main/.* .
 rmdir snakemake-workflow-template-main
 ```
 
-Edit workflow to download the reference genome  from Ensembl.
+Edit workflow to download the reference genome from Ensembl.
+
+Note that the 'primary assembly' genome is used, as per recommendations in the [STAR manual](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf).
 
 Using VSCode command palette, create a Conda environment for the project.
 
@@ -86,3 +88,7 @@ Fix warning:
 ```bash
 conda config --set channel_priority strict
 ```
+
+Extend workflow to download the genome annotation from Ensembl.
+
+Run again.
