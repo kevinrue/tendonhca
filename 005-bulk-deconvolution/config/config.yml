@@ -9,3 +9,4 @@ get_genome_gtf:
 star_index:
   sjdbOverhang: 149
   mem: 64G
+  runtime: 4h

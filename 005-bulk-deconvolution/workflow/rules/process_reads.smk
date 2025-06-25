@@ -51,6 +51,7 @@ rule star_index:
     threads: 16
     resources:
         mem=lookup(within=config, dpath="star_index/mem"),
+        runtime=lookup(within=config, dpath="star_index/runtime"),
     params:
         sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
         extra="",
