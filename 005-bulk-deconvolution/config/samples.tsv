@@ -1,0 +1,9 @@
+sample	read1	read2
+LHBT_1519	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/11-LHBT-1519-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/11-LHBT-1519-MB_R2_001.fastq.gz
+LHBT_1530	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/21-LHBT-1530-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/21-LHBT-1530-MB_R2_001.fastq.gz
+LHBT_1503	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/26-LHBT-1503-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/26-LHBT-1503-MB_R2_001.fastq.gz
+LHBT_1507	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/35-LHBT-1507-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/35-LHBT-1507-MB_R2_001.fastq.gz
+LHBT_1537	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/43-LHBT-1537-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/43-LHBT-1537-MB_R2_001.fastq.gz
+LHBT_1502	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/52-LHBT-1502-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/52-LHBT-1502-MB_R2_001.fastq.gz
+LHBT_1532	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/55-LHBT-1532-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/55-LHBT-1532-MB_R2_001.fastq.gz
+LHBT_1506	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/63-LHBT-1506-MB_R1_001.fastq.gz	/project/tendonhca/shared/bulk_RNAseq/backup/20250414_tendon/00_fastq/63-LHBT-1506-MB_R2_001.fastq.gz

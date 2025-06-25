@@ -39,6 +39,7 @@ rule get_genome_gtf:
         "gunzip results/get_genome_gtf/genome.gtf.gz >> {log} 2>&1"
 
 # index genome sequence with STAR
+# source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/index.html>
 # -----------------------------------------------------
 rule star_index:
     input:
@@ -58,7 +59,52 @@ rule star_index:
     log:
         "logs/star_index/star_index.log",
     wrapper:
-        "v3.3.0/bio/star/index"
+        "v7.1.0/bio/star/index"
+
+
+def get_star_bam_files(wildcards):
+    """
+    Get all STAR BAM files for the given sample wildcard.
+    """
+    sample_data=samples[samples['sample'] == wildcards.sample].filter(items=['directory', 'read1', 'read2'])
+    fq1=sample_data['read1'].to_list()
+    fq2=sample_data['read2'].to_list()
+    return {
+        'fq1': fq1,
+        'fq2': fq2,
+    }
+
+
+# map reads with STAR
+# source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/align.html>
+# -----------------------------------------------------
+rule star_pe:
+    input:
+        # use a list for multiple fastq files for one sample
+        # usually technical replicates across lanes/flowcells
+        #fq1=["reads/{sample}_R1.1.fastq", "reads/{sample}_R1.2.fastq"],
+        # paired end reads needs to be ordered so each item in the two lists match
+        #fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
+        unpack(get_star_bam_files),
+        # path to STAR reference genome index
+        idx="results/star_index",
+    output:
+        # see STAR manual for additional output files
+        aln="results/star_pe/{sample}/pe_aligned.sam",
+        log="results/star_pe/{sample}/Log.out",
+        sj="results/star_pe/{sample}/SJ.out.tab",
+        unmapped=["results/star_pe/{sample}/unmapped.1.fastq.gz","star_pe/{sample}/unmapped.2.fastq.gz"],
+    log:
+        "logs/star_pe/{sample}.log",
+    params:
+        # optional parameters
+        extra="",
+    threads: 8
+    resources:
+        mem=lookup(within=config, dpath="star_pe/mem"),
+        runtime=lookup(within=config, dpath="star_pe/runtime"),
+    wrapper:
+        "v7.1.0/bio/star/align"
 
 # validate genome sequence file
 # -----------------------------------------------------

@@ -11,7 +11,7 @@ configfile: "config/config.yml"
 
 # load rules
 # -----------------------------------------------------
-##include: "rules/common.smk"
+include: "rules/common.smk"
 include: "rules/process_reads.smk"
 
 
@@ -34,5 +34,5 @@ onerror:
 rule all:
     input:
         ##"results/multiqc/multiqc_report.html",
-        "results/star_index",
+        expand("results/star_pe/{sample}/pe_aligned.sam", sample=samples['sample'].unique()),
     default_target: True
