@@ -132,6 +132,23 @@ rm nohup.out && nohup snakemake --sdm conda &
 Woops.
 I made STAR output BAM files, but called those SAM files in the workflow.
 Renaming the output files to BAM files triggered Snakemake warnings forcing me to rerun the whole workflow from the top.
+Weird, STAR seems to take longer to run than yesterday (over an hour).
+Or maybe it's because it is making BAM files instead of SAM files, which it happened while I was walking home from work.
+
+Woops #2.
+The MarkDuplicates rule failed because the BAM files do not contain read group information.
+That works out well since I was working on a rule to convert the FASTQ files to uBAM files with read group information.
+
+#### Make uBAM files
+
+Based on How-to <https://gatk.broadinstitute.org/hc/en-us/articles/4403687183515--How-to-Generate-an-unmapped-BAM-from-FASTQ-or-aligned-BAM>
+and meaning of read groups <https://gatk.broadinstitute.org/hc/en-us/articles/360035890671-Read-groups>.
+
+I tweaked `samples.tsv` to include the read group information, and added a rule to convert the FASTQ files to uBAM files using GATK's `FastqToSam`.
+
+```bash
+rm nohup.out && nohup snakemake --sdm conda &
+```
 
 ## Resources
 

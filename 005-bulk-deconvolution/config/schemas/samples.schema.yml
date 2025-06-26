@@ -4,6 +4,12 @@ properties:
   sample:
     type: string
     description: sample name/identifier
+  library:
+    type: string
+    description: library name/identifier
+  read_group:
+    type: string
+    description: read group identifier
   read1:
     type: string
     description: names of fastq.gz files, read 1
@@ -13,5 +19,7 @@ properties:
 
 required:
   - sample
+  - library
+  - read_group
   - read1
   - read2

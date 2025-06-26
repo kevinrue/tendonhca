@@ -62,7 +62,7 @@ rule star_index:
         "v7.1.0/bio/star/index"
 
 
-def get_star_bam_files(wildcards):
+def get_paired_fastq_files(wildcards):
     """
     Get all STAR BAM files for the given sample wildcard.
     """
@@ -75,6 +75,38 @@ def get_star_bam_files(wildcards):
     }
 
 
+# make uBAM from FASTQ files
+# -----------------------------------------------------
+rule paired_fastqs_to_ubam:
+    input:
+        unpack(get_paired_fastq_files),
+    output:
+        ubam="results/paired_fastqs_to_ubam/{sample}.bam",
+    message:
+        """--- Running GATK FastqToSam."""
+    threads: 16
+    resources:
+        mem=lookup(within=config, dpath="paired_fastqs_to_ubam/mem"),
+        runtime=lookup(within=config, dpath="paired_fastqs_to_ubam/runtime"),
+    conda:
+        "../envs/gatk.yml"
+    params:
+        read_group=lambda wildcards, input: samples['read_group'][wildcards.sample],
+        library=lambda wildcards, input: samples['library'][wildcards.sample],
+    log:
+        "logs/paired_fastqs_to_ubam/{sample}.log",
+    shell:
+        "gatk FastqToSam"
+        " --FASTQ {input.fq1}"
+        " --FASTQ2 {input.fq2}"
+        " --OUTPUT {output.ubam}"
+        " --READ_GROUP_NAME {params.read_group}"
+        " --SAMPLE_NAME {wildcards.sample}"
+        " --LIBRARY_NAME pooled"
+        " --PLATFORM_UNIT {params.read_group}"
+        " --PLATFORM illumina > {log} 2>&1"
+
+
 # map reads with STAR
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/align.html>
 # -----------------------------------------------------
@@ -85,7 +117,7 @@ rule star_pe:
         #fq1=["reads/{sample}_R1.1.fastq", "reads/{sample}_R1.2.fastq"],
         # paired end reads needs to be ordered so each item in the two lists match
         #fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
-        unpack(get_star_bam_files),
+        unpack(get_paired_fastq_files),
         # path to STAR reference genome index
         idx="results/star_index",
     output:
@@ -111,25 +143,25 @@ rule star_pe:
 
 # mark duplicates with GATK
 # -----------------------------------------------------
-rule mark_duplicate:
-    input:
-        bam="results/star_pe/{sample}/pe_aligned.bam",
-    output:
-        bam="results/mark_duplicate/{sample}.bam",
-        metrics="results/mark_duplicate/{sample}.metrics",
-    conda:
-        "../envs/gatk.yml"
-    message:
-        """--- Running GATK MarkDuplicates."""
-    log:
-        "logs/mark_duplicate/{sample}.log",
-    shell:
-        "gatk MarkDuplicates"
-        " --INPUT {input.bam}"
-        " --OUTPUT {output.bam}"
-        " --CREATE_INDEX true"
-        " --VALIDATION_STRINGENCY SILENT"
-        " --METRICS_FILE {output.metrics} > {log} 2>&1 "
+# rule mark_duplicate:
+#     input:
+#         bam="results/star_pe/{sample}/pe_aligned.bam",
+#     output:
+#         bam="results/mark_duplicate/{sample}.bam",
+#         metrics="results/mark_duplicate/{sample}.metrics",
+#     conda:
+#         "../envs/gatk.yml"
+#     message:
+#         """--- Running GATK MarkDuplicates."""
+#     log:
+#         "logs/mark_duplicate/{sample}.log",
+#     shell:
+#         "gatk MarkDuplicates"
+#         " --INPUT {input.bam}"
+#         " --OUTPUT {output.bam}"
+#         " --CREATE_INDEX true"
+#         " --VALIDATION_STRINGENCY SILENT"
+#         " --METRICS_FILE {output.metrics} > {log} 2>&1 "
 
 
 # mark duplicates with picard tools
