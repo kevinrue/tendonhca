@@ -150,6 +150,16 @@ I tweaked `samples.tsv` to include the read group information, and added a rule 
 rm nohup.out && nohup snakemake --sdm conda &
 ```
 
+#### Create sequence dictionary to use with GATK tools
+
+Extend workflow to create a sequence dictionary for the genome FASTA file using GATK's `CreateSequenceDictionary`.
+
+I'm still waiting for the latest run of the workflow to finish, so I can run this rule.
+
+#### Split reads at N bases
+
+Extend workflow to split reads at N bases into supplementary alignments using GATK's `SplitNCigarReads`.
+
 ## Resources
 
 - GATK best practices for RNAseq: <https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels>
