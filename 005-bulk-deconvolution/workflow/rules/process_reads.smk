@@ -48,7 +48,7 @@ rule star_index:
     output:
         directory("results/star_index"),
     message:
-        "Testing STAR index"
+        """--- Building STAR index."""
     threads: 16
     resources:
         mem=lookup(within=config, dpath="star_index/mem"),
@@ -90,10 +90,12 @@ rule star_pe:
         idx="results/star_index",
     output:
         # see STAR manual for additional output files
-        aln="results/star_pe/{sample}/pe_aligned.sam",
+        aln="results/star_pe/{sample}/pe_aligned.bam",
         log="results/star_pe/{sample}/Log.out",
         sj="results/star_pe/{sample}/SJ.out.tab",
         unmapped=["results/star_pe/{sample}/unmapped.1.fastq.gz","results/star_pe/{sample}/unmapped.2.fastq.gz"],
+    message:
+        """--- Mapping reads using STAR."""
     log:
         "logs/star_pe/{sample}.log",
     params:
@@ -105,6 +107,30 @@ rule star_pe:
         runtime=lookup(within=config, dpath="star_pe/runtime"),
     wrapper:
         "v7.1.0/bio/star/align"
+
+
+# fetch genome sequence from Ensembl
+# -----------------------------------------------------
+rule mark_duplicate:
+    input:
+        bam="results/star_pe/{sample}/pe_aligned.bam",
+    output:
+        bam="results/mark_duplicate/{sample}.bam",
+        metrics="results/mark_duplicate/{sample}.metrics",
+    conda:
+        "../envs/gatk.yml"
+    message:
+        """--- Running GATK MarkDuplicates."""
+    log:
+        "logs/mark_duplicate/{sample}.log",
+    shell:
+        "MarkDuplicates"
+        " --INPUT ${input.bam}"
+        " --OUTPUT ${output.bam}"
+        " --CREATE_INDEX true"
+        " --VALIDATION_STRINGENCY SILENT"
+        " --METRICS_FILE {output.metrics} > {log} 2>&1 "
+
 
 # validate genome sequence file
 # -----------------------------------------------------

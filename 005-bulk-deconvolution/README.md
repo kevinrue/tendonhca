@@ -107,7 +107,7 @@ Extend workflow to index the genome using STAR.
 Note that STAR needs to know the read length for the `--sjdbOverhang` option.
 I don't have read access to the FASTA files, so I provisionally assumed 150bp while sending an email to get the number (and access to the files).
 
-### Map reads to the genome with STAR
+#### Map reads to the genome with STAR
 
 Extend workflow to map the reads to the genome using STAR.
 
@@ -116,6 +116,22 @@ Run workflow again to map the reads to the genome.
 ```bash
 rm nohup.out && nohup snakemake --sdm conda &
 ```
+
+### 26 Jun 2025
+
+#### Mark duplicates
+
+Extend workflow to mark duplicates using GATK's `MarkDuplicates`.
+
+Run workflow again to map the reads to the genome.
+
+```bash
+rm nohup.out && nohup snakemake --sdm conda &
+```
+
+Woops.
+I made STAR output BAM files, but called those SAM files in the workflow.
+Renaming the output files to BAM files triggered Snakemake warnings forcing me to rerun the whole workflow from the top.
 
 ## Resources
 
