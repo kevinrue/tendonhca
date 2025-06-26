@@ -109,7 +109,7 @@ rule star_pe:
         "v7.1.0/bio/star/align"
 
 
-# fetch genome sequence from Ensembl
+# mark duplicates with GATK
 # -----------------------------------------------------
 rule mark_duplicate:
     input:
@@ -124,13 +124,60 @@ rule mark_duplicate:
     log:
         "logs/mark_duplicate/{sample}.log",
     shell:
-        "MarkDuplicates"
-        " --INPUT ${input.bam}"
-        " --OUTPUT ${output.bam}"
+        "gatk MarkDuplicates"
+        " --INPUT {input.bam}"
+        " --OUTPUT {output.bam}"
         " --CREATE_INDEX true"
         " --VALIDATION_STRINGENCY SILENT"
         " --METRICS_FILE {output.metrics} > {log} 2>&1 "
 
+
+# mark duplicates with picard tools
+# source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/gatk/markduplicatesspark.html>
+# -----------------------------------------------------
+rule mark_duplicates_spark:
+    input:
+        "results/star_pe/{sample}/pe_aligned.bam",
+    output:
+        bam="results/mark_duplicates_spark/{sample}.bam",
+        metrics="results/mark_duplicates_spark/{sample}.metrics",
+    message:
+        """--- Running GATK MarkDuplicates."""
+    log:
+        "logs/mark_duplicates_spark/{sample}.log",
+    params:
+        extra="",  # optional
+        java_opts="",  # optional
+        #spark_runner="",  # optional, local by default
+        #spark_v7.1.0="",  # optional
+        #spark_extra="", # optional
+    resources:
+        # Memory needs to be at least 471859200 for Spark, so 589824000 when
+        # accounting for default JVM overhead of 20%. We round round to 650M.
+        mem_mb=lambda wildcards, input: max([input.size_mb * 0.25, 650]),
+    threads: 8
+    wrapper:
+        "v7.1.0/bio/gatk/markduplicatesspark"
+
+# rule mark_duplicate:
+#     input:
+#         bam="results/star_pe/{sample}/pe_aligned.bam",
+#     output:
+#         bam="results/mark_duplicate/{sample}.bam",
+#         metrics="results/mark_duplicate/{sample}.metrics",
+#     conda:
+#         "../envs/gatk.yml"
+#     message:
+#         """--- Running GATK MarkDuplicates."""
+#     log:
+#         "logs/mark_duplicate/{sample}.log",
+#     shell:
+#         "gatk MarkDuplicates"
+#         " --INPUT {input.bam}"
+#         " --OUTPUT {output.bam}"
+#         " --CREATE_INDEX true"
+#         " --VALIDATION_STRINGENCY SILENT"
+#         " --METRICS_FILE {output.metrics} > {log} 2>&1 "
 
 # validate genome sequence file
 # -----------------------------------------------------
