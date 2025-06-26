@@ -145,7 +145,7 @@ rule create_sequence_dictionary:
     input:
         "results/get_genome/genome.fna",
     output:
-        "results/get_genome/genome.dict",
+        "results/create_sequence_dictionary/genome.dict",
     conda:
         "../envs/gatk.yml"
     message:
@@ -169,7 +169,7 @@ rule merge_bam_alignment:
         ubam="results/paired_fastqs_to_ubam/{sample}.bam",
         bam="results/star_pe/{sample}/pe_aligned.bam",
         fasta="results/get_genome/genome.fna",
-        dict="results/get_genome/genome.dict",
+        dict="results/create_sequence_dictionary/genome.dict",
     output:
         bam="results/merge_bam_alignment/{sample}.bam",
     message:
@@ -222,7 +222,7 @@ rule merge_bam_alignment:
 # -----------------------------------------------------
 rule mark_duplicates_spark:
     input:
-        "results/star_pe/{sample}/pe_aligned.bam",
+        "results/merge_bam_alignment/{sample}.bam",
     output:
         bam="results/mark_duplicates_spark/{sample}.bam",
         metrics="results/mark_duplicates_spark/{sample}.metrics",
@@ -243,6 +243,29 @@ rule mark_duplicates_spark:
     threads: 8
     wrapper:
         "v7.1.0/bio/gatk/markduplicatesspark"
+
+
+# split reads with N CIGAR operations
+# source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/gatk/splitncigarreads.html>
+# -----------------------------------------------------
+rule splitncigarreads:
+    input:
+        bam="results/mark_duplicates_spark/{sample}.bam",
+        ref="results/get_genome/genome.fna",
+    output:
+        "results/splitncigarreads/{sample}.bam",
+    message:
+        """--- Running GATK SplitNCigarReads."""
+    log:
+        "logs/gatk/splitncigarreads/{sample}.log",
+    params:
+        extra="",  # optional
+        java_opts="",  # optional
+    resources:
+        mem_mb=1024,
+    wrapper:
+        "v7.1.0/bio/gatk/splitncigarreads"
+
 
 # rule mark_duplicate:
 #     input:
