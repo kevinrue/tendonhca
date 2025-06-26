@@ -15,6 +15,14 @@ star_pe:
   mem: 45G
   runtime: 2h
 
+create_sequence_dictionary:
+  mem: 12G
+  runtime: 30m
+
 paired_fastqs_to_ubam:
   mem: 12G
+  runtime: 30m
+
+merge_bam_alignment:
+  mem: 4G
   runtime: 30m

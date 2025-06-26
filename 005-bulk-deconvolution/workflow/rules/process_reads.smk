@@ -141,6 +141,59 @@ rule star_pe:
         "v7.1.0/bio/star/align"
 
 
+rule create_sequence_dictionary:
+    input:
+        "results/get_genome/genome.fna",
+    output:
+        "results/get_genome/genome.dict",
+    conda:
+        "../envs/gatk.yml"
+    message:
+        """--- Creating sequence dictionary for genome."""
+    log:
+        "logs/create_sequence_dictionary.log",
+    threads: 8
+    resources:
+        mem=lookup(within=config, dpath="create_sequence_dictionary/mem"),
+        runtime=lookup(within=config, dpath="create_sequence_dictionary/runtime"),
+    shell:
+        "gatk CreateSequenceDictionary"
+        " -R {input}"
+        " -O {output} > {log} 2>&1"
+
+
+# merge reads mapped using STAR with unmapped BAM files
+# -----------------------------------------------------
+rule merge_bam_alignment:
+    input:
+        ubam="results/paired_fastqs_to_ubam/{sample}.bam",
+        bam="results/star_pe/{sample}/pe_aligned.bam",
+        fasta="results/get_genome/genome.fna",
+        dict="results/get_genome/genome.dict",
+    output:
+        bam="results/merge_bam_alignment/{sample}.bam",
+    message:
+        """--- Running GATK FastqToSam."""
+    threads: 16
+    resources:
+        mem=lookup(within=config, dpath="merge_bam_alignment/mem"),
+        runtime=lookup(within=config, dpath="merge_bam_alignment/runtime"),
+    conda:
+        "../envs/gatk.yml"
+    params:
+        read_group=lambda wildcards, input: samples['read_group'][wildcards.sample],
+        library=lambda wildcards, input: samples['library'][wildcards.sample],
+    log:
+        "logs/merge_bam_alignment/{sample}.log",
+    shell:
+        "gatk MergeBamAlignment"
+        " --REFERENCE_SEQUENCE {input.fasta}"
+        " --UNMAPPED_BAM {input.ubam}"
+        " --ALIGNED_BAM {input.bam}"
+        " --OUTPUT {output}"
+        " --INCLUDE_SECONDARY_ALIGNMENTS false"
+        " --VALIDATION_STRINGENCY SILENT > {log} 2>&1"
+
 # mark duplicates with GATK
 # -----------------------------------------------------
 # rule mark_duplicate:
