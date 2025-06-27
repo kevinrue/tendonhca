@@ -40,7 +40,7 @@ samtools_faidx:
 
 splitncigarreads:
   mem: 12G
-  runtime: 6h
+  runtime: 4h
 
 gatk_baserecalibratorspark:
   mem: 4G
