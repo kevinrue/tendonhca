@@ -46,6 +46,10 @@ bcftools_mpileup:
   mem: 12G
   runtime: 4h
 
+bcftools_call:
+  mem: 12G
+  runtime: 4h
+
 gatk_baserecalibratorspark:
   mem: 4G
   runtime: 6h

@@ -325,7 +325,9 @@ rule splitncigarreads:
     wrapper:
         "v7.1.0/bio/gatk/splitncigarreads"
 
-
+# Run BCFtools mpileup
+# source <https://samtools.github.io/bcftools/howtos/variant-calling.html>
+# -----------------------------------------------------
 rule bcftools_mpileup:
     input:
         alignments=["results/splitncigarreads/{sample}.bam",],
@@ -343,6 +345,27 @@ rule bcftools_mpileup:
         runtime=lookup(within=config, dpath="bcftools_mpileup/runtime"),
     wrapper:
         "v7.1.0/bio/bcftools/mpileup"
+
+
+# Run BCFtools call
+# source <https://samtools.github.io/bcftools/howtos/variant-calling.html>
+# -----------------------------------------------------
+rule bcftools_call:
+    input:
+        pileup="results/bcftools_mpileup/{sample}.pileup.bcf",
+    output:
+        calls="results/bcftools_call/{sample}.calls.bcf",
+    params:
+        uncompressed_bcf=False,
+        caller="-m",  # valid options include -c/--consensus-caller or -m/--multiallelic-caller
+        extra="-v -Ob",
+    log:
+        "logs/bcftools_call/{sample}.log",
+    resources:
+        mem=lookup(within=config, dpath="bcftools_call/mem"),
+        runtime=lookup(within=config, dpath="bcftools_call/runtime"),
+    wrapper:
+        "v7.1.0/bio/bcftools/call"
 
 
 # rule gatk_baserecalibratorspark:
