@@ -50,6 +50,10 @@ bcftools_call:
   mem: 12G
   runtime: 1h
 
+bcftools_view:
+  mem: 12G
+  runtime: 10m
+
 gatk_baserecalibratorspark:
   mem: 4G
   runtime: 6h

@@ -372,6 +372,22 @@ rule bcftools_call:
         "v7.1.0/bio/bcftools/call"
 
 
+rule bcftools_view:
+    input:
+        "results/bcftools_call/{sample}.calls.bcf",
+    output:
+        "results/bcftools_view/{sample}.calls.filtered.vcf.gz",
+    log:
+        "logs/bcftools_view/{sample}.log",
+    params:
+        extra="--include 'QUAL>=20' --exclude-types indels",
+    threads: 8,
+    resources:
+        mem=lookup(within=config, dpath="bcftools_view/mem"),
+        runtime=lookup(within=config, dpath="bcftools_view/runtime"),
+    wrapper:
+        "v7.1.0/bio/bcftools/view"
+
 # rule gatk_baserecalibratorspark:
 #     input:
 #         bam="results/splitncigarreads/{sample}.bam",
