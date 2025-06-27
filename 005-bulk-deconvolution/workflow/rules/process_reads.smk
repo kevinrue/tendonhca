@@ -420,6 +420,28 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
+rule popscle_dsc:
+    input:
+        bam="/project/tendonhca/albrecht/004-deconvolution/results/cellranger_count/12G/outs/possorted_genome_bam.bam",
+        vcf="results/bcftools_merge/all.vcf.gz",
+    output:
+        pileup="results/popscle_dsc/12G.pileup",
+    conda:
+        "../envs/popscle.yml"
+    message:
+        """--- Running popscle dsc-pileup."""
+    log:
+        "logs/popscle_dsc/12G.log",
+    threads: 1
+    resources:
+        mem=lookup(within=config, dpath="popscle_dsc/mem"),
+        runtime=lookup(within=config, dpath="popscle_dsc/runtime"),
+    shell:
+        "popscle dsc-pileup"
+        " --sam {input.bam}"
+        " --vcf {input.vcf}"
+        " --out {output.pileup} > {log} 2>&1"
+
 # rule gatk_baserecalibratorspark:
 #     input:
 #         bam="results/splitncigarreads/{sample}.bam",

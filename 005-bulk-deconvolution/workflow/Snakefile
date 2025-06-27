@@ -35,6 +35,7 @@ rule all:
     input:
         ##"results/multiqc/multiqc_report.html",
         "results/bcftools_merge/all.vcf.gz",
+        "results/popscle_dsc/12G.pileup",
         # expand("results/bcftools_view/{sample}.calls.filtered.vcf.gz", sample=samples['sample'].unique()),
         # expand("results/star_pe/{sample}/pe_aligned.bam", sample=samples['sample'].unique()),
     default_target: True

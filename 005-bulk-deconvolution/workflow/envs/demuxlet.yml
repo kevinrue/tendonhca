@@ -1,7 +1,7 @@
 name: demuxlet
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - nodefaults
 dependencies:
   - demuxlet=1.0

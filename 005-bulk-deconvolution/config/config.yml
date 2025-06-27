@@ -61,3 +61,7 @@ bcftools_merge:
 gatk_baserecalibratorspark:
   mem: 4G
   runtime: 6h
+
+popscle_dsc:
+  mem: 12G
+  runtime: 6h
