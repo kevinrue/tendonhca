@@ -388,6 +388,38 @@ rule bcftools_view:
     wrapper:
         "v7.1.0/bio/bcftools/view"
 
+
+rule bcftools_index:
+    input:
+        "results/bcftools_view/{sample}.calls.filtered.vcf.gz",
+    output:
+        "results/bcftools_view/{sample}.calls.filtered.vcf.gz.csi",
+    log:
+        "logs/bcftools_index/{sample}.log",
+    params:
+        extra="",  # optional parameters for bcftools index
+    wrapper:
+        "v7.1.0/bio/bcftools/index"
+
+
+rule bcftools_merge:
+    input:
+        calls=expand("results/bcftools_view/{sample}.calls.filtered.vcf.gz", sample=samples['sample'].unique()),
+        idx=expand("results/bcftools_view/{sample}.calls.filtered.vcf.gz.csi", sample=samples['sample'].unique()),
+    output:
+        "results/bcftools_merge/all.vcf.gz",
+    log:
+        "logs/bcftools_merge/all.log",
+    params:
+        extra="",  # optional parameters for bcftools concat (except -o)
+    threads: 8,
+    resources:
+        mem=lookup(within=config, dpath="bcftools_merge/mem"),
+        runtime=lookup(within=config, dpath="bcftools_merge/runtime"),
+    wrapper:
+        "v7.1.0/bio/bcftools/merge"
+
+
 # rule gatk_baserecalibratorspark:
 #     input:
 #         bam="results/splitncigarreads/{sample}.bam",
