@@ -36,7 +36,7 @@ mark_duplicates_spark:
 
 samtools_faidx:
   mem: 12G
-  runtime: 6h
+  runtime: 2h
 
 splitncigarreads:
   mem: 12G

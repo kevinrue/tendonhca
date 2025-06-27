@@ -297,7 +297,7 @@ rule samtools_faidx:
         runtime=lookup(within=config, dpath="samtools_faidx/runtime"),
     conda:
         "../envs/samtools.yml"
-    threads: 1
+    threads: 8
     shell:
         "samtools faidx {input.fa} > {log} 2>&1"
 
