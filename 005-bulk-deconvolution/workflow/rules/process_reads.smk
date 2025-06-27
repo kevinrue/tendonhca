@@ -380,7 +380,7 @@ rule bcftools_view:
     log:
         "logs/bcftools_view/{sample}.log",
     params:
-        extra="--include 'QUAL>=20' --exclude-types indels",
+        extra="--include 'QUAL>=30' --exclude-types indels",
     threads: 8,
     resources:
         mem=lookup(within=config, dpath="bcftools_view/mem"),
