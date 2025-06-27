@@ -44,11 +44,11 @@ splitncigarreads:
 
 bcftools_mpileup:
   mem: 12G
-  runtime: 4h
+  runtime: 1h
 
 bcftools_call:
   mem: 12G
-  runtime: 4h
+  runtime: 1h
 
 gatk_baserecalibratorspark:
   mem: 4G

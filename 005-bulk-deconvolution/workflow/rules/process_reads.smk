@@ -337,9 +337,12 @@ rule bcftools_mpileup:
         pileup="results/bcftools_mpileup/{sample}.pileup.bcf",
     params:
         uncompressed_bcf=False,
-        extra="-Ou -f results/get_genome/genome.fna --max-depth 100 --min-BQ 15",
+        extra="--max-depth 100 --min-BQ 15",
     log:
         "logs/bcftools_mpileup/{sample}.log",
+    threads: 8,
+    message:
+        """--- Running BCFtools mpileup."""
     resources:
         mem=lookup(within=config, dpath="bcftools_mpileup/mem"),
         runtime=lookup(within=config, dpath="bcftools_mpileup/runtime"),
@@ -361,6 +364,7 @@ rule bcftools_call:
         extra="-v -Ob",
     log:
         "logs/bcftools_call/{sample}.log",
+    threads: 8,
     resources:
         mem=lookup(within=config, dpath="bcftools_call/mem"),
         runtime=lookup(within=config, dpath="bcftools_call/runtime"),
