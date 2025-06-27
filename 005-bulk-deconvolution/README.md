@@ -178,7 +178,12 @@ Re-run includes:
 
 - Marking duplicates
 
+#### TODO
+
+Extended the pipeline up to the merging of filtered variant calls.
+
 ## Resources
 
 - GATK best practices for RNAseq: <https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels>
 - STAR manual <https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf>
+- Minor allele frequency for 1000genomes without downloading GBs of VCF files? <https://bioconductor.org/packages/release/data/annotation/html/MafDb.1Kgenomes.phase3.GRCh38.html>
