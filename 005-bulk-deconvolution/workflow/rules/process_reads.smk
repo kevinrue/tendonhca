@@ -291,8 +291,6 @@ rule samtools_faidx:
     log:
         "logs/samtools_faidx/genome.log",
     resources:
-        # Memory needs to be at least 471859200 for Spark, so 589824000 when
-        # accounting for default JVM overhead of 20%. We round round to 650M.
         mem=lookup(within=config, dpath="samtools_faidx/mem"),
         runtime=lookup(within=config, dpath="samtools_faidx/runtime"),
     conda:
@@ -308,8 +306,8 @@ rule samtools_faidx:
 rule splitncigarreads:
     input:
         bam="results/mark_duplicates_spark/{sample}.bam",
-        bai="results/get_genome/genome.fna.fai",
         ref="results/get_genome/genome.fna",
+        fai="results/get_genome/genome.fna.fai",
     output:
         "results/splitncigarreads/{sample}.bam",
     message:
@@ -328,27 +326,46 @@ rule splitncigarreads:
         "v7.1.0/bio/gatk/splitncigarreads"
 
 
-rule gatk_baserecalibratorspark:
+rule bcftools_mpileup:
     input:
-        bam="results/splitncigarreads/{sample}.bam",
+        alignments=["results/splitncigarreads/{sample}.bam",],
         ref="results/get_genome/genome.fna",
-        dict="results/create_sequence_dictionary/genome.dict",
-        known="results/get_dbsnp_vcf/genome.vcf.gz",
+        index="results/get_genome/genome.fna.fai",
     output:
-        recal_table="results/gatk_baserecalibratorspark/{sample}.grp",
-    log:
-        "logs/gatk_baserecalibratorspark/{sample}.log",
+        pileup="results/bcftools_mpileup/{sample}.pileup.bcf",
     params:
-        extra="--use-original-qualities",  # optional
-        java_opts="",  # optional
-        #spark_runner="",  # optional, local by default
-        #spark_v7.1.0="",  # optional
-        #spark_extra="", # optional
+        uncompressed_bcf=False,
+        extra="-Ou -f results/get_genome/genome.fna --max-depth 100 --min-BQ 15",
+    log:
+        "logs/bcftools_mpileup/{sample}.log",
     resources:
-        mem=lookup(within=config, dpath="gatk_baserecalibratorspark/mem"),
-        runtime=lookup(within=config, dpath="gatk_baserecalibratorspark/runtime"),
+        mem=lookup(within=config, dpath="bcftools_mpileup/mem"),
+        runtime=lookup(within=config, dpath="bcftools_mpileup/runtime"),
     wrapper:
-        "v7.1.0/bio/gatk/baserecalibratorspark"
+        "v7.1.0/bio/bcftools/mpileup"
+
+
+# rule gatk_baserecalibratorspark:
+#     input:
+#         bam="results/splitncigarreads/{sample}.bam",
+#         ref="results/get_genome/genome.fna",
+#         dict="results/create_sequence_dictionary/genome.dict",
+#         known="results/get_dbsnp_vcf/genome.vcf.gz",
+#     output:
+#         recal_table="results/gatk_baserecalibratorspark/{sample}.grp",
+#     log:
+#         "logs/gatk_baserecalibratorspark/{sample}.log",
+#     params:
+#         extra="--use-original-qualities",  # optional
+#         java_opts="",  # optional
+#         #spark_runner="",  # optional, local by default
+#         #spark_v7.1.0="",  # optional
+#         #spark_extra="", # optional
+#     resources:
+#         mem=lookup(within=config, dpath="gatk_baserecalibratorspark/mem"),
+#         runtime=lookup(within=config, dpath="gatk_baserecalibratorspark/runtime"),
+#     wrapper:
+#         "v7.1.0/bio/gatk/baserecalibratorspark"
 
 
 # merge reads mapped using STAR with unmapped BAM files
