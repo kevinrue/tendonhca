@@ -160,6 +160,24 @@ I'm still waiting for the latest run of the workflow to finish, so I can run thi
 
 Extend workflow to split reads at N bases into supplementary alignments using GATK's `SplitNCigarReads`.
 
+I'm still waiting for the latest run of the workflow to finish, so I can re-run the workflow after fixing the creation of a sequence dictionary.
+
+#### Base Quality Recalibration
+
+Extend workflow to perform Base Quality Recalibration using GATK's `BaseRecalibrator` and `ApplyBQSR`.
+
+I'm still waiting for the latest run of the workflow to finish, so I can re-run the workflow after fixing the creation of a sequence dictionary.
+
+### 27 Jun 2025
+
+#### Re-run workflow after fix
+
+Re-running the workflow after fixing the creation of a sequence dictionary.
+
+Re-run includes:
+
+- Marking duplicates
+
 ## Resources
 
 - GATK best practices for RNAseq: <https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels>

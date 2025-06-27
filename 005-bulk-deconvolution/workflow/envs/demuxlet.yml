@@ -1,0 +1,7 @@
+name: demuxlet
+channels:
+  - bioconda
+  - conda-forge
+  - nodefaults
+dependencies:
+  - demuxlet=1.0

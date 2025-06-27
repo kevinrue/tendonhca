@@ -6,6 +6,9 @@ get_genome:
 get_genome_gtf:
   ensembl_ftp: https://ftp.ensembl.org/pub/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh38.114.chr_patch_hapl_scaff.gtf.gz
 
+get_dbsnp_vcf:
+  ncbi_ftp: https://ftp.ncbi.nih.gov/snp/archive/b157/VCF/GCF_000001405.40.gz
+
 star_index:
   sjdbOverhang: 149
   mem: 45G
@@ -24,5 +27,21 @@ paired_fastqs_to_ubam:
   runtime: 30m
 
 merge_bam_alignment:
-  mem: 4G
+  mem: 12G
   runtime: 30m
+
+mark_duplicates_spark:
+  mem: 12G
+  runtime: 6h
+
+samtools_faidx:
+  mem: 12G
+  runtime: 6h
+
+splitncigarreads:
+  mem: 12G
+  runtime: 6h
+
+gatk_baserecalibratorspark:
+  mem: 4G
+  runtime: 6h

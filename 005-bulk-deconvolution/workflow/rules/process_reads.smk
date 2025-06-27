@@ -38,6 +38,41 @@ rule get_genome_gtf:
         "wget -O results/get_genome_gtf/genome.gtf.gz {params.ensembl_ftp} > {log} 2>&1 && "
         "gunzip results/get_genome_gtf/genome.gtf.gz >> {log} 2>&1"
 
+
+# fetch dbSNP VCF file from NCBI
+# -----------------------------------------------------
+# rule get_dbsnp_vcf:
+#     output:
+#         vcf="results/get_dbsnp_vcf/genome.vcf.gz",
+#     conda:
+#         "../envs/get_genome.yml"
+#     message:
+#         """--- Downloading genome annotations."""
+#     params:
+#         ncbi_ftp=lookup(within=config, dpath="get_dbsnp_vcf/ncbi_ftp"),
+#     log:
+#         "results/get_dbsnp_vcf/get_dbsnp_vcf.log",
+#     shell:
+#         "wget -O {output.vcf} {params.ensembl_ftp} > {log} 2>&1 "
+
+
+# fetch dbSNP VCF file from NCBI
+# -----------------------------------------------------
+# rule get_1000genome_vcfs:
+#     output:
+#         vcf="results/get_dbsnp_vcf/genome.vcf.gz",
+#     conda:
+#         "../envs/get_genome.yml"
+#     message:
+#         """--- Downloading genome annotations."""
+#     params:
+#         ncbi_ftp=lookup(within=config, dpath="get_dbsnp_vcf/ncbi_ftp"),
+#     log:
+#         "results/get_dbsnp_vcf/get_dbsnp_vcf.log",
+#     shell:
+#         "wget -O {output.vcf} {params.ensembl_ftp} > {log} 2>&1 "
+
+
 # index genome sequence with STAR
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/index.html>
 # -----------------------------------------------------
@@ -173,7 +208,7 @@ rule merge_bam_alignment:
     output:
         bam="results/merge_bam_alignment/{sample}.bam",
     message:
-        """--- Running GATK FastqToSam."""
+        """--- Running GATK MergeBamAlignment."""
     threads: 16
     resources:
         mem=lookup(within=config, dpath="merge_bam_alignment/mem"),
@@ -239,10 +274,32 @@ rule mark_duplicates_spark:
     resources:
         # Memory needs to be at least 471859200 for Spark, so 589824000 when
         # accounting for default JVM overhead of 20%. We round round to 650M.
-        mem_mb=lambda wildcards, input: max([input.size_mb * 0.25, 650]),
+        mem=lookup(within=config, dpath="mark_duplicates_spark/mem"),
+        runtime=lookup(within=config, dpath="mark_duplicates_spark/runtime"),
     threads: 8
     wrapper:
         "v7.1.0/bio/gatk/markduplicatesspark"
+
+
+rule samtools_faidx:
+    input:
+        fa="results/get_genome/genome.fna",
+    output:
+        bai="results/get_genome/genome.fna.fai",
+    message:
+        """--- Running samtools faidx."""
+    log:
+        "logs/samtools_faidx/genome.log",
+    resources:
+        # Memory needs to be at least 471859200 for Spark, so 589824000 when
+        # accounting for default JVM overhead of 20%. We round round to 650M.
+        mem=lookup(within=config, dpath="samtools_faidx/mem"),
+        runtime=lookup(within=config, dpath="samtools_faidx/runtime"),
+    conda:
+        "../envs/samtools.yml"
+    threads: 1
+    shell:
+        "samtools faidx {input.fa} > {log} 2>&1"
 
 
 # split reads with N CIGAR operations
@@ -251,6 +308,7 @@ rule mark_duplicates_spark:
 rule splitncigarreads:
     input:
         bam="results/mark_duplicates_spark/{sample}.bam",
+        bai="results/get_genome/genome.fna.fai",
         ref="results/get_genome/genome.fna",
     output:
         "results/splitncigarreads/{sample}.bam",
@@ -262,79 +320,64 @@ rule splitncigarreads:
         extra="",  # optional
         java_opts="",  # optional
     resources:
-        mem_mb=1024,
+        # Memory needs to be at least 471859200 for Spark, so 589824000 when
+        # accounting for default JVM overhead of 20%. We round round to 650M.
+        mem=lookup(within=config, dpath="splitncigarreads/mem"),
+        runtime=lookup(within=config, dpath="splitncigarreads/runtime"),
     wrapper:
         "v7.1.0/bio/gatk/splitncigarreads"
 
 
-# rule mark_duplicate:
+rule gatk_baserecalibratorspark:
+    input:
+        bam="results/splitncigarreads/{sample}.bam",
+        ref="results/get_genome/genome.fna",
+        dict="results/create_sequence_dictionary/genome.dict",
+        known="results/get_dbsnp_vcf/genome.vcf.gz",
+    output:
+        recal_table="results/gatk_baserecalibratorspark/{sample}.grp",
+    log:
+        "logs/gatk_baserecalibratorspark/{sample}.log",
+    params:
+        extra="--use-original-qualities",  # optional
+        java_opts="",  # optional
+        #spark_runner="",  # optional, local by default
+        #spark_v7.1.0="",  # optional
+        #spark_extra="", # optional
+    resources:
+        mem=lookup(within=config, dpath="gatk_baserecalibratorspark/mem"),
+        runtime=lookup(within=config, dpath="gatk_baserecalibratorspark/runtime"),
+    wrapper:
+        "v7.1.0/bio/gatk/baserecalibratorspark"
+
+
+# merge reads mapped using STAR with unmapped BAM files
+# see <https://github.com/statgen/popscle?tab=readme-ov-file>
+# -----------------------------------------------------
+# rule dsc_pileup:
 #     input:
-#         bam="results/star_pe/{sample}/pe_aligned.bam",
+#         bam=TODO,
+#         vcf=TODO
 #     output:
-#         bam="results/mark_duplicate/{sample}.bam",
-#         metrics="results/mark_duplicate/{sample}.metrics",
+#         pileup=TODO
+#     message:
+#         """--- Running popscle dsc-pileup."""
+#     threads: TODO
+#     resources:
+#         mem=lookup(within=config, dpath="dsc_pileup/mem"),
+#         runtime=lookup(within=config, dpath="dsc_pileup/runtime"),
 #     conda:
 #         "../envs/gatk.yml"
-#     message:
-#         """--- Running GATK MarkDuplicates."""
-#     log:
-#         "logs/mark_duplicate/{sample}.log",
-#     shell:
-#         "gatk MarkDuplicates"
-#         " --INPUT {input.bam}"
-#         " --OUTPUT {output.bam}"
-#         " --CREATE_INDEX true"
-#         " --VALIDATION_STRINGENCY SILENT"
-#         " --METRICS_FILE {output.metrics} > {log} 2>&1 "
-
-# validate genome sequence file
-# -----------------------------------------------------
-# rule validate_genome:
-#     input:
-#         fasta=rules.get_genome.output.fasta,
-#     output:
-#         fasta="results/validate_genome/genome.fna",
-#     conda:
-#         "../envs/validate_genome.yml"
-#     message:
-#         """--- Validating genome sequence file."""
-#     log:
-#         "results/validate_genome/genome.log",
-#     script:
-#         "../scripts/validate_fasta.py"
-
-
-# simulate read data using DWGSIM
-# -----------------------------------------------------
-# rule simulate_reads:
-#     input:
-#         fasta=rules.validate_genome.output.fasta,
-#     output:
-#         multiext(
-#             "results/simulate_reads/{sample}",
-#             read1=".bwa.read1.fastq.gz",
-#             read2=".bwa.read2.fastq.gz",
-#         ),
-#     conda:
-#         "../envs/simulate_reads.yml"
-#     message:
-#         """--- Simulating read data with DWGSIM."""
 #     params:
-#         output_type=1,
-#         read_length=lookup(within=config, dpath="simulate_reads/read_length"),
-#         read_number=lookup(within=config, dpath="simulate_reads/read_number"),
+#         read_group=lambda wildcards, input: samples['read_group'][wildcards.sample],
+#         library=lambda wildcards, input: samples['library'][wildcards.sample],
 #     log:
-#         "results/simulate_reads/{sample}.log",
+#         "logs/dsc_pileup/{sample}.log",
 #     shell:
-#         "output_prefix=`echo {output.read1} | cut -f 1 -d .`;"
-#         "dwgsim "
-#         " -1 {params.read_length}"
-#         " -2 {params.read_length}"
-#         " -N {params.read_number}"
-#         " -o {params.output_type}"
-#         " {input.fasta}"
-#         " ${{output_prefix}}"
-#         " > {log} 2>&1"
+#         "popscle dsc-pileup"
+#         " --sam /data/$bam"
+#         " --vcf /data/$ref_vcf"
+#         " --out /data/$pileup > {log} 2>&1"
 
 
 # make QC report

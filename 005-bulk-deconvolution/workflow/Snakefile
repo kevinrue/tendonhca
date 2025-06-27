@@ -34,6 +34,6 @@ onerror:
 rule all:
     input:
         ##"results/multiqc/multiqc_report.html",
-        expand("results/mark_duplicates_spark/{sample}.bam", sample=samples['sample'].unique()),
+        expand("results/splitncigarreads/{sample}.bam", sample=samples['sample'].unique()),
         # expand("results/star_pe/{sample}/pe_aligned.bam", sample=samples['sample'].unique()),
     default_target: True
