@@ -5,14 +5,5 @@ properties:
     type: string
     description: path to sample-sheet TSV file
 
-  get_genome:
-    type: object
-    properties:
-      ncbi_ftp:
-        type: string
-        description: URL for genome retrieval
-    required: ["ensembl_ftp"]
-
 required:
   - samplesheet
-  - get_genome

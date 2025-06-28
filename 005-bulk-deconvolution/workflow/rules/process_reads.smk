@@ -6,37 +6,34 @@
 # fetch genome sequence from Ensembl
 # -----------------------------------------------------
 rule get_genome:
+    input:
+        fasta=config["genome_fasta"],
+        fai=config["genome_fasta"] + ".fai",
     output:
-        fasta="results/get_genome/genome.fna",
-    conda:
-        "../envs/get_genome.yml"
+        fasta="results/get_genome/genome.fa",
+        fai="results/get_genome/genome.fa.fai",
     message:
         """--- Downloading genome sequence."""
-    params:
-        ensembl_ftp=lookup(within=config, dpath="get_genome/ensembl_ftp"),
     log:
         "results/get_genome/genome.log",
     shell:
-        "wget -O results/get_genome/genome.fna.gz {params.ensembl_ftp} > {log} 2>&1 && "
-        "gunzip results/get_genome/genome.fna.gz >> {log} 2>&1"
+        "cp {input.fasta} {output.fasta} > {log} 2>&1 && "
+        "cp {input.fai} {output.fai} >> {log} 2>&1 "
 
 
 # fetch genome annotations from Ensembl
 # -----------------------------------------------------
-rule get_genome_gtf:
-    output:
-        gtf="results/get_genome_gtf/genome.gtf",
-    conda:
-        "../envs/get_genome.yml"
-    message:
-        """--- Downloading genome annotations."""
-    params:
-        ensembl_ftp=lookup(within=config, dpath="get_genome_gtf/ensembl_ftp"),
-    log:
-        "results/get_genome_gtf/genome.log",
-    shell:
-        "wget -O results/get_genome_gtf/genome.gtf.gz {params.ensembl_ftp} > {log} 2>&1 && "
-        "gunzip results/get_genome_gtf/genome.gtf.gz >> {log} 2>&1"
+# rule get_genome_gtf:
+#     input:
+#         gtf=config["genome_gtf"],
+#     output:
+#         gtf="results/get_genome_gtf/genome.gtf",
+#     message:
+#         """--- Downloading genome annotations."""
+#     log:
+#         "results/get_genome_gtf/genome.log",
+#     shell:
+#         "cp {input.gtf} {output.gtf} > {log} 2>&1 "
 
 
 # fetch dbSNP VCF file from NCBI
@@ -76,25 +73,25 @@ rule get_genome_gtf:
 # index genome sequence with STAR
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/index.html>
 # -----------------------------------------------------
-rule star_index:
-    input:
-        fasta="results/get_genome/genome.fna",
-        gtf="results/get_genome_gtf/genome.gtf",
-    output:
-        directory("results/star_index"),
-    message:
-        """--- Building STAR index."""
-    threads: 16
-    resources:
-        mem=lookup(within=config, dpath="star_index/mem"),
-        runtime=lookup(within=config, dpath="star_index/runtime"),
-    params:
-        sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
-        extra="",
-    log:
-        "logs/star_index/star_index.log",
-    wrapper:
-        "v7.1.0/bio/star/index"
+# rule star_index:
+#     input:
+#         fasta="results/get_genome/genome.fa",
+#         gtf=config["genome_gtf"],
+#     output:
+#         directory("results/star_index"),
+#     message:
+#         """--- Building STAR index."""
+#     threads: 16
+#     resources:
+#         mem=lookup(within=config, dpath="star_index/mem"),
+#         runtime=lookup(within=config, dpath="star_index/runtime"),
+#     params:
+#         sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
+#         extra="",
+#     log:
+#         "logs/star_index/star_index.log",
+#     wrapper:
+#         "v7.1.0/bio/star/index"
 
 
 def get_paired_fastq_files(wildcards):
@@ -154,7 +151,7 @@ rule star_pe:
         #fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
         unpack(get_paired_fastq_files),
         # path to STAR reference genome index
-        idx="results/star_index",
+        idx=config["star_index"],
     output:
         # see STAR manual for additional output files
         aln="results/star_pe/{sample}/pe_aligned.bam",
@@ -178,9 +175,9 @@ rule star_pe:
 
 rule create_sequence_dictionary:
     input:
-        "results/get_genome/genome.fna",
+        "results/get_genome/genome.fa",
     output:
-        "results/create_sequence_dictionary/genome.dict",
+        "results/get_genome/genome.dict",
     conda:
         "../envs/gatk.yml"
     message:
@@ -203,8 +200,8 @@ rule merge_bam_alignment:
     input:
         ubam="results/paired_fastqs_to_ubam/{sample}.bam",
         bam="results/star_pe/{sample}/pe_aligned.bam",
-        fasta="results/get_genome/genome.fna",
-        dict="results/create_sequence_dictionary/genome.dict",
+        fasta="results/get_genome/genome.fa",
+        dict="results/get_genome/genome.dict",
     output:
         bam="results/merge_bam_alignment/{sample}.bam",
     message:
@@ -281,23 +278,23 @@ rule mark_duplicates_spark:
         "v7.1.0/bio/gatk/markduplicatesspark"
 
 
-rule samtools_faidx:
-    input:
-        fa="results/get_genome/genome.fna",
-    output:
-        bai="results/get_genome/genome.fna.fai",
-    message:
-        """--- Running samtools faidx."""
-    log:
-        "logs/samtools_faidx/genome.log",
-    resources:
-        mem=lookup(within=config, dpath="samtools_faidx/mem"),
-        runtime=lookup(within=config, dpath="samtools_faidx/runtime"),
-    conda:
-        "../envs/samtools.yml"
-    threads: 8
-    shell:
-        "samtools faidx {input.fa} > {log} 2>&1"
+# rule samtools_faidx:
+#     input:
+#         fa="results/get_genome/genome.fa",
+#     output:
+#         bai="results/get_genome/genome.fa.fai",
+#     message:
+#         """--- Running samtools faidx."""
+#     log:
+#         "logs/samtools_faidx/genome.log",
+#     resources:
+#         mem=lookup(within=config, dpath="samtools_faidx/mem"),
+#         runtime=lookup(within=config, dpath="samtools_faidx/runtime"),
+#     conda:
+#         "../envs/samtools.yml"
+#     threads: 8
+#     shell:
+#         "samtools faidx {input.fa} > {log} 2>&1"
 
 
 # split reads with N CIGAR operations
@@ -306,16 +303,16 @@ rule samtools_faidx:
 rule splitncigarreads:
     input:
         bam="results/mark_duplicates_spark/{sample}.bam",
-        ref="results/get_genome/genome.fna",
-        fai="results/get_genome/genome.fna.fai",
+        ref="results/get_genome/genome.fa",
+        dict="results/get_genome/genome.dict",
     output:
         "results/splitncigarreads/{sample}.bam",
     message:
         """--- Running GATK SplitNCigarReads."""
     log:
-        "logs/gatk/splitncigarreads/{sample}.log",
+        "logs/splitncigarreads/{sample}.log",
     params:
-        extra="",  # optional
+        extra="--sequence-dictionary results/create_sequence_dictionary/genome.dict",  # optional
         java_opts="",  # optional
     resources:
         # Memory needs to be at least 471859200 for Spark, so 589824000 when
@@ -331,8 +328,8 @@ rule splitncigarreads:
 rule bcftools_mpileup:
     input:
         alignments=["results/splitncigarreads/{sample}.bam",],
-        ref="results/get_genome/genome.fna",
-        index="results/get_genome/genome.fna.fai",
+        ref="results/get_genome/genome.fa",
+        index="results/get_genome/genome.fa.fai",
     output:
         pileup="results/bcftools_mpileup/{sample}.pileup.bcf",
     params:
@@ -471,7 +468,7 @@ rule popscle_demuxlet:
 # rule gatk_baserecalibratorspark:
 #     input:
 #         bam="results/splitncigarreads/{sample}.bam",
-#         ref="results/get_genome/genome.fna",
+#         ref="results/get_genome/genome.fa",
 #         dict="results/create_sequence_dictionary/genome.dict",
 #         known="results/get_dbsnp_vcf/genome.vcf.gz",
 #     output:
