@@ -1,5 +1,7 @@
 samplesheet: "config/samples.tsv"
 
+ref_vcf_sheet: "config/common_variants.tsv"
+
 get_genome:
   ensembl_ftp: https://ftp.ensembl.org/pub/release-114/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 
@@ -64,4 +66,8 @@ gatk_baserecalibratorspark:
 
 popscle_dsc:
   mem: 12G
+  runtime: 6h
+
+popscle_demuxlet:
+  mem: 48G
   runtime: 6h

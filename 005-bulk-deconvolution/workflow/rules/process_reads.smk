@@ -440,7 +440,33 @@ rule popscle_dsc:
         "popscle dsc-pileup"
         " --sam {input.bam}"
         " --vcf {input.vcf}"
-        " --out {output.pileup} > {log} 2>&1"
+        " --out {output.pileup} > {log} 2>&1 &&"
+        " touch {output.pileup}"
+
+
+rule popscle_demuxlet:
+    input:
+        pileup="results/popscle_dsc/12G.pileup",
+        vcf="results/bcftools_merge/all.vcf.gz",
+    output:
+        pileup="results/popscle_demuxlet/12G",
+    conda:
+        "../envs/popscle.yml"
+    message:
+        """--- Running popscle demuxlet."""
+    log:
+        "logs/popscle_demuxlet/12G.log",
+    threads: 1
+    resources:
+        mem=lookup(within=config, dpath="popscle_demuxlet/mem"),
+        runtime=lookup(within=config, dpath="popscle_demuxlet/runtime"),
+    shell:
+        "popscle demuxlet"
+        " --plp {input.pileup}"
+        " --vcf {input.vcf}"
+        " --field GT"
+        " --out {output.pileup} > {log} 2>&1 &&"
+        " touch {output.pileup}"
 
 # rule gatk_baserecalibratorspark:
 #     input:
