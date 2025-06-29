@@ -17,7 +17,6 @@ ref_vcfs = (
     .sort_index()
 )
 
-
 # validate sample sheet and config file
 validate(samples, schema="../../config/schemas/samples.schema.yml")
 validate(config, schema="../../config/schemas/config.schema.yml")

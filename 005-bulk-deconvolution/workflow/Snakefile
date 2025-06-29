@@ -36,6 +36,7 @@ rule all:
         ##"results/multiqc/multiqc_report.html",
         "results/bcftools_merge/all.vcf.gz",
         "results/popscle_demuxlet/12G",
+        expand("results/filter_common_variants/{chr}.vcf.gz", chr=ref_vcfs.index.unique()),
         # expand("results/bcftools_view/{sample}.calls.filtered.vcf.gz", sample=samples['sample'].unique()),
         # expand("results/star_pe/{sample}/pe_aligned.bam", sample=samples['sample'].unique()),
     default_target: True

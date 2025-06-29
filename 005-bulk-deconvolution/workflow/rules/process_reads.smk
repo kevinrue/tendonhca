@@ -3,7 +3,7 @@
 # ----------------------------------------------------- #
 
 
-# fetch genome sequence from Ensembl
+# copy genome sequence from cellranger
 # -----------------------------------------------------
 rule get_genome:
     input:
@@ -21,7 +21,7 @@ rule get_genome:
         "cp {input.fai} {output.fai} >> {log} 2>&1 "
 
 
-# fetch genome annotations from Ensembl
+# copy genome annotations from cellranger
 # -----------------------------------------------------
 rule get_genome_gtf:
     input:
@@ -53,25 +53,9 @@ rule get_genome_gtf:
 #         "wget -O {output.vcf} {params.ensembl_ftp} > {log} 2>&1 "
 
 
-# fetch dbSNP VCF file from NCBI
-# -----------------------------------------------------
-# rule get_1000genome_vcfs:
-#     output:
-#         vcf="results/get_dbsnp_vcf/genome.vcf.gz",
-#     conda:
-#         "../envs/get_genome.yml"
-#     message:
-#         """--- Downloading genome annotations."""
-#     params:
-#         ncbi_ftp=lookup(within=config, dpath="get_dbsnp_vcf/ncbi_ftp"),
-#     log:
-#         "results/get_dbsnp_vcf/get_dbsnp_vcf.log",
-#     shell:
-#         "wget -O {output.vcf} {params.ensembl_ftp} > {log} 2>&1 "
-
-
 # index genome sequence with STAR
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/index.html>
+# Necessary because the cellranger index was generated with an old version of STAR
 # -----------------------------------------------------
 rule star_index:
     input:
@@ -94,6 +78,8 @@ rule star_index:
         "v7.1.0/bio/star/index"
 
 
+# helper function to get paired fastq files for a sample
+# -----------------------------------------------------
 def get_paired_fastq_files(wildcards):
     """
     Get all STAR BAM files for the given sample wildcard.
@@ -108,6 +94,7 @@ def get_paired_fastq_files(wildcards):
 
 
 # make uBAM from FASTQ files
+# extra step to enter the GATK Best Practices pipeline
 # -----------------------------------------------------
 rule paired_fastqs_to_ubam:
     input:
@@ -137,6 +124,42 @@ rule paired_fastqs_to_ubam:
         " --LIBRARY_NAME pooled"
         " --PLATFORM_UNIT {params.read_group}"
         " --PLATFORM illumina > {log} 2>&1"
+
+
+# fetch VCF file for reference variants
+# -----------------------------------------------------
+rule get_reference_variants:
+    output:
+        vcf="results/get_reference_variants/{chr}.vcf.gz",
+    message:
+        """--- Downloading reference variants."""
+    params:
+        url=lambda wildcards: ref_vcfs["url"][wildcards.chr],
+    log:
+        "logs/get_reference_variants/{chr}.log",
+    shell:
+        "wget -O {output.vcf} {params.url} > {log} 2>&1"
+
+
+# filter reference VCF file for common exonic SNVs
+# -----------------------------------------------------
+rule filter_common_variants:
+    input:
+        "results/get_reference_variants/{chr}.vcf.gz",
+    output:
+        "results/filter_common_variants/{chr}.vcf.gz",
+    message:
+        """--- Filtering common variants."""
+    log:
+        "logs/filter_common_variants/{chr}.log",
+    params:
+        extra="--exclude 'AF<0.01' --exclude-types indels", # TODO: add filter for exonic variants
+    threads: 8,
+    resources:
+        mem=lookup(within=config, dpath="bcftools_call/mem"),
+        runtime=lookup(within=config, dpath="bcftools_call/runtime"),
+    wrapper:
+        "v3.7.0/bio/bcftools/view"
 
 
 # map reads with STAR
@@ -173,6 +196,9 @@ rule star_pe:
         "v7.1.0/bio/star/align"
 
 
+# create sequence dictionary for genome
+# needed by some GATK tools
+# -----------------------------------------------------
 rule create_sequence_dictionary:
     input:
         "results/get_genome/genome.fa",
@@ -226,28 +252,6 @@ rule merge_bam_alignment:
         " --INCLUDE_SECONDARY_ALIGNMENTS false"
         " --VALIDATION_STRINGENCY SILENT > {log} 2>&1"
 
-# mark duplicates with GATK
-# -----------------------------------------------------
-# rule mark_duplicate:
-#     input:
-#         bam="results/star_pe/{sample}/pe_aligned.bam",
-#     output:
-#         bam="results/mark_duplicate/{sample}.bam",
-#         metrics="results/mark_duplicate/{sample}.metrics",
-#     conda:
-#         "../envs/gatk.yml"
-#     message:
-#         """--- Running GATK MarkDuplicates."""
-#     log:
-#         "logs/mark_duplicate/{sample}.log",
-#     shell:
-#         "gatk MarkDuplicates"
-#         " --INPUT {input.bam}"
-#         " --OUTPUT {output.bam}"
-#         " --CREATE_INDEX true"
-#         " --VALIDATION_STRINGENCY SILENT"
-#         " --METRICS_FILE {output.metrics} > {log} 2>&1 "
-
 
 # mark duplicates with picard tools
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/gatk/markduplicatesspark.html>
@@ -278,6 +282,7 @@ rule merge_bam_alignment:
 #         "v7.1.0/bio/gatk/markduplicatesspark"
 
 
+## not needed because cellranger already indexed the genome
 # rule samtools_faidx:
 #     input:
 #         fa="results/get_genome/genome.fa",
@@ -321,6 +326,7 @@ rule splitncigarreads:
         runtime=lookup(within=config, dpath="splitncigarreads/runtime"),
     wrapper:
         "v7.1.0/bio/gatk/splitncigarreads"
+
 
 # Run BCFtools mpileup
 # source <https://samtools.github.io/bcftools/howtos/variant-calling.html>
@@ -369,6 +375,11 @@ rule bcftools_call:
         "v7.1.0/bio/bcftools/call"
 
 
+# filter BCF calls
+# source <https://samtools.github.io/bcftools/howtos/variant-calling.html>
+# - quality >= 30
+# - exclude indels
+# -----------------------------------------------------
 rule bcftools_view:
     input:
         "results/bcftools_call/{sample}.calls.bcf",
@@ -386,6 +397,9 @@ rule bcftools_view:
         "v7.1.0/bio/bcftools/view"
 
 
+# index VCF files
+# necessary for merging VCF files later
+# -----------------------------------------------------
 rule bcftools_index:
     input:
         "results/bcftools_view/{sample}.calls.filtered.vcf.gz",
@@ -399,6 +413,9 @@ rule bcftools_index:
         "v7.1.0/bio/bcftools/index"
 
 
+# merge VCF files
+# prepares the file for deconvolution by popscle demuxlet
+# -----------------------------------------------------
 rule bcftools_merge:
     input:
         calls=expand("results/bcftools_view/{sample}.calls.filtered.vcf.gz", sample=samples['sample'].unique()),
@@ -417,6 +434,8 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
+# first step of deconvolution with popscle
+# -----------------------------------------------------
 rule popscle_dsc:
     input:
         bam="/project/tendonhca/albrecht/004-deconvolution/results/cellranger_count/12G/outs/possorted_genome_bam.bam",
@@ -441,6 +460,8 @@ rule popscle_dsc:
         " touch {output.pileup}"
 
 
+# second step of deconvolution with popscle
+# -----------------------------------------------------
 rule popscle_demuxlet:
     input:
         pileup="results/popscle_dsc/12G.pileup",
