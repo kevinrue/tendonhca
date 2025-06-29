@@ -252,30 +252,30 @@ rule merge_bam_alignment:
 # mark duplicates with picard tools
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/gatk/markduplicatesspark.html>
 # -----------------------------------------------------
-rule mark_duplicates_spark:
-    input:
-        "results/merge_bam_alignment/{sample}.bam",
-    output:
-        bam="results/mark_duplicates_spark/{sample}.bam",
-        metrics="results/mark_duplicates_spark/{sample}.metrics",
-    message:
-        """--- Running GATK MarkDuplicates."""
-    log:
-        "logs/mark_duplicates_spark/{sample}.log",
-    params:
-        extra="",  # optional
-        java_opts="",  # optional
-        #spark_runner="",  # optional, local by default
-        #spark_v7.1.0="",  # optional
-        #spark_extra="", # optional
-    resources:
-        # Memory needs to be at least 471859200 for Spark, so 589824000 when
-        # accounting for default JVM overhead of 20%. We round round to 650M.
-        mem=lookup(within=config, dpath="mark_duplicates_spark/mem"),
-        runtime=lookup(within=config, dpath="mark_duplicates_spark/runtime"),
-    threads: 8
-    wrapper:
-        "v7.1.0/bio/gatk/markduplicatesspark"
+# rule mark_duplicates_spark:
+#     input:
+#         "results/merge_bam_alignment/{sample}.bam",
+#     output:
+#         bam="results/mark_duplicates_spark/{sample}.bam",
+#         metrics="results/mark_duplicates_spark/{sample}.metrics",
+#     message:
+#         """--- Running GATK MarkDuplicates."""
+#     log:
+#         "logs/mark_duplicates_spark/{sample}.log",
+#     params:
+#         extra="",  # optional
+#         java_opts="",  # optional
+#         #spark_runner="",  # optional, local by default
+#         #spark_v7.1.0="",  # optional
+#         #spark_extra="", # optional
+#     resources:
+#         # Memory needs to be at least 471859200 for Spark, so 589824000 when
+#         # accounting for default JVM overhead of 20%. We round round to 650M.
+#         mem=lookup(within=config, dpath="mark_duplicates_spark/mem"),
+#         runtime=lookup(within=config, dpath="mark_duplicates_spark/runtime"),
+#     threads: 8
+#     wrapper:
+#         "v7.1.0/bio/gatk/markduplicatesspark"
 
 
 # rule samtools_faidx:
@@ -302,7 +302,7 @@ rule mark_duplicates_spark:
 # -----------------------------------------------------
 rule splitncigarreads:
     input:
-        bam="results/mark_duplicates_spark/{sample}.bam",
+        bam="results/merge_bam_alignment/{sample}.bam",
         ref="results/get_genome/genome.fa",
         dict="results/get_genome/genome.dict",
     output:
@@ -334,7 +334,7 @@ rule bcftools_mpileup:
         pileup="results/bcftools_mpileup/{sample}.pileup.bcf",
     params:
         uncompressed_bcf=False,
-        extra="--max-depth 100 --min-BQ 15",
+        extra="--max-depth 500 --min-BQ 20",
     log:
         "logs/bcftools_mpileup/{sample}.log",
     threads: 8,

@@ -36,11 +36,11 @@ paired_fastqs_to_ubam:
 
 merge_bam_alignment:
   mem: 12G
-  runtime: 30m
+  runtime: 2h
 
-mark_duplicates_spark:
-  mem: 12G
-  runtime: 6h
+# mark_duplicates_spark:
+#   mem: 12G
+#   runtime: 6h
 
 samtools_faidx:
   mem: 12G
