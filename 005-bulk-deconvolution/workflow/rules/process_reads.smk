@@ -23,17 +23,17 @@ rule get_genome:
 
 # fetch genome annotations from Ensembl
 # -----------------------------------------------------
-# rule get_genome_gtf:
-#     input:
-#         gtf=config["genome_gtf"],
-#     output:
-#         gtf="results/get_genome_gtf/genome.gtf",
-#     message:
-#         """--- Downloading genome annotations."""
-#     log:
-#         "results/get_genome_gtf/genome.log",
-#     shell:
-#         "cp {input.gtf} {output.gtf} > {log} 2>&1 "
+rule get_genome_gtf:
+    input:
+        gtf=config["genome_gtf"],
+    output:
+        gtf="results/get_genome_gtf/genome.gtf",
+    message:
+        """--- Downloading genome annotations."""
+    log:
+        "results/get_genome_gtf/genome.log",
+    shell:
+        "cp {input.gtf} {output.gtf} > {log} 2>&1 "
 
 
 # fetch dbSNP VCF file from NCBI
@@ -73,25 +73,25 @@ rule get_genome:
 # index genome sequence with STAR
 # source <https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/bio/star/index.html>
 # -----------------------------------------------------
-# rule star_index:
-#     input:
-#         fasta="results/get_genome/genome.fa",
-#         gtf=config["genome_gtf"],
-#     output:
-#         directory("results/star_index"),
-#     message:
-#         """--- Building STAR index."""
-#     threads: 16
-#     resources:
-#         mem=lookup(within=config, dpath="star_index/mem"),
-#         runtime=lookup(within=config, dpath="star_index/runtime"),
-#     params:
-#         sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
-#         extra="",
-#     log:
-#         "logs/star_index/star_index.log",
-#     wrapper:
-#         "v7.1.0/bio/star/index"
+rule star_index:
+    input:
+        fasta="results/get_genome/genome.fa",
+        gtf="results/get_genome_gtf/genome.gtf",
+    output:
+        directory("results/star_index"),
+    message:
+        """--- Building STAR index."""
+    threads: 16
+    resources:
+        mem=lookup(within=config, dpath="star_index/mem"),
+        runtime=lookup(within=config, dpath="star_index/runtime"),
+    params:
+        sjdbOverhang=lookup(within=config, dpath="star_index/sjdbOverhang"),
+        extra="",
+    log:
+        "logs/star_index/star_index.log",
+    wrapper:
+        "v7.1.0/bio/star/index"
 
 
 def get_paired_fastq_files(wildcards):
@@ -151,7 +151,7 @@ rule star_pe:
         #fq2=["reads/{sample}_R2.1.fastq", "reads/{sample}_R2.2.fastq"],  #optional
         unpack(get_paired_fastq_files),
         # path to STAR reference genome index
-        idx=config["star_index"],
+        idx="results/star_index",
     output:
         # see STAR manual for additional output files
         aln="results/star_pe/{sample}/pe_aligned.bam",
@@ -312,7 +312,7 @@ rule splitncigarreads:
     log:
         "logs/splitncigarreads/{sample}.log",
     params:
-        extra="--sequence-dictionary results/create_sequence_dictionary/genome.dict",  # optional
+        extra="",  # optional
         java_opts="",  # optional
     resources:
         # Memory needs to be at least 471859200 for Spark, so 589824000 when

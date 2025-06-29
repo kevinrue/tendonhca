@@ -15,16 +15,16 @@ genome_fasta: /project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020
 
 genome_gtf: /project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/genes/genes.gtf
 
-star_index: /project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/star/
+# star_index: /project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/star/
 
-# star_index:
-#   sjdbOverhang: 149
-#   mem: 45G
-#   runtime: 1h
+star_index:
+  sjdbOverhang: 149
+  mem: 45G
+  runtime: 1h
 
 star_pe:
   mem: 45G
-  runtime: 2h
+  runtime: 3h
 
 create_sequence_dictionary:
   mem: 12G
