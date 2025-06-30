@@ -141,6 +141,22 @@ rule get_reference_variants:
         "wget -O {output.vcf} {params.url} > {log} 2>&1"
 
 
+# index VCF files
+# necessary for merging VCF files later
+# -----------------------------------------------------
+rule bcftools_index_reference_variants:
+    input:
+        "results/get_reference_variants/{chr}.vcf.gz",
+    output:
+        "results/get_reference_variants/{chr}.vcf.gz.csi",
+    log:
+        "logs/bcftools_index_reference_variants/{chr}.log",
+    params:
+        extra="",  # optional parameters for bcftools index
+    wrapper:
+        "v7.1.0/bio/bcftools/index"
+
+
 rule filter_gtf_mrna:
     input:
         gtf="results/get_genome_gtf/genome.gtf",
@@ -152,7 +168,7 @@ rule filter_gtf_mrna:
     log:
         "logs/filter_gtf_mrna/filter_gtf_mrna.log",
     shell:
-        "awk '$3 == \"exon\" || $3 == \"UTR\" {print $1 \"\t\" $4 \"\t\" $5}' {input.gtf} > {output.bed} 2> {log}"
+        """awk '$3 == "exon" || $3 == "UTR" {{print $1 "\\t" $4 "\\t" $5}}' {input.gtf} > {output.bed} 2> {log}"""
 
 
 # filter reference VCF file for common exonic SNVs
@@ -160,6 +176,7 @@ rule filter_gtf_mrna:
 rule filter_common_variants:
     input:
         "results/get_reference_variants/{chr}.vcf.gz",
+        index="results/get_reference_variants/{chr}.vcf.gz.csi",
         regions="results/filter_gtf_mrna/mRNAs.bed",
     output:
         "results/filter_common_variants/{chr}.vcf.gz",
@@ -432,13 +449,13 @@ rule bcftools_view:
 # index VCF files
 # necessary for merging VCF files later
 # -----------------------------------------------------
-rule bcftools_index:
+rule bcftools_index_calls:
     input:
         "results/bcftools_view/{sample}.calls.filtered.vcf.gz",
     output:
         "results/bcftools_view/{sample}.calls.filtered.vcf.gz.csi",
     log:
-        "logs/bcftools_index/{sample}.log",
+        "logs/bcftools_index_calls/{sample}.log",
     params:
         extra="",  # optional parameters for bcftools index
     wrapper:
