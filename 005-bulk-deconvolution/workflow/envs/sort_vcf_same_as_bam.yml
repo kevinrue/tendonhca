@@ -1,0 +1,8 @@
+name: sort_vcf_same_as_bam
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - samtools=1.22
+  - bcftools=1.22

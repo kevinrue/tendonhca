@@ -68,7 +68,7 @@ bcftools_merge:
   mem: 12G
   runtime: 1h
 
-sort_reference_variants:
+sort_vcf_same_as_bam:
   mem: 12G
   runtime: 1h
 

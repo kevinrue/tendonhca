@@ -483,30 +483,28 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
-rule sort_reference_variants:
+rule sort_vcf_same_as_bam:
     input:
         vcf="results/bcftools_concat/common_snvs.vcf.gz",
-        fa="results/get_genome/genome.fa",
+        bam=pooled_bams['bam'].iloc[0],
     output:
-        vcf="results/sort_reference_variants/common_snvs.vcf.gz",
+        vcf="results/sort_vcf_same_as_bam/common_snvs.vcf.gz",
     conda:
-        "../envs/picard.yml"
+        "../envs/sort_vcf_same_as_bam.yml"
     message:
         """--- Sort reference variants to match mapped reads."""
     log:
-        "logs/sort_reference_variants.log",
-    params:
-        java_opts="-Xmx12g",
+        "logs/sort_vcf_same_as_bam.log",
     threads: 1
     resources:
-        mem=lookup(within=config, dpath="sort_reference_variants/mem"),
-        runtime=lookup(within=config, dpath="sort_reference_variants/runtime"),
+        mem=lookup(within=config, dpath="sort_vcf_same_as_bam/mem"),
+        runtime=lookup(within=config, dpath="sort_vcf_same_as_bam/runtime"),
     shell:
-        "picard SortVcf"
-        " {params.java_opts}"
-        " --INPUT {input.vcf}"
-        " --OUTPUT {output.vcf}"
-        " --REFERENCE_SEQUENCE {input.fa} > {log} 2>&1"
+        "../sort_vcf_same_as_bam.sh"
+        " {input.bam}"
+        " {input.vcf}"
+        " z"
+        " > {output.vcf} 2> {log}"
 
 
 # rule bedtools_sort_vcf:
@@ -530,7 +528,7 @@ rule sort_reference_variants:
 # -----------------------------------------------------
 rule popscle_dsc:
     input:
-        vcf="results/sort_reference_variants/common_snvs.vcf.gz",
+        vcf="results/sort_vcf_same_as_bam/common_snvs.vcf.gz",
     output:
         pileup="results/popscle_dsc/{pool}.pileup",
     params:
