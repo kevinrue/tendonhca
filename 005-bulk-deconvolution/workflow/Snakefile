@@ -33,7 +33,6 @@ onerror:
 # -----------------------------------------------------
 rule all:
     input:
-        ##"results/multiqc/multiqc_report.html",
         "results/bcftools_merge/all.vcf.gz",
         expand("results/popscle_demuxlet/{pool}", pool=pooled_bams.index.unique()),
         expand("results/filter_common_variants/{chr}.vcf.gz", chr=ref_vcfs.index.unique()),

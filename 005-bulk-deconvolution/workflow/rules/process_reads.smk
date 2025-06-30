@@ -141,11 +141,26 @@ rule get_reference_variants:
         "wget -O {output.vcf} {params.url} > {log} 2>&1"
 
 
+rule filter_gtf_mrna:
+    input:
+        gtf="results/get_genome_gtf/genome.gtf",
+    output:
+        bed="results/filter_gtf_mrna/mRNAs.bed",
+    message:
+        """--- Filter GTF to exons and UTRs."""
+    threads: 1
+    log:
+        "logs/filter_gtf_mrna/filter_gtf_mrna.log",
+    shell:
+        "awk '$3 == \"exon\" || $3 == \"UTR\" {print $1 \"\t\" $4 \"\t\" $5}' {input.gtf} > {output.bed} 2> {log}"
+
+
 # filter reference VCF file for common exonic SNVs
 # -----------------------------------------------------
 rule filter_common_variants:
     input:
         "results/get_reference_variants/{chr}.vcf.gz",
+        regions="results/filter_gtf_mrna/mRNAs.bed",
     output:
         "results/filter_common_variants/{chr}.vcf.gz",
     message:
@@ -160,6 +175,23 @@ rule filter_common_variants:
         runtime=lookup(within=config, dpath="bcftools_call/runtime"),
     wrapper:
         "v3.7.0/bio/bcftools/view"
+
+
+rule bcftools_concat:
+    input:
+        calls=expand("results/filter_common_variants/{chr}.vcf.gz", chr=ref_vcfs.index.unique()),
+    output:
+        "results/bcftools_concat/common_snvs.vcf.gz",
+    log:
+        "logs/bcftools_concat/bcftools_concat.log",
+    params:
+        uncompressed_bcf=False,
+        extra="",  # optional parameters for bcftools concat (except -o)
+    threads: 4
+    resources:
+        mem_mb=10,
+    wrapper:
+        "v7.1.0/bio/bcftools/concat"
 
 
 # map reads with STAR
@@ -434,25 +466,11 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
-rule filter_gtf_mrna:
-    input:
-        gtf="results/get_genome_gtf/genome.gtf",
-    output:
-        gtf="results/filter_gtf_mrna/mRNAs.bed",
-    message:
-        """--- Filter GTF to exons and UTRs."""
-    threads: 1
-    log:
-        "logs/filter_gtf_mrna/filter_gtf_mrna.log",
-    shell:
-        "awk '$3 == \"exon\" || $3 == \"UTR\" {print $1 "\t" $4 "\t" $5}' {input.gtf} > {output.gtf} 2> {log}"
-
-
 # first step of deconvolution with popscle
 # -----------------------------------------------------
 rule popscle_dsc:
     input:
-        vcf="results/bcftools_merge/all.vcf.gz",
+        vcf="results/bcftools_concat/common_snvs.vcf.gz",
     output:
         pileup="results/popscle_dsc/{pool}.pileup",
     params:
