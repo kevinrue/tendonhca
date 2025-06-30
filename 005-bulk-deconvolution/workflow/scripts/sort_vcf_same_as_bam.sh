@@ -202,5 +202,4 @@ sort_vcf_same_as_bam () {
 }
 
 
-
-sort_vcf_same_as_bam "${@}";
+sort_vcf_same_as_bam "${snakemake_input[bam]}" "${snakemake_input[vcf]}" z > "${snakemake_output[vcf]}";

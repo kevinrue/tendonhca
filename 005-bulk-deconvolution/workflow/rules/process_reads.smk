@@ -499,12 +499,8 @@ rule sort_vcf_same_as_bam:
     resources:
         mem=lookup(within=config, dpath="sort_vcf_same_as_bam/mem"),
         runtime=lookup(within=config, dpath="sort_vcf_same_as_bam/runtime"),
-    shell:
-        "../sort_vcf_same_as_bam.sh"
-        " {input.bam}"
-        " {input.vcf}"
-        " z"
-        " > {output.vcf} 2> {log}"
+    script:
+        "../scripts/sort_vcf_same_as_bam.sh"
 
 
 # rule bedtools_sort_vcf:

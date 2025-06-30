@@ -77,7 +77,7 @@ gatk_baserecalibratorspark:
   runtime: 6h
 
 popscle_dsc:
-  mem: 12G
+  mem: 24G
   runtime: 6h
 
 popscle_demuxlet:
