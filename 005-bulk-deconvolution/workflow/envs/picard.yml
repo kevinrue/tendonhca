@@ -1,0 +1,7 @@
+name: picard
+channels:
+  - bioconda
+  - conda-forge
+  - nodefaults
+dependencies:
+  - picard=3.4.0

@@ -68,6 +68,10 @@ bcftools_merge:
   mem: 12G
   runtime: 1h
 
+sort_reference_variants:
+  mem: 12G
+  runtime: 1h
+
 gatk_baserecalibratorspark:
   mem: 4G
   runtime: 6h

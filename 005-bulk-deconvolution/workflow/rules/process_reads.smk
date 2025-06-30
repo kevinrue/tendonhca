@@ -483,11 +483,54 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
+rule sort_reference_variants:
+    input:
+        vcf="results/bcftools_concat/common_snvs.vcf.gz",
+        fa="results/get_genome/genome.fa",
+    output:
+        vcf="results/sort_reference_variants/common_snvs.vcf.gz",
+    conda:
+        "../envs/picard.yml"
+    message:
+        """--- Sort reference variants to match mapped reads."""
+    log:
+        "logs/sort_reference_variants.log",
+    params:
+        java_opts="-Xmx12g",
+    threads: 1
+    resources:
+        mem=lookup(within=config, dpath="sort_reference_variants/mem"),
+        runtime=lookup(within=config, dpath="sort_reference_variants/runtime"),
+    shell:
+        "picard SortVcf"
+        " {params.java_opts}"
+        " --INPUT {input.vcf}"
+        " --OUTPUT {output.vcf}"
+        " --REFERENCE_SEQUENCE {input.fa} > {log} 2>&1"
+
+
+# rule bedtools_sort_vcf:
+#     input:
+#         in_file="results/bcftools_concat/common_snvs.vcf.gz",
+#         # an optional sort file can be set either as genomefile by the variable genome or
+#         # as fasta index file by the variable faidx
+#         faidx="results/get_genome/genome.fa.fai",
+#     output:
+#         "results/sort_reference_variants/common_snvs.vcf.gz",
+#     params:
+#         ## Add optional parameters
+#         extra=""
+#     log:
+#         "logs/bedtools_sort_vcf.log"
+#     wrapper:
+#         "v7.1.0/bio/bedtools/sort"
+
+
 # first step of deconvolution with popscle
 # -----------------------------------------------------
 rule popscle_dsc:
     input:
-        vcf="results/bcftools_concat/common_snvs.vcf.gz",
+        vcf="results/sort_reference_variants/common_snvs.vcf.gz",
     output:
         pileup="results/popscle_dsc/{pool}.pileup",
     params:
