@@ -434,6 +434,20 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
+rule filter_gtf_mrna:
+    input:
+        gtf="results/get_genome_gtf/genome.gtf",
+    output:
+        gtf="results/filter_gtf_mrna/mRNAs.bed",
+    message:
+        """--- Filter GTF to exons and UTRs."""
+    threads: 1
+    log:
+        "logs/filter_gtf_mrna/filter_gtf_mrna.log",
+    shell:
+        "awk '$3 == \"exon\" || $3 == \"UTR\" {print $1 "\t" $4 "\t" $5}' {input.gtf} > {output.gtf} 2> {log}"
+
+
 # first step of deconvolution with popscle
 # -----------------------------------------------------
 rule popscle_dsc:
