@@ -438,23 +438,24 @@ rule bcftools_merge:
 # -----------------------------------------------------
 rule popscle_dsc:
     input:
-        bam="/project/tendonhca/albrecht/004-deconvolution/results/cellranger_count/12G/outs/possorted_genome_bam.bam",
         vcf="results/bcftools_merge/all.vcf.gz",
     output:
-        pileup="results/popscle_dsc/12G.pileup",
+        pileup="results/popscle_dsc/{pool}.pileup",
+    params:
+        bam=lambda wildcards: pooled_bams['bam'][wildcards.pool],
     conda:
         "../envs/popscle.yml"
     message:
         """--- Running popscle dsc-pileup."""
     log:
-        "logs/popscle_dsc/12G.log",
+        "logs/popscle_dsc/{pool}.log",
     threads: 1
     resources:
         mem=lookup(within=config, dpath="popscle_dsc/mem"),
         runtime=lookup(within=config, dpath="popscle_dsc/runtime"),
     shell:
         "popscle dsc-pileup"
-        " --sam {input.bam}"
+        " --sam {params.bam}"
         " --vcf {input.vcf}"
         " --out {output.pileup} > {log} 2>&1 &&"
         " touch {output.pileup}"
@@ -464,16 +465,16 @@ rule popscle_dsc:
 # -----------------------------------------------------
 rule popscle_demuxlet:
     input:
-        pileup="results/popscle_dsc/12G.pileup",
+        pileup="results/popscle_dsc/{pool}.pileup",
         vcf="results/bcftools_merge/all.vcf.gz",
     output:
-        pileup="results/popscle_demuxlet/12G",
+        pileup="results/popscle_demuxlet/{pool}",
     conda:
         "../envs/popscle.yml"
     message:
         """--- Running popscle demuxlet."""
     log:
-        "logs/popscle_demuxlet/12G.log",
+        "logs/popscle_demuxlet/{pool}.log",
     threads: 1
     resources:
         mem=lookup(within=config, dpath="popscle_demuxlet/mem"),

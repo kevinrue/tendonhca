@@ -2,6 +2,8 @@ samplesheet: "config/samples.tsv"
 
 ref_vcf_sheet: "config/common_variants.tsv"
 
+poolsheet: "config/pools.tsv"
+
 # get_genome:
 #   ensembl_ftp: https://ftp.ensembl.org/pub/release-114/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 

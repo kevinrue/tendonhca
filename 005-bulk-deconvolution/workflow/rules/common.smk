@@ -17,6 +17,13 @@ ref_vcfs = (
     .sort_index()
 )
 
+# read pooled BAMs sheet
+pooled_bams = (
+    pd.read_csv(config["poolsheet"], sep="\t", dtype={"id": str})
+    .set_index("id", drop=False)
+    .sort_index()
+)
+
 # validate sample sheet and config file
 validate(samples, schema="../../config/schemas/samples.schema.yml")
 validate(config, schema="../../config/schemas/config.schema.yml")
