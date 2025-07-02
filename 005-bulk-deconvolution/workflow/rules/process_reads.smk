@@ -483,24 +483,47 @@ rule bcftools_merge:
         "v7.1.0/bio/bcftools/merge"
 
 
-rule sort_vcf_same_as_bam:
+rule gatk_sort_reference_vcf:
     input:
         vcf="results/bcftools_concat/common_snvs.vcf.gz",
-        bam=pooled_bams['bam'].iloc[0],
+        dict="results/get_genome/genome.dict",
     output:
-        vcf="results/sort_vcf_same_as_bam/common_snvs.vcf.gz",
+        vcf="results/gatk_sort_reference_vcf/common_snvs.vcf.gz",
     conda:
-        "../envs/sort_vcf_same_as_bam.yml"
+        "../envs/gatk.yml"
     message:
-        """--- Sort reference variants to match mapped reads."""
+        """--- Sort reference variants to match FASTA index."""
     log:
-        "logs/sort_vcf_same_as_bam.log",
+        "logs/gatk_sort_reference_vcf.log",
     threads: 1
     resources:
-        mem=lookup(within=config, dpath="sort_vcf_same_as_bam/mem"),
-        runtime=lookup(within=config, dpath="sort_vcf_same_as_bam/runtime"),
-    script:
-        "../scripts/sort_vcf_same_as_bam.sh"
+        mem=lookup(within=config, dpath="gatk_sort_reference_vcf/mem"),
+        runtime=lookup(within=config, dpath="gatk_sort_reference_vcf/runtime"),
+    shell:
+        "gatk UpdateVCFSequenceDictionary"
+        "-V {input.vcf}"
+        "--source-dictionary {input.dict}"
+        "--output {output.vcf}"
+        "--replace true"
+
+# rule sort_vcf_same_as_bam:
+#     input:
+#         vcf="results/bcftools_concat/common_snvs.vcf.gz",
+#         bam=pooled_bams['bam'].iloc[0],
+#     output:
+#         vcf="results/sort_vcf_same_as_bam/common_snvs.vcf.gz",
+#     conda:
+#         "../envs/sort_vcf_same_as_bam.yml"
+#     message:
+#         """--- Sort reference variants to match mapped reads."""
+#     log:
+#         "logs/sort_vcf_same_as_bam.log",
+#     threads: 1
+#     resources:
+#         mem=lookup(within=config, dpath="sort_vcf_same_as_bam/mem"),
+#         runtime=lookup(within=config, dpath="sort_vcf_same_as_bam/runtime"),
+#     script:
+#         "../scripts/sort_vcf_same_as_bam.sh"
 
 
 # rule bedtools_sort_vcf:
