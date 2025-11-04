@@ -1,0 +1,243 @@
+---
+title: "Report on reference-based deconvolution"
+format: html
+editor: visual
+---
+
+```{r}
+#| include: false
+log_breaks_major <- 10^(-1:10)
+log_breaks_minor_125 <- rep(c(1, 2, 5), 12) * (10^rep(-1:10, each = 3))
+```
+
+## Background
+
+Working directory for this notebook:
+
+```{r}
+getwd()
+```
+
+The deconvolution was performed using demuxlet, and the output files are stored in the following directory:
+
+```{r}
+list.files("../../results/popscle_demuxlet")
+```
+
+The files simply named after the pool - e.g. '12G' - are empty files used by Snakemake to track the timestamp of the rule execution.
+
+The files named '\*.best' are those that contain the results. They're several dozens of MB large each, in plain text tabular format. We'll use the tidyverse to parse them.
+
+## Libraries
+
+What do we need to parse the input files for this notebook?
+
+```{r}
+#| message: false
+library(scales)
+library(tidyverse)
+```
+
+## Pool 12G
+
+Let's load '12G.best' as an examplar.
+
+```{r}
+#| echo: false
+pool_id <- "12G"
+raw_demuxlet <- read_tsv(sprintf("../../results/popscle_demuxlet/%s.best", pool_id), show_col_types = FALSE)
+raw_demuxlet
+```
+
+The column '**DROPLET.TYPE**' gives us the assignment.
+
+```{r}
+table(raw_demuxlet$DROPLET.TYPE)
+```
+
+Comparing the number of SNP between droplet types is an interesting QC point:
+
+```{r}
+ggplot(raw_demuxlet, aes(DROPLET.TYPE, NUM.SNPS)) +
+  geom_violin() +
+  geom_point() +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+Wait a second, at least one singlet based on a single SNP? Let's use the column '**NUM.READS**' to see at least how many reads that SNP is based on.
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG") |> 
+  ggplot(aes(NUM.SNPS, NUM.READS)) +
+  geom_point() +
+  scale_x_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+How many singlets are left if we request at least 10 SNPs?
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG" & NUM.SNPS >= 10) |> 
+  nrow()
+```
+
+## Pool 14G
+
+Copy paste to repeat for pool 14G.
+
+```{r}
+#| echo: false
+pool_id <- "14G"
+raw_demuxlet <- read_tsv(sprintf("../../results/popscle_demuxlet/%s.best", pool_id), show_col_types = FALSE)
+raw_demuxlet
+```
+
+The column '**DROPLET.TYPE**' gives us the assignment.
+
+```{r}
+table(raw_demuxlet$DROPLET.TYPE)
+```
+
+Comparing the number of SNP between droplet types is an interesting QC point:
+
+```{r}
+ggplot(raw_demuxlet, aes(DROPLET.TYPE, NUM.SNPS)) +
+  geom_violin() +
+  geom_point() +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+Wait a second, at least one singlet based on a single SNP? Let's use the column '**NUM.READS**' to see at least how many reads that SNP is based on.
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG") |> 
+  ggplot(aes(NUM.SNPS, NUM.READS)) +
+  geom_point() +
+  scale_x_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+How many singlets are left if we request at least 10 SNPs?
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG" & NUM.SNPS >= 10) |> 
+  nrow()
+```
+
+## Pool 16G
+
+Copy paste to repeat for pool 16G.
+
+```{r}
+#| echo: false
+pool_id <- "16G"
+raw_demuxlet <- read_tsv(sprintf("../../results/popscle_demuxlet/%s.best", pool_id), show_col_types = FALSE)
+raw_demuxlet
+```
+
+The column '**DROPLET.TYPE**' gives us the assignment.
+
+```{r}
+table(raw_demuxlet$DROPLET.TYPE)
+```
+
+Comparing the number of SNP between droplet types is an interesting QC point:
+
+```{r}
+ggplot(raw_demuxlet, aes(DROPLET.TYPE, NUM.SNPS)) +
+  geom_violin() +
+  geom_point() +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+Wait a second, at least one singlet based on a single SNP? Let's use the column '**NUM.READS**' to see at least how many reads that SNP is based on.
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG") |> 
+  ggplot(aes(NUM.SNPS, NUM.READS)) +
+  geom_point() +
+  scale_x_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  scale_y_log10(
+    breaks = log_breaks_major,
+    minor_breaks = log_breaks_minor_125,
+    labels = label_number(scale_cut = cut_short_scale()),
+    limits = c(1, NA)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(
+    title = sprintf("Pool: %s", pool_id),
+    subtitle = sprintf("Singlets: %s", format(sum(raw_demuxlet$DROPLET.TYPE == "SNG")))
+  )
+```
+
+How many singlets are left if we request at least 10 SNPs?
+
+```{r}
+raw_demuxlet |> 
+  filter(DROPLET.TYPE == "SNG" & NUM.SNPS >= 10) |> 
+  nrow()
+```

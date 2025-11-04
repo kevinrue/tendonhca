@@ -1,0 +1,178 @@
+---
+title: "14G report"
+format: html
+editor: visual
+---
+
+## Introduction
+
+In this notebook, we'll load the CellRanger filtered matrix from the following file:
+
+```{r inputfiles}
+cellranger_filtered_matrix <- c("14G" = "../../../004-deconvolution/results/cellranger_count/14G/outs/filtered_feature_bc_matrix")
+sample_name <- names(cellranger_filtered_matrix)
+```
+
+## Libraries
+
+What we need for this analysis:
+
+```{r libraries}
+#| echo: false
+#| message: false
+library(DropletUtils)
+library(ggplot2)
+library(readr)
+library(scater)
+library(scran)
+library(scuttle)
+library(tibble)
+```
+
+## Load data
+
+Load the CellRanger filtered matrix.
+
+```{r read10xcounts}
+#| echo: false
+sce <- read10xCounts(samples = cellranger_filtered_matrix, col.names = TRUE)
+sce
+```
+
+## Basic processing
+
+Adapted from <https://carpentries-incubator.github.io/bioc-scrnaseq/eda_qc.html>
+
+Size factors:
+
+```{r}
+lib.sf <- librarySizeFactors(sce)
+sf_df <- data.frame(size_factor = lib.sf)
+ggplot(sf_df, aes(size_factor)) + 
+  geom_histogram(fill = "grey", colour = "black") + 
+  scale_x_log10() +
+  labs(
+    title = sprintf("Sample: %s", sample_name),
+    subtitle = sprintf("Number of cells: %s", format(ncol(sce), big.mark = ","))
+  ) +
+  theme_bw()
+```
+
+Log-normalisation:
+
+```{r}
+sizeFactors(sce) <- lib.sf
+sce <- logNormCounts(sce)
+sce
+```
+
+Feature selection
+
+```{r}
+dec.sce <- modelGeneVar(sce)
+
+fit.sce <- metadata(dec.sce)
+
+mean_var_df <- data.frame(mean = fit.sce$mean,
+                          var  = fit.sce$var)
+
+ggplot(mean_var_df, aes(mean, var)) + 
+    geom_point() + 
+    geom_function(
+      fun = fit.sce$trend, 
+      color = "dodgerblue"
+    ) + 
+    labs(
+      x = "Mean of log-expression",
+      y = "Variance of log-expression"
+    ) +
+  theme_bw()
+```
+
+HVG
+
+```{r}
+hvg.sce.var <- getTopHVGs(dec.sce, n = 500)
+
+mean_var_df$hvg <- rownames(mean_var_df) %in% hvg.sce.var
+ggplot(mean_var_df, aes(mean, var, colour = hvg)) + 
+    geom_point() + 
+    geom_function(
+      fun = fit.sce$trend, 
+      color = "dodgerblue"
+    ) + 
+    labs(
+      x = "Mean of log-expression",
+      y = "Variance of log-expression"
+    ) +
+  theme_bw()
+
+```
+
+PCA
+
+```{r}
+sce <- runPCA(sce, subset_row = hvg.sce.var)
+sce
+```
+
+PCA scree plot
+
+```{r}
+pct_var_df <- data.frame(
+  PC = 1:50,
+  pct_var = attr(reducedDim(sce), "percentVar")
+)
+
+ggplot(pct_var_df, aes(PC, pct_var)) + 
+    geom_point() + 
+    labs(y = "Variance explained (%)")
+```
+
+PCA scatter plot
+
+```{r}
+plotPCA(sce)
+```
+
+UMAP
+
+```{r}
+set.seed(111)
+
+sce <- runUMAP(sce, dimred = "PCA")
+
+plotUMAP(sce)
+```
+
+## Load deconvolution data
+
+Load table
+
+```{r}
+demuxlet_file <- "../../../005-bulk-deconvolution/results/popscle_demuxlet/14G.best"
+demuxlet_data <- read_tsv(demuxlet_file, show_col_types = FALSE) |> 
+  column_to_rownames("BARCODE")
+stopifnot(all(colnames(sce) %in% rownames(demuxlet_data)))
+glimpse(demuxlet_data)
+```
+
+Transfer deconvoluted labels to `sce` object.
+
+```{r}
+demuxlet_data$sce_label <- ifelse(demuxlet_data$DROPLET.TYPE == "SNG", demuxlet_data$SNG.BEST.GUESS, demuxlet_data$DROPLET.TYPE)
+sce$demuxlet <- demuxlet_data[colnames(sce), "sce_label"]
+plotUMAP(sce, colour_by = "demuxlet")
+```
+
+Distribution of cell assignments:
+
+```{r}
+table(sce$demuxlet) |> as.data.frame()
+```
+
+Number of cells passed cellranger filtering AND deconvoluted:
+
+```{r}
+sum(!sce$demuxlet %in% c("AMB", "DBL"))
+```
