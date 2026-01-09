@@ -28,5 +28,5 @@ Updated config files:
 ```bash
 export CELLRANGER_TARBALL="/ceph/project/tendonhca/albrecht/resources/cellranger-9.0.1.tar.gz"
 snakemake --dry-run
-snakemake --cores all --sdm conda apptainer
+snakemake --cores all --sdm conda apptainer --default-resources runtime=720
 ```
