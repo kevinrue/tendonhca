@@ -1,0 +1,132 @@
+---
+title: "Vatrix PCA (12G)"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Introduction
+
+This notebook loads the Vatrix MTX file on the 12G pool of nuclei to hopefully produce a PCA/UMAP with 8 clusters of nuclei.
+
+## Libraries
+
+Attach the packages that we need for the analysis.
+
+```{r}
+#| message: false
+library(Matrix)
+library(umap)
+library(tidyverse)
+```
+
+```{r}
+theme_set(theme_bw())
+```
+
+## Load data
+
+```{r}
+#| echo: false
+matrix_alt <- Matrix::readMM("../results/vartrix/12G.alt.mtx")
+str(matrix_alt)
+```
+
+```{r}
+#| echo: false
+matrix_ref <- Matrix::readMM("../results/vartrix/12G.ref.mtx")
+str(matrix_ref)
+```
+
+## Basic filtering
+
+Remove variants (i.e. rows) that are not detected in at least 10 nuclei. It's a small arbitrary filter but it'll get rid of the most useless rows.
+
+```{r}
+keep_variants <- rowSums(matrix_alt) >= 10 & rowSums(matrix_ref) >= 10
+table(keep_variants)
+```
+
+```{r}
+matrix_alt_filtered <- matrix_alt[keep_variants, ]
+matrix_ref_filtered <- matrix_ref[keep_variants, ]
+```
+
+```{r}
+alt_rank_stats <- 
+  tibble(
+    col_sum = colSums(matrix_alt_filtered)
+  ) |> 
+  mutate(
+    rank = row_number(-col_sum)
+  )
+ref_rank_stats <- 
+  tibble(
+    col_sum = colSums(matrix_ref_filtered)
+  ) |> 
+  mutate(
+    rank = row_number(-col_sum)
+  )
+```
+
+```{r}
+ggplot() +
+  geom_point(aes(rank, col_sum), ref_rank_stats, colour = "blue") +
+  geom_point(aes(rank, col_sum), alt_rank_stats, colour = "red")
+```
+
+```{r}
+keep_nuclei <- colSums(matrix_alt_filtered > 0) & colSums(matrix_ref_filtered > 0)
+table(keep_nuclei)
+```
+
+```{r}
+matrix_alt_filtered <- matrix_alt_filtered[, keep_nuclei]
+matrix_ref_filtered <- matrix_ref_filtered[, keep_nuclei]
+```
+
+```{r}
+sprintf("%i variants", nrow(matrix_alt_filtered))
+sprintf("%i nuclei", ncol(matrix_alt_filtered))
+```
+
+```{r}
+matrix_combined <- rbind(matrix_alt_filtered, matrix_ref_filtered)
+dim(matrix_combined)
+```
+
+## Dimensionality reduction
+
+Run a quick and dirty PCA and UMAP to check whether the available data captures the expected number of samples.
+
+```{r}
+pca <- prcomp(x = t(matrix_combined), center = TRUE, scale. = FALSE)
+str(pca)
+```
+
+```{r}
+pca_stats <- tibble(
+  PC = seq_along(pca$sdev),
+  var_explained = pca$sdev^2 / sum(pca$sdev^2)
+)
+pca_stats
+```
+
+```{r}
+ggplot(pca_stats, aes(PC, var_explained)) +
+  geom_point()
+```
+
+```{r}
+umap_out <- umap(d = pca$x[, 1:25])
+umap_out
+```
+
+```{r}
+umap_df <- as_tibble(as.data.frame(umap_out$layout))
+colnames(umap_df) <- c("UMAP1", "UMAP2")
+ggplot(umap_df, aes(UMAP1, UMAP2)) +
+  geom_point()
+```
+

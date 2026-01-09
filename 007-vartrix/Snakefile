@@ -1,0 +1,42 @@
+pools = [
+    "12G",
+    "14G",
+    "16G"
+]
+
+configfile: "config/config.yaml"
+
+rule all:
+    input:
+        expand("results/vartrix/{pool}.{ext}", pool=pools, ext=["alt.mtx", "ref.mtx", "variants.tsv", "barcodes.tsv"]),
+
+rule vartrix:
+    input:
+        bam="/project/tendonhca/albrecht/004-deconvolution/results/cellranger_count/{pool}/outs/possorted_genome_bam.bam",
+        barcodes="/project/tendonhca/albrecht/004-deconvolution/results/cellranger_count/{pool}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz"
+    output:
+        alt_matrix="results/vartrix/{pool}.alt.mtx",
+        ref_matrix="results/vartrix/{pool}.ref.mtx",
+        variants="results/vartrix/{pool}.variants.tsv",
+        barcodes="results/vartrix/{pool}.barcodes.tsv",
+    params:
+        vcf=config["vartrix"]["vcf"],
+        fasta=config["vartrix"]["fasta"],
+    threads: 4
+    resources:
+        mem="8G",
+        runtime="2h",
+    shell:
+        """
+        /ceph/project/tendonhca/albrecht/bin/vartrix_linux \
+            --bam {input.bam} \
+            --cell-barcodes {input.barcodes} \
+            --fasta {params.fasta} \
+            --vcf {params.vcf} \
+            --scoring-method coverage \
+            --out-matrix {output.alt_matrix} \
+            --ref-matrix {output.ref_matrix} \
+            --out-variants {output.variants} \
+            --out-barcodes {output.barcodes} \
+            --threads {threads}
+        """

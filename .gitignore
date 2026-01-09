@@ -24,3 +24,9 @@ transcriptome/
 # temporary files
 *.lock
 *backup*
+# binaries
+bin/
+# archives
+*.tar.gz
+# data files
+*.vcf

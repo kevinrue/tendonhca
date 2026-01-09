@@ -1,0 +1,9 @@
+id	feature_types	read1	read2	lane_number	subsample_rate
+A	Gene Expression	data/fastqs/A/A_S1_L001_R1_001.fastq.gz	data/fastqs/A/A_S1_L001_R2_001.fastq.gz	1	
+B	Gene Expression	data/fastqs/B/B_S1_L001_R1_001.fastq.gz	data/fastqs/B/B_S1_L001_R2_001.fastq.gz	1	
+C	Gene Expression	data/fastqs/C/C_S1_L001_R1_001.fastq.gz	data/fastqs/C/C_S1_L001_R2_001.fastq.gz	1	
+D	Gene Expression	data/fastqs/D/D_S1_L001_R1_001.fastq.gz	data/fastqs/D/D_S1_L001_R2_001.fastq.gz	1	
+E	Gene Expression	data/fastqs/E/E_S1_L001_R1_001.fastq.gz	data/fastqs/E/E_S1_L001_R2_001.fastq.gz	1	
+F	Gene Expression	data/fastqs/F/F_S1_L001_R1_001.fastq.gz	data/fastqs/F/F_S1_L001_R2_001.fastq.gz	1	
+G	Gene Expression	data/fastqs/G/G_S1_L001_R1_001.fastq.gz	data/fastqs/G/G_S1_L001_R2_001.fastq.gz	1	
+H	Gene Expression	data/fastqs/H/H_S1_L001_R1_001.fastq.gz	data/fastqs/H/H_S1_L001_R2_001.fastq.gz	1	
