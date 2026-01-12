@@ -1,9 +1,9 @@
-sample_id	filepath
-A	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/A/outs/per_sample_outs/A/count/sample_alignments.bam
-B	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/B/outs/per_sample_outs/B/count/sample_alignments.bam
-C	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/C/outs/per_sample_outs/C/count/sample_alignments.bam
-D	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/D/outs/per_sample_outs/D/count/sample_alignments.bam
-E	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/E/outs/per_sample_outs/E/count/sample_alignments.bam
-F	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/F/outs/per_sample_outs/F/count/sample_alignments.bam
-G	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/G/outs/per_sample_outs/G/count/sample_alignments.bam
-H	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/H/outs/per_sample_outs/H/count/sample_alignments.bam
+sample_id	bam	barcodes
+A	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/A/outs/per_sample_outs/A/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/A/outs/per_sample_outs/A/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+B	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/B/outs/per_sample_outs/B/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/B/outs/per_sample_outs/B/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+C	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/C/outs/per_sample_outs/C/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/C/outs/per_sample_outs/C/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+D	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/D/outs/per_sample_outs/D/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/D/outs/per_sample_outs/D/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+E	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/E/outs/per_sample_outs/E/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/E/outs/per_sample_outs/E/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+F	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/F/outs/per_sample_outs/F/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/F/outs/per_sample_outs/F/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+G	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/G/outs/per_sample_outs/G/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/G/outs/per_sample_outs/G/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+H	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/H/outs/per_sample_outs/H/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/single_nuc_cellranger/results/cellranger/H/outs/per_sample_outs/H/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz

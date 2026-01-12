@@ -194,3 +194,25 @@ Number of cells passed cellranger filtering AND deconvoluted:
 sum(!sce$demuxlet %in% c("AMB", "DBL"))
 ```
 
+UMI count for cells, separated as singlet or not.
+
+```{r}
+#| fig-width: 4
+#| fig-height: 5
+sce$umi_sum <- colSums(counts(sce))
+tmp_df <- colData(sce) |> 
+  as_tibble() |> 
+  mutate(
+    singlet = !demuxlet %in% c("AMB", "DBL"),
+    summary = fct_collapse(demuxlet, 
+      AMB = c("AMB"), 
+      DBL = c("DBL"), 
+      other_level = "Singlet"
+    )
+  )
+tmp_df
+ggplot(tmp_df) +
+  geom_violin(aes(x = summary, y = umi_sum), draw_quantiles = 0.5) +
+  scale_y_log10(limits = c(100, 50E3)) +
+  theme_classic()
+```

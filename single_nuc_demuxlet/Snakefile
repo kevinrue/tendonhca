@@ -16,7 +16,8 @@ rule popscle_dsc_pileup:
     input:
         vcf=config["dsc-pileup"]["vcf"],
         # bam=lambda wildcards: bams[wildcards.sample_id]['filepath']
-        bam=lookup(query="sample_id == '{sample_id}'", within=bams, cols="filepath"),
+        bam=lookup(query="sample_id == '{sample_id}'", within=bams, cols="bam"),
+        barcodes=lookup(query="sample_id == '{sample_id}'", within=bams, cols="barcodes"),
     output:
         pileup="results/popscle_dsc_pileup/{sample_id}.pileup",
     # params:
@@ -35,7 +36,9 @@ rule popscle_dsc_pileup:
         "popscle dsc-pileup"
         " --sam {input.bam}"
         " --vcf {input.vcf}"
-        " --out {output.pileup} > {log} 2>&1 &&"
+        " --out {output.pileup}"
+        " --group-list {input.barcodes}"
+        " > {log} 2>&1 &&"
         " touch {output.pileup}"
 
 
@@ -45,6 +48,7 @@ rule popscle_demuxlet:
     input:
         pileup="results/popscle_dsc_pileup/{sample_id}.pileup",
         vcf=config["demuxlet"]["vcf"],
+        barcodes=lookup(query="sample_id == '{sample_id}'", within=bams, cols="barcodes"),
     output:
         pileup="results/popscle_demuxlet/{sample_id}",
     conda:
@@ -62,5 +66,7 @@ rule popscle_demuxlet:
         " --plp {input.pileup}"
         " --vcf {input.vcf}"
         " --field GT"
-        " --out {output.pileup} > {log} 2>&1 &&"
+        " --out {output.pileup}"
+        " --group-list {input.barcodes}"
+        " > {log} 2>&1 &&"
         " touch {output.pileup}"
