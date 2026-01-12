@@ -30,3 +30,5 @@ bin/
 *.tar.gz
 # data files
 *.vcf
+# nohup
+nohup.out

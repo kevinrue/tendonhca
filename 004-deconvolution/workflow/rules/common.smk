@@ -17,6 +17,10 @@ def get_final_output():
         "results/vireo_filtered_barcodes_qc_cowplot/{sample}.pdf",
         sample=samples.index.tolist(),
     ))
+    final_output.append(expand(
+        "results/cellsnp_lite/{sample}",
+        sample=samples.index.tolist(),
+    ))
     return final_output
 
 def get_fastqs(wildcards):

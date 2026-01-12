@@ -27,14 +27,14 @@ snakemake --dry-run
 ### Running
 
 ```bash
-snakemake --use-envmodules
+nohup snakemake --use-envmodules &
 ```
 
 Workaround to avoid issue #1 (below):
 
 ```bash
 module load cellranger/7.2.0
-snakemake
+nohup snakemake --sdm slurm &
 ```
 
 ## Conda
