@@ -1,0 +1,9 @@
+dsc-pileup:
+  vcf: /ceph/project/tendonhca/albrecht/005-bulk-deconvolution/results/sort_vcf_same_as_bam/common_snvs.vcf.gz
+  mem: 24G
+  runtime: 6h
+
+demuxlet:
+  vcf: /ceph/project/tendonhca/albrecht/005-bulk-deconvolution/results/bcftools_merge/all.vcf.gz
+  mem: 48G
+  runtime: 6h

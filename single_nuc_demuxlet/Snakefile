@@ -1,0 +1,66 @@
+import pandas as pd
+
+samples_df = pd.read_csv("config/samples.tsv", sep="\t")
+sample_ids = samples_df["sample_id"].tolist()
+bams = samples_df.set_index("sample_id")
+
+configfile: "config/config.yaml"
+
+rule all:
+    input:
+        expand("results/popscle_demuxlet/{sample_id}", sample_id=sample_ids),
+
+# first step of deconvolution with popscle
+# -----------------------------------------------------
+rule popscle_dsc_pileup:
+    input:
+        vcf=config["dsc-pileup"]["vcf"],
+        # bam=lambda wildcards: bams[wildcards.sample_id]['filepath']
+        bam=lookup(query="sample_id == '{sample_id}'", within=bams, cols="filepath"),
+    output:
+        pileup="results/popscle_dsc_pileup/{sample_id}.pileup",
+    # params:
+    #     bam=lambda wildcards: bams[wildcards.sample_id]['filepath'],
+    conda:
+        "envs/popscle.yml"
+    message:
+        """--- Running popscle dsc-pileup."""
+    log:
+        "logs/popscle_dsc_pileup/{sample_id}.log",
+    threads: 1
+    resources:
+        mem=lookup(within=config, dpath="dsc-pileup/mem"),
+        runtime=lookup(within=config, dpath="dsc-pileup/runtime"),
+    shell:
+        "popscle dsc-pileup"
+        " --sam {input.bam}"
+        " --vcf {input.vcf}"
+        " --out {output.pileup} > {log} 2>&1 &&"
+        " touch {output.pileup}"
+
+
+# second step of deconvolution with popscle
+# -----------------------------------------------------
+rule popscle_demuxlet:
+    input:
+        pileup="results/popscle_dsc_pileup/{sample_id}.pileup",
+        vcf=config["demuxlet"]["vcf"],
+    output:
+        pileup="results/popscle_demuxlet/{sample_id}",
+    conda:
+        "envs/popscle.yml"
+    message:
+        """--- Running popscle demuxlet."""
+    log:
+        "logs/popscle_demuxlet/{sample_id}.log",
+    threads: 1
+    resources:
+        mem=lookup(within=config, dpath="demuxlet/mem"),
+        runtime=lookup(within=config, dpath="demuxlet/runtime"),
+    shell:
+        "popscle demuxlet"
+        " --plp {input.pileup}"
+        " --vcf {input.vcf}"
+        " --field GT"
+        " --out {output.pileup} > {log} 2>&1 &&"
+        " touch {output.pileup}"
