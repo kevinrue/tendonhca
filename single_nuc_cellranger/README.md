@@ -30,3 +30,14 @@ export CELLRANGER_TARBALL="/ceph/project/tendonhca/albrecht/resources/cellranger
 snakemake --dry-run
 snakemake --cores all --sdm conda apptainer --default-resources runtime=720
 ```
+
+## 12 Jan 2026
+
+```bash
+for sample in A B C D E F G H
+do
+    cp \
+        results/cellranger/${sample}/outs/per_sample_outs/${sample}/web_summary.html \
+        /ceph/project/tendonhca/datashare/albrecht/single_nuc/cellranger_web_summary/${sample}.html
+done
+```

@@ -1,0 +1,6 @@
+id	feature_types	read1	read2	lane_number	subsample_rate
+12G	Gene Expression	data/fastqs/12G/12G_S1_L001_R1_001.fastq.gz	data/fastqs/12G/12G_S1_L001_R2_001.fastq.gz	1	
+12G	Gene Expression	data/fastqs/12G/12G_S1_L002_R1_001.fastq.gz	data/fastqs/12G/12G_S1_L002_R2_001.fastq.gz	2	
+14G	Gene Expression	data/fastqs/14G/14G_S1_L001_R1_001.fastq.gz	data/fastqs/14G/14G_S1_L001_R2_001.fastq.gz	1	
+14G	Gene Expression	data/fastqs/14G/14G_S1_L002_R1_001.fastq.gz	data/fastqs/14G/14G_S1_L002_R2_001.fastq.gz	2	
+16G	Gene Expression	data/fastqs/16G/16G_S1_L001_R1_001.fastq.gz	data/fastqs/16G/16G_S1_L001_R2_001.fastq.gz	1	
