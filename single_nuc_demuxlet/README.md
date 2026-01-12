@@ -10,3 +10,16 @@ snakemake --sdm conda --dry-run
 ```bash
 nohup snakemake --sdm conda &
 ```
+
+## Results
+
+Data-driven predictions, compared to experimental samplesheet (see "LHBT analysis plan Dec25-Jan26.docx")
+
+A   LHBT_1502   correct
+B   
+C   LHBT_1506   correct
+D   LHBT_1507   correct
+E   LHBT_1519   correct
+F   
+G   
+H   
