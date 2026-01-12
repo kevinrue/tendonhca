@@ -1,6 +1,8 @@
 ---
 title: "16G report"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
@@ -20,6 +22,7 @@ What we need for this analysis:
 ```{r libraries}
 #| echo: false
 #| message: false
+library(dplyr)
 library(DropletUtils)
 library(ggplot2)
 library(readr)
@@ -163,6 +166,20 @@ Transfer deconvoluted labels to `sce` object.
 demuxlet_data$sce_label <- ifelse(demuxlet_data$DROPLET.TYPE == "SNG", demuxlet_data$SNG.BEST.GUESS, demuxlet_data$DROPLET.TYPE)
 sce$demuxlet <- demuxlet_data[colnames(sce), "sce_label"]
 plotUMAP(sce, colour_by = "demuxlet")
+```
+
+Plot AMB, then singlets, then DBL:
+
+```{r}
+tmp_df <- cbind(
+  colData(sce),
+  reducedDim(sce, "UMAP")
+) |> as_tibble()
+ggplot() +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "AMB"), colour = "grey") +
+  geom_point(aes(x = UMAP1, y = UMAP2, colour = demuxlet), tmp_df |> filter(!demuxlet %in% c("AMB", "DBL"))) +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "DBL"), colour = "red", shape = "x", size = 3) +
+  theme_classic()
 ```
 
 Distribution of cell assignments:

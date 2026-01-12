@@ -1,6 +1,8 @@
 ---
 title: "12G report"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
@@ -20,6 +22,7 @@ What we need for this analysis:
 ```{r libraries}
 #| echo: false
 #| message: false
+library(dplyr)
 library(DropletUtils)
 library(ggplot2)
 library(readr)
@@ -165,6 +168,20 @@ sce$demuxlet <- demuxlet_data[colnames(sce), "sce_label"]
 plotUMAP(sce, colour_by = "demuxlet")
 ```
 
+Plot AMB, then singlets, then DBL:
+
+```{r}
+tmp_df <- cbind(
+  colData(sce),
+  reducedDim(sce, "UMAP")
+) |> as_tibble()
+ggplot() +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "AMB"), colour = "grey") +
+  geom_point(aes(x = UMAP1, y = UMAP2, colour = demuxlet), tmp_df |> filter(!demuxlet %in% c("AMB", "DBL"))) +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "DBL"), colour = "red", shape = "x", size = 3) +
+  theme_classic()
+```
+
 Distribution of cell assignments:
 
 ```{r}
@@ -176,3 +193,4 @@ Number of cells passed cellranger filtering AND deconvoluted:
 ```{r}
 sum(!sce$demuxlet %in% c("AMB", "DBL"))
 ```
+
