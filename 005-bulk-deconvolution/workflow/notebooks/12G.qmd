@@ -160,6 +160,8 @@ stopifnot(all(colnames(sce) %in% rownames(demuxlet_data)))
 glimpse(demuxlet_data)
 ```
 
+## Plot deconvolution results
+
 Transfer deconvoluted labels to `sce` object.
 
 ```{r}

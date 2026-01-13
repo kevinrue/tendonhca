@@ -20,6 +20,6 @@ B   LHBT_1503   correct
 C   LHBT_1506   correct
 D   LHBT_1507   correct
 E   LHBT_1519   correct
-F       (LHBT_1530)
-G       (LHBT_1532)
-H       (LHBT_1537)
+F   LHBT_1530   correct
+G   LHBT_1532   correct
+H   LHBT_1537   correct

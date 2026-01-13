@@ -1,0 +1,171 @@
+---
+title: "report"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Introduction
+
+## Dependencies
+
+```{r}
+library(dplyr)
+library(readr)
+library(SingleCellExperiment)
+```
+
+## Helper functions
+
+```{r}
+load_demuxlet <- function(sample_id) {
+  message("Loading demuxlet data for sample: ", sample_id)
+  base_path <- "../results/popscle_demuxlet/%s.best"
+  dexmulet_file <- sprintf(base_path, sample_id)
+  demuxlet_data <- read_tsv(dexmulet_file, show_col_types = FALSE)
+  demuxlet_data$sample_id <- sample_id
+  demuxlet_data
+}
+demuxlet_data <- load_demuxlet(sample_id = "A")
+demuxlet_data
+```
+
+Load cellranger filtered matrix
+
+```{r}
+load_cellranger_matrix <- function(sample_id) {
+  message("Loading cellranger data for sample: ", sample_id)
+  base_path <- "../../single_nuc_cellranger/results/cellranger/%s/outs/per_sample_outs/%s/count/sample_filtered_feature_bc_matrix/"
+  cellranger_path <- sprintf(base_path, sample_id, sample_id)
+  sce <- read10xCounts(cellranger_path, col.names = TRUE)
+  sce
+}
+sce <- load_cellranger_matrix("A")
+sce
+```
+
+Add UMI sum to demuxlet data.
+
+```{r}
+# colData(sce)
+# all(demuxlet_data$BARCODE %in% sce$Barcode)
+stopifnot(all(demuxlet_data$BARCODE == sce$Barcode))
+demuxlet_data$umi_sum <- colSums(counts(sce))
+demuxlet_data
+```
+
+## Load and combine results from all samples
+
+Test for one sample
+
+```{r}
+load_sample_data <- function(sample_id) {
+  demuxlet_data <- load_demuxlet(sample_id = sample_id)
+  sce <- load_cellranger_matrix(sample_id)
+  stopifnot(all(demuxlet_data$BARCODE == sce$Barcode))
+  demuxlet_data$umi_sum <- colSums(counts(sce))
+  demuxlet_data
+}
+demuxlet_data <- load_sample_data("A")
+demuxlet_data
+```
+
+Apply to all samples
+
+```{r}
+demuxlet_data <- do.call("rbind", lapply(c(
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"), load_sample_data))
+table(demuxlet_data$sample_id)
+```
+
+## Add ground truth
+
+```{r}
+ground_truth <- tibble(
+  sample_id = c(
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"),
+  sample_name = c(
+    "LHBT_1502",
+    "LHBT_1503",
+    "LHBT_1506",
+    "LHBT_1507",
+    "LHBT_1519",
+    "LHBT_1530",
+    "LHBT_1532",
+    "LHBT_1537"
+    )
+)
+ground_truth
+```
+
+```{r}
+demuxlet_data <- demuxlet_data |> 
+  left_join(ground_truth, by = "sample_id")
+demuxlet_data
+```
+
+```{r}
+demuxlet_data$prediction_type <- factor(NA, c("AMB", "DBL", "SNG.correct", "SNG.wrong"))
+demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "AMB"] <- "AMB"
+demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "DBL"] <- "DBL"
+demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "SNG" & demuxlet_data$SNG.BEST.GUESS == demuxlet_data$sample_name] <- "SNG.correct"
+demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "SNG" & demuxlet_data$SNG.BEST.GUESS != demuxlet_data$sample_name] <- "SNG.wrong"
+table(demuxlet_data$prediction_type, useNA = "ifany")
+```
+
+## Analyse UMI sum relative to ground truth
+
+```{r}
+#| fig-width: 10
+#| fig-height: 8
+ggplot(demuxlet_data) +
+  geom_violin(aes(x = prediction_type, y = umi_sum), draw_quantiles = 0.5) +
+  facet_wrap(~sample_name) +
+  scale_y_log10(limits = c(NA, NA)) +
+  theme_classic()
+```
+
+Tabulate the numbers
+
+```{r}
+prediction_stats <- with(demuxlet_data, table(sample_name, prediction_type))
+prediction_stats
+```
+
+Success rate?
+
+```{r}
+matrix(
+  prediction_stats[,3] / rowSums(prediction_stats[,3:4]) * 100,
+  ncol = 1,
+  dimnames = list(NULL, "% correct SNG")
+)
+```
+
+Minimum and median UMI sum for correctly assigned singlets.
+
+```{r}
+demuxlet_data |> 
+  filter(DROPLET.TYPE == "SNG" & SNG.BEST.GUESS == sample_name) |> 
+  group_by(sample_name) |> 
+  summarise(
+    n = n(),
+    min_umi = min(umi_sum),
+    median_umi = median(umi_sum)
+  )
+```
