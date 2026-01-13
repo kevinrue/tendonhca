@@ -1,0 +1,74 @@
+---
+title: "Report"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Introduction
+
+```{r}
+sample_id <- "16G"
+```
+
+## Dependencies
+
+```{r}
+library(DropletUtils)
+library(ggplot2)
+library(readr)
+```
+
+## Load data
+
+```{r}
+vireo_path <- sprintf("../results/vireo/%s/donor_ids.tsv", sample_id)
+vireo_data <- read_tsv(vireo_path, show_col_types = FALSE)
+vireo_data
+```
+
+```{r}
+cellranger_path <- sprintf("../../pools_cellranger/results/cellranger/%s/outs/per_sample_outs/%s/count/sample_filtered_feature_bc_matrix/", sample_id, sample_id)
+sce <- read10xCounts(cellranger_path, col.names = TRUE)
+sce
+```
+
+## Analysis
+
+```{r}
+umi_sum <- colSums(counts(sce))
+names(umi_sum) <- colnames(sce)
+vireo_data$umi_sum <- umi_sum[vireo_data$cell]
+vireo_data
+```
+
+```{r}
+ggplot(vireo_data) +
+  geom_jitter(aes(x = donor_id, y = umi_sum), width = 0.2) +
+  scale_y_log10() +
+  coord_cartesian(ylim = c(100, 1E6)) +
+  labs(
+    title = sample_id,
+    y = "UMI sum",
+    x = "Predicted donor"
+  ) +
+  theme_bw()
+```
+
+```{r}
+as.data.frame(table(vireo_data$donor_id)) |> as_tibble()
+```
+
+```{r}
+n_assigned <- sum(!vireo_data$donor_id %in% c("doublet", "unassigned"))
+n_cellranger <- ncol(sce)
+paste0(
+  format(n_assigned, big.mark = ","),
+  " assigned (",
+  round(100* n_assigned / n_cellranger, digits = 1),
+  "% of ",
+  format(n_cellranger, big.mark = ","),
+  " nuclei in cellranger matrix)"
+)
+```

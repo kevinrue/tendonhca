@@ -33,8 +33,9 @@ nohup snakemake --use-envmodules &
 Workaround to avoid issue #1 (below):
 
 ```bash
+conda activate snakemake
 module load cellranger/7.2.0
-nohup snakemake --sdm slurm &
+nohup snakemake --sdm conda &
 ```
 
 ## Conda

@@ -1,0 +1,5 @@
+cellsnp_lite:
+  min_maf: 0.1
+  min_count: 100
+  mem_gb: 16
+  runtime: 23h

@@ -1,6 +1,7 @@
+# run vireo on cellranger's own list of filtered barcodes
 rule vireo:
     input:
-        dir="results/cellsnp-lite/{sample}",
+        dir="results/cellsnp_lite/{sample}",
     output:
         dir=directory("results/vireo/{sample}"),
     log:
@@ -10,10 +11,10 @@ rule vireo:
     conda:
         "../../envs/vireo.yaml"
     shell:
-        "vireo "
-        "-c {input.dir}"
-        "-N {params.n_donors}"
-        "-o {output.dir}"
+        "vireo"
+        " -c {input.dir}"
+        " -N {params.n_donors}"
+        " -o {output.dir}"
 
 rule vireo_filtered_barcodes:
     input:

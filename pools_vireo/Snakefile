@@ -1,0 +1,56 @@
+import pandas as pd
+
+samples_df = pd.read_csv("config/samples.tsv", sep="\t")
+sample_ids = samples_df["sample_id"].tolist()
+samples_df = samples_df.set_index("sample_id")
+
+configfile: "config/config.yaml"
+
+rule all:
+    input:
+        expand("results/vireo/{sample_id}", sample_id=sample_ids)
+
+rule cellsnp_lite:
+    input:
+        bam=lookup(query="sample_id == '{sample_id}'", within=samples_df, cols="bam"),
+        barcodes=lookup(query="sample_id == '{sample_id}'", within=samples_df, cols="barcodes"),
+    output:
+        dir=directory("results/cellsnp_lite/{sample_id}"),
+    params:
+        min_maf=config["cellsnp_lite"]["min_maf"],
+        min_count=config["cellsnp_lite"]["min_count"],
+    log:
+        "logs/cellsnp_lite/{sample_id}.log",
+    conda:
+        "envs/cellsnp_lite.yaml",
+    threads: 10
+    resources:
+        mem_mb=config["cellsnp_lite"]["mem_gb"] * 1024,
+        runtime=config["cellsnp_lite"]["runtime"],
+    shell:
+        "cellsnp-lite"
+        " -s {input.bam}"
+        " -b {input.barcodes}"
+        " -O {output.dir}"
+        " -p {threads}"
+        " --minMAF {params.min_maf}"
+        " --minCOUNT {params.min_count}"
+        " --gzip"
+
+# run vireo on cellranger's own list of filtered barcodes
+rule vireo:
+    input:
+        dir="results/cellsnp_lite/{sample_id}",
+    output:
+        dir=directory("results/vireo/{sample_id}"),
+    log:
+        "logs/vireo/{sample_id}.log",
+    params:
+        donors=lookup(query="sample_id == '{sample_id}'", within=samples_df, cols="donors"),
+    conda:
+        "envs/vireo.yaml"
+    shell:
+        "vireo"
+        " -c {input.dir}"
+        " -N {params.donors}"
+        " -o {output.dir}"

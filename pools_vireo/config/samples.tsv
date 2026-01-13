@@ -1,0 +1,4 @@
+sample_id	donors	bam	barcodes
+12G	8	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/12G/outs/per_sample_outs/12G/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/12G/outs/per_sample_outs/12G/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+14G	8	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/14G/outs/per_sample_outs/14G/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/14G/outs/per_sample_outs/14G/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz
+16G	7	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/16G/outs/per_sample_outs/16G/count/sample_alignments.bam	/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/16G/outs/per_sample_outs/16G/count/sample_filtered_feature_bc_matrix/barcodes.tsv.gz

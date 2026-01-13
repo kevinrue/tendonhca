@@ -1,8 +1,8 @@
-# run cellsnp-lite cellranger's list of filtered barcodes
+# run vireo on cellranger's own list of filtered barcodes
 rule cellsnp_lite:
     input:
         bam="results/cellranger_count/{sample}/outs/possorted_genome_bam.bam",
-        barcode="results/cellranger_count/12G/outs/filtered_feature_bc_matrix/barcodes.tsv.gz",
+        barcode="results/cellranger_count/{sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz",
     output:
         dir=directory("results/cellsnp_lite/{sample}"),
     log:

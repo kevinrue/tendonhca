@@ -15,7 +15,6 @@ rule all:
 rule popscle_dsc_pileup:
     input:
         vcf=config["dsc-pileup"]["vcf"],
-        # bam=lambda wildcards: bams[wildcards.sample_id]['filepath']
         bam=lookup(query="sample_id == '{sample_id}'", within=bams, cols="bam"),
         barcodes=lookup(query="sample_id == '{sample_id}'", within=bams, cols="barcodes"),
     output:

@@ -1,0 +1,8 @@
+name: vireo
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - pip:
+    - vireoSNP
