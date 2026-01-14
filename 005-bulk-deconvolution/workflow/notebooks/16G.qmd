@@ -24,6 +24,7 @@ What we need for this analysis:
 #| message: false
 library(dplyr)
 library(DropletUtils)
+library(forcats)
 library(ggplot2)
 library(readr)
 library(scater)
@@ -216,3 +217,4 @@ ggplot(tmp_df) +
   scale_y_log10(limits = c(100, NA)) +
   theme_classic()
 ```
+

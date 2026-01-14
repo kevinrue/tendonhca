@@ -9,7 +9,7 @@ editor: visual
 ## Introduction
 
 ```{r}
-sample_id <- "16G"
+sample_id <- "12G"
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ sample_id <- "16G"
 library(DropletUtils)
 library(ggplot2)
 library(readr)
+library(tibble)
 ```
 
 ## Load data
@@ -44,8 +45,9 @@ vireo_data
 ```
 
 ```{r}
-ggplot(vireo_data) +
-  geom_jitter(aes(x = donor_id, y = umi_sum), width = 0.2) +
+ggplot(vireo_data, aes(x = donor_id, y = umi_sum)) +
+  geom_jitter(width = 0.2) +
+  geom_violin(fill = NA, scale = "width") +
   scale_y_log10() +
   coord_cartesian(ylim = c(100, 1E6)) +
   labs(

@@ -12,8 +12,9 @@ editor: visual
 
 ```{r}
 library(dplyr)
+library(ggplot2)
 library(readr)
-library(SingleCellExperiment)
+library(DropletUtils)
 ```
 
 ## Helper functions
@@ -133,8 +134,9 @@ table(demuxlet_data$prediction_type, useNA = "ifany")
 ```{r}
 #| fig-width: 10
 #| fig-height: 8
-ggplot(demuxlet_data) +
-  geom_violin(aes(x = prediction_type, y = umi_sum), draw_quantiles = 0.5) +
+ggplot(demuxlet_data, aes(x = prediction_type, y = umi_sum)) +
+  geom_jitter(width = 0.2, size = 0.1) +
+  geom_violin(fill = NA, scale = "width", draw_quantiles = 0.5) +
   facet_wrap(~sample_name) +
   scale_y_log10(limits = c(NA, NA)) +
   theme_classic()

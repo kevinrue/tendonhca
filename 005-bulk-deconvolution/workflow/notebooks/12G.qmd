@@ -24,6 +24,7 @@ What we need for this analysis:
 #| message: false
 library(dplyr)
 library(DropletUtils)
+library(forcats)
 library(ggplot2)
 library(readr)
 library(scater)
