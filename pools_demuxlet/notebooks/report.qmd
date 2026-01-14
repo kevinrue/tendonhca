@@ -1,0 +1,285 @@
+---
+title: "Report"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+```{r sample_id}
+sample_id <- "16G"
+```
+
+## Introduction
+
+In this notebook, we'll load the CellRanger filtered matrix from the following file:
+
+```{r inputfiles}
+cellranger_filtered_matrix <- sprintf("/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/%s/outs/per_sample_outs/%s/count/sample_filtered_feature_bc_matrix", sample_id, sample_id)
+names(cellranger_filtered_matrix) <- sample_id
+```
+
+## Libraries
+
+What we need for this analysis:
+
+```{r libraries}
+#| echo: false
+#| message: false
+library(dplyr)
+library(DropletUtils)
+library(forcats)
+library(ggplot2)
+library(readr)
+library(scater)
+library(scran)
+library(scuttle)
+library(tibble)
+```
+
+## Load data
+
+Load the CellRanger filtered matrix.
+
+```{r read10xcounts}
+#| echo: false
+sce <- read10xCounts(samples = cellranger_filtered_matrix, col.names = TRUE)
+sce
+```
+
+## Basic processing
+
+Adapted from <https://carpentries-incubator.github.io/bioc-scrnaseq/eda_qc.html>
+
+Size factors:
+
+```{r}
+lib.sf <- librarySizeFactors(sce)
+sf_df <- data.frame(size_factor = lib.sf)
+ggplot(sf_df, aes(size_factor)) + 
+  geom_histogram(fill = "grey", colour = "black") + 
+  scale_x_log10() +
+  labs(
+    title = sprintf("Sample: %s", sample_id),
+    subtitle = sprintf("Number of cells: %s", format(ncol(sce), big.mark = ","))
+  ) +
+  theme_bw()
+```
+
+Log-normalisation:
+
+```{r}
+sizeFactors(sce) <- lib.sf
+sce <- logNormCounts(sce)
+sce
+```
+
+Feature selection
+
+```{r}
+dec.sce <- modelGeneVar(sce)
+
+fit.sce <- metadata(dec.sce)
+
+mean_var_df <- data.frame(mean = fit.sce$mean,
+                          var  = fit.sce$var)
+
+ggplot(mean_var_df, aes(mean, var)) + 
+    geom_point() + 
+    geom_function(
+      fun = fit.sce$trend, 
+      color = "dodgerblue"
+    ) + 
+    labs(
+      x = "Mean of log-expression",
+      y = "Variance of log-expression"
+    ) +
+  theme_bw()
+```
+
+HVG
+
+```{r}
+hvg.sce.var <- getTopHVGs(dec.sce, n = 500)
+
+mean_var_df$hvg <- rownames(mean_var_df) %in% hvg.sce.var
+ggplot(mean_var_df, aes(mean, var, colour = hvg)) + 
+    geom_point() + 
+    geom_function(
+      fun = fit.sce$trend, 
+      color = "dodgerblue"
+    ) + 
+    labs(
+      x = "Mean of log-expression",
+      y = "Variance of log-expression"
+    ) +
+  theme_bw()
+
+```
+
+PCA
+
+```{r}
+sce <- runPCA(sce, subset_row = hvg.sce.var)
+sce
+```
+
+PCA scree plot
+
+```{r}
+pct_var_df <- data.frame(
+  PC = 1:50,
+  pct_var = attr(reducedDim(sce), "percentVar")
+)
+
+ggplot(pct_var_df, aes(PC, pct_var)) + 
+    geom_point() + 
+    labs(y = "Variance explained (%)")
+```
+
+PCA scatter plot
+
+```{r}
+plotPCA(sce)
+```
+
+UMAP
+
+```{r}
+set.seed(111)
+
+sce <- runUMAP(sce, dimred = "PCA")
+
+plotUMAP(sce)
+```
+
+## Load deconvolution data
+
+Load table
+
+```{r}
+demuxlet_file <- sprintf("/ceph/project/tendonhca/albrecht/pools_demuxlet/results/popscle_demuxlet/%s.best", sample_id)
+demuxlet_data <- read_tsv(demuxlet_file, show_col_types = FALSE) |> 
+  column_to_rownames("BARCODE")
+stopifnot(all(colnames(sce) %in% rownames(demuxlet_data)))
+glimpse(demuxlet_data)
+```
+
+## Plot deconvolution results
+
+Transfer deconvoluted labels to `sce` object.
+
+```{r}
+demuxlet_data$sce_label <- ifelse(demuxlet_data$DROPLET.TYPE == "SNG", demuxlet_data$SNG.BEST.GUESS, demuxlet_data$DROPLET.TYPE)
+sce$demuxlet <- demuxlet_data[colnames(sce), "sce_label"]
+plotUMAP(sce, colour_by = "demuxlet")
+```
+
+Plot AMB, then singlets, then DBL:
+
+```{r}
+tmp_df <- cbind(
+  colData(sce),
+  reducedDim(sce, "UMAP")
+) |> as_tibble()
+ggplot() +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "AMB"), colour = "grey") +
+  geom_point(aes(x = UMAP1, y = UMAP2, colour = demuxlet), tmp_df |> filter(!demuxlet %in% c("AMB", "DBL"))) +
+  geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "DBL"), colour = "red", shape = "x", size = 3) +
+  labs(
+    title = sample_id
+  ) +
+  theme_classic()
+```
+
+Distribution of cell assignments:
+
+```{r}
+table(sce$demuxlet) |> as.data.frame()
+```
+
+Number of cells passed cellranger filtering AND deconvoluted:
+
+```{r}
+sum(!sce$demuxlet %in% c("AMB", "DBL"))
+```
+
+UMI count for cells, separated as singlet or not.
+
+```{r}
+#| fig-width: 4
+#| fig-height: 5
+sce$umi_sum <- colSums(counts(sce))
+tmp_df <- colData(sce) |> 
+  as_tibble() |> 
+  mutate(
+    singlet = !demuxlet %in% c("AMB", "DBL"),
+    summary = fct_collapse(demuxlet, 
+      AMB = c("AMB"), 
+      DBL = c("DBL"), 
+      other_level = "Singlet"
+    )
+  )
+ggplot(tmp_df, aes(x = summary, y = umi_sum)) +
+  geom_jitter(width = 0.2, colour = "grey") +
+  geom_violin(fill = NA, scale = "width", draw_quantiles = 0.5) +
+  scale_y_log10(limits = c(100, 50E3)) +
+  labs(
+    title = sample_id
+  ) +
+  theme_classic()
+```
+
+```{r}
+n_assigned <- sum(demuxlet_data$DROPLET.TYPE == "SNG")
+n_cellranger <- ncol(sce)
+paste0(
+  format(n_assigned, big.mark = ","),
+  " assigned (",
+  round(100* n_assigned / n_cellranger, digits = 1),
+  "% of ",
+  format(n_cellranger, big.mark = ","),
+  " nuclei in cellranger matrix)"
+)
+```
+
+```{r}
+tmp_df <- tmp_df |> 
+  arrange(desc(umi_sum)) |> 
+  mutate(
+    cumsum_singlet = cumsum(summary == "Singlet"),
+    rank = row_number(),
+    singlet_fraction = cumsum_singlet / rank
+  )
+tmp_df
+```
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+ggplot(tmp_df, aes(umi_sum, cumsum_singlet)) +
+  geom_line() +
+  scale_x_log10() +
+  coord_cartesian(xlim = c(100, 1E5)) +
+  labs(
+    title = sample_id,
+    y = "Total number assigned as singlet",
+    x = "Minimum UMI sum"
+  ) +
+  theme_classic()
+```
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+ggplot(tmp_df, aes(umi_sum, singlet_fraction)) +
+  geom_line() +
+  scale_x_log10() +
+  coord_cartesian(xlim = c(100, 1E5), ylim = c(0, 1)) +
+  labs(
+    title = sample_id,
+    y = "Fraction assigned as singlet",
+    x = "Minimum UMI sum"
+  ) +
+  theme_classic()
+```

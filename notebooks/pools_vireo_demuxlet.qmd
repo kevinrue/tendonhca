@@ -1,0 +1,57 @@
+---
+title: "pools_vireo_demuxlet"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+```{r}
+sample_id <- "12G"
+```
+
+## Intro
+
+Even though vireo doesn't have reference genotypes telling who's who and assigns nuclei to anonymous donors.
+
+## Load data
+
+### Vireo
+
+```{r}
+vireo_path <- sprintf("/ceph/project/tendonhca/albrecht/pools_vireo/results/vireo/%s/donor_ids.tsv", sample_id)
+vireo_data <- read_tsv(vireo_path, show_col_types = FALSE)
+vireo_data
+```
+
+### demuxlet
+
+```{r}
+demuxlet_file <- sprintf("/ceph/project/tendonhca/albrecht/pools_demuxlet/results/popscle_demuxlet/%s.best", sample_id)
+demuxlet_data <- read_tsv(demuxlet_file, show_col_types = FALSE)
+demuxlet_data
+```
+
+## Analysis
+
+```{r}
+combined_data <- dplyr::left_join(
+  x = vireo_data,
+  y = demuxlet_data,
+  by = join_by(cell == BARCODE)) |> 
+  mutate(
+    demuxlet = ifelse(
+      DROPLET.TYPE == "SNG",
+      SNG.BEST.GUESS,
+      DROPLET.TYPE)
+  )
+combined_data
+```
+
+```{r}
+if (interactive()) {
+  as.data.frame(with(combined_data, table(donor_id, demuxlet))) |> 
+    tidyr::pivot_wider(names_from = demuxlet, values_from = Freq) |> 
+    View()
+}
+```
