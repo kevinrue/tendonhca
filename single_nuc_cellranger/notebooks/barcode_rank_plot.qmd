@@ -1,0 +1,132 @@
+---
+title: "barcode_rank_plot"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Dependencies
+
+```{r}
+#| message: false
+library(DropletUtils)
+library(dplyr)
+library(ggplot2)
+```
+
+## Helper functions
+
+```{r}
+sample_ids <- LETTERS[1:8]
+
+resolve_raw_matrix_path <- function(sample_id) {
+  candidate_paths <- c(
+    file.path(
+      ".",
+      "single_nuc_cellranger",
+      "results",
+      "cellranger",
+      sample_id,
+      "outs",
+      "multi",
+      "count",
+      "raw_feature_bc_matrix"
+    ),
+    file.path(
+      "..",
+      "results",
+      "cellranger",
+      sample_id,
+      "outs",
+      "multi",
+      "count",
+      "raw_feature_bc_matrix"
+    )
+  )
+
+  existing_path <- candidate_paths[file.exists(candidate_paths)][1]
+
+  if (is.na(existing_path)) {
+    stop(
+      "Could not find raw_feature_bc_matrix for sample ",
+      sample_id,
+      ". Checked: ",
+      paste(candidate_paths, collapse = ", ")
+    )
+  }
+
+  existing_path
+}
+
+load_barcode_rank_data <- function(sample_id) {
+  raw_matrix_path <- resolve_raw_matrix_path(sample_id)
+  names(raw_matrix_path) <- sample_id
+
+  sce <- read10xCounts(raw_matrix_path, col.names = TRUE)
+  umi_sum <- sort(colSums(counts(sce)), decreasing = TRUE)
+  umi_sum <- umi_sum[umi_sum >= 10]
+
+  data.frame(
+    sample_id = sample_id,
+    rank = seq_along(umi_sum),
+    umi_sum = as.numeric(umi_sum)
+  )
+}
+```
+
+## Load Cell Ranger raw matrices
+
+```{r}
+barcode_rank_data <- bind_rows(lapply(sample_ids, load_barcode_rank_data))
+head(barcode_rank_data)
+```
+
+## Barcode rank plot
+
+```{r}
+#| fig-width: 10
+#| fig-height: 8
+log_grid_breaks <- function(min_value, max_value) {
+  exponents <- seq(
+    floor(log10(min_value)),
+    ceiling(log10(max_value))
+  )
+
+  breaks <- as.vector(outer(c(1, 2, 5), 10^exponents))
+  breaks <- sort(unique(breaks))
+  breaks[breaks >= min_value & breaks <= max_value]
+}
+
+decade_label_function <- function(values) {
+  is_decade <- values > 0 & abs(log10(values) - round(log10(values))) < 1e-10
+  ifelse(is_decade, format(values, trim = TRUE, scientific = FALSE), "")
+}
+
+x_breaks <- log_grid_breaks(1, max(barcode_rank_data$rank))
+y_breaks <- log_grid_breaks(1, 1e6)
+
+ggplot(barcode_rank_data, aes(x = rank, y = umi_sum, colour = sample_id)) +
+  geom_line(linewidth = 0.4) +
+  scale_x_log10(
+    limits = c(1, max(barcode_rank_data$rank)),
+    breaks = x_breaks,
+    labels = decade_label_function
+  ) +
+  scale_y_log10(
+    limits = c(1, 1e6),
+    breaks = y_breaks,
+    labels = decade_label_function
+  ) +
+  labs(
+    x = "Barcode rank",
+    y = "UMI sum",
+    colour = "Sample",
+    title = "Cell Ranger raw barcode rank plot"
+  ) +
+  theme_classic() +
+  theme(
+    panel.grid.major = element_line(colour = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_blank()
+  )
+```
