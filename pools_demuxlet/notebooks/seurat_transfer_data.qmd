@@ -1,0 +1,39 @@
+---
+title: "seurat_transfer_data"
+format: html
+---
+
+```{r}
+sample_id <- "14G"
+```
+
+```{r}
+#| message: false
+library(stringr)
+library(Seurat)
+```
+
+```{r}
+seurat_ref <- readRDS("/ceph/project/tendonhca/shared/chromium/analysis/20231102_LHBT/20240116_15-16_Fine_annotation.dir/RDS_objects.dir/LHBT_integrated_annotated.rds")
+seurat_ref
+```
+
+```{r}
+str_glue("/ceph/project/tendonhca/albrecht/pools_cellranger/results/cellranger/{sample_id}/outs/per_sample_outs/{sample_id}/count/sample_filtered_feature_bc_matrix.h5", sample_id=sample_id)
+seurat <- Read10X()
+```
+
+
+```{r}
+anchors <- FindTransferAnchors(reference = ref, 
+                               query = seurat, 
+                               normalization.method = "SCT")
+
+seurat <- TransferData(anchorset = anchors, 
+                       refdata = ref$CellType, 
+                       prediction.assay = TRUE,
+                       weight.reduction = seurat[["pca"]], 
+                       query = seurat, 
+                       dims=1:30)
+```
+
