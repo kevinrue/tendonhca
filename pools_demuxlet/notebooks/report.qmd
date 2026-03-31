@@ -26,11 +26,14 @@ What we need for this analysis:
 ```{r libraries}
 #| echo: false
 #| message: false
+library(BiocIO)
 library(dplyr)
 library(DropletUtils)
 library(forcats)
 library(ggplot2)
 library(readr)
+library(rtracklayer)
+library(Seurat)
 library(scater)
 library(scran)
 library(scuttle)
@@ -44,6 +47,24 @@ Load the CellRanger filtered matrix.
 ```{r read10xcounts}
 #| echo: false
 sce <- read10xCounts(samples = cellranger_filtered_matrix, col.names = TRUE)
+sce
+```
+
+## Apply typical quality filters
+
+```{r}
+gtf_file <- "/ceph/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/genes/genes.gtf"
+gtf_gene_data <- BiocIO::import(gtf_file, feature.type = "gene")
+mt_gene_ids <- mcols(subset(gtf_gene_data, seqnames == "chrM", "gene_id"))[["gene_id"]]
+cat(mt_gene_ids, sep = "\n")
+```
+
+```{r}
+sce$umi_sum <- colSums(counts(sce))
+sce$n_features <- colSums(counts(sce) > 0)
+sce$pct_mt <- colSums(counts(sce)[mt_gene_ids, ]) / sce$umi_sum
+keep <- sce$umi_sum >= 300 & sce$n_features >= 300 & sce$pct_mt <= 0.05
+sce <- sce[, keep]
 sce
 ```
 
@@ -162,7 +183,13 @@ demuxlet_file <- sprintf("/ceph/project/tendonhca/albrecht/pools_demuxlet/result
 demuxlet_data <- read_tsv(demuxlet_file, show_col_types = FALSE) |> 
   column_to_rownames("BARCODE")
 stopifnot(all(colnames(sce) %in% rownames(demuxlet_data)))
-glimpse(demuxlet_data)
+demuxlet_data
+```
+
+Tabulate counts of droplets demultiplexed.
+
+```{r}
+table(demuxlet_data$DROPLET.TYPE, useNA = "always")
 ```
 
 ## Plot deconvolution results
@@ -171,8 +198,117 @@ Transfer deconvoluted labels to `sce` object.
 
 ```{r}
 demuxlet_data$sce_label <- ifelse(demuxlet_data$DROPLET.TYPE == "SNG", demuxlet_data$SNG.BEST.GUESS, demuxlet_data$DROPLET.TYPE)
-sce$demuxlet <- demuxlet_data[colnames(sce), "sce_label"]
+sce$demuxlet <- factor(
+  demuxlet_data[colnames(sce), "sce_label"],
+  c("AMB", "DBL", "LHBT_1519", "LHBT_1507", "LHBT_1537", "LHBT_1502",  "LHBT_1532", "LHBT_1503", "LHBT_1506", "LHBT_1530")
+)
 plotUMAP(sce, colour_by = "demuxlet")
+```
+
+UMI stats per droplet per donor:
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+colData(sce) |> 
+  ggplot(aes(x = demuxlet, y = umi_sum)) +
+  geom_violin(scale = "width", draw_quantiles = c(0.5)) +
+  geom_point(aes(x = demuxlet, y = umi_sum), colData(sce) |> as_tibble() |> filter(demuxlet == "LHBT_1532")) + # for pool 16G
+  scale_y_log10(
+    limits = c(300, 100E3)
+  ) +
+  scale_x_discrete(drop = FALSE) +
+  labs(
+    title = sample_id,
+    y = "Total UMI sum",
+    x = "Assignment"
+  ) +
+  theme_classic()
+```
+
+Examine the number of SNPs used per droplet
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+sce$demuxlet_snps <- demuxlet_data[colnames(sce), "NUM.SNPS"]
+colData(sce) |> 
+  ggplot(aes(x = demuxlet, y = demuxlet_snps)) +
+  geom_violin(scale = "width", draw_quantiles = c(0.5)) +
+  geom_point(aes(x = demuxlet, y = demuxlet_snps), colData(sce) |> as_tibble() |> filter(demuxlet == "LHBT_1532")) + # for pool 16G
+  scale_y_log10(
+    limits = c(1, 10E3)
+  ) +
+  scale_x_discrete(drop = FALSE) +
+  labs(
+    title = sample_id,
+    y = "Number of SNPs used by demuxlet",
+    x = "Assignment"
+  ) +
+  theme_classic()
+```
+
+Examine the number of reads used per droplet
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+sce$demuxlet_reads <- demuxlet_data[colnames(sce), "NUM.READS"]
+colData(sce) |> 
+  ggplot(aes(x = demuxlet, y = demuxlet_reads)) +
+  geom_violin(scale = "width", draw_quantiles = c(0.5)) +
+  geom_point(aes(x = demuxlet, y = demuxlet_reads), colData(sce) |> as_tibble() |> filter(demuxlet == "LHBT_1532")) + # for pool 16G
+  scale_y_log10(
+    limits = c(1, 10E3)
+  ) +
+  scale_x_discrete(drop = FALSE) +
+  labs(
+    title = sample_id,
+    y = "Number of UMIs used by demuxlet",
+    x = "Assignment"
+  ) +
+  theme_classic()
+```
+
+Examine the fraction of UMIs used per droplet
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+colData(sce) |> 
+  ggplot(aes(x = demuxlet, y = demuxlet_reads / umi_sum)) +
+  geom_violin(scale = "width", draw_quantiles = c(0.5)) +
+  geom_point(aes(x = demuxlet, y = demuxlet_reads / umi_sum), colData(sce) |> as_tibble() |> filter(demuxlet == "LHBT_1532")) + # for pool 16G
+  scale_y_continuous(
+    limits = c(0, 1), labels = label_percent()
+  ) +
+  scale_x_discrete(drop = FALSE) +
+  labs(
+    title = sample_id,
+    y = "Fraction of UMIs used by demuxlet",
+    x = "Assignment"
+  ) +
+  theme_classic()
+```
+
+Demonstrate that the number of SNPs and number of reads used by demuxlet are identical even if they are very similar and highly correlated:
+
+```{r}
+colData(sce) |> 
+  as_tibble() |> 
+  # filter(!demuxlet %in% c("AMB", "DBL")) |> 
+  ggplot(aes(x = demuxlet_reads, y = demuxlet_snps)) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_point(aes(colour = demuxlet)) +
+  scale_x_log10(limits = c(10, 100E3)) +
+  scale_y_log10(limits = c(10, 100E3)) +
+  scale_colour_discrete(drop = FALSE) +
+  theme_classic() +
+  labs(
+    title = sample_id,
+    x = "Number of reads used by demuxlet",
+    y = "Number of SNPs used by demuxlet"
+  )
 ```
 
 Plot AMB, then singlets, then DBL:
@@ -186,6 +322,9 @@ ggplot() +
   geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "AMB"), colour = "grey") +
   geom_point(aes(x = UMAP1, y = UMAP2, colour = demuxlet), tmp_df |> filter(!demuxlet %in% c("AMB", "DBL"))) +
   geom_point(aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "DBL"), colour = "red", shape = "x", size = 3) +
+  guides(
+    colour = guide_legend(override.aes = list(size = 3))
+  ) +
   labs(
     title = sample_id
   ) +
@@ -282,4 +421,90 @@ ggplot(tmp_df, aes(umi_sum, singlet_fraction)) +
     x = "Minimum UMI sum"
   ) +
   theme_classic()
+```
+
+## Transfer learning
+
+Carla's annotated object:
+
+```{r}
+carla <- readRDS("/project/tendonhca/shared/chromium/analysis/20231102_LHBT/20240116_15-16_Fine_annotation.dir/RDS_objects.dir/LHBT_integrated_annotated.rds")
+carla
+```
+
+```{r}
+DimPlot(carla, group.by = c("cell_annotation_update"))
+```
+
+```{r}
+pool.query <- CreateSeuratObject(counts = counts(sce))
+rownames(pool.query) <- make.unique(rowData(sce)[["Symbol"]])
+keep_features <- intersect(rownames(carla), rownames(pool.query))
+carla <- subset(carla, features = keep_features)
+pool.query <- subset(pool.query, features = keep_features)
+pool.query <- NormalizeData(pool.query)
+pools.anchors <- FindTransferAnchors(
+  reference = carla,
+  query = pool.query,
+  dims = 1:30,
+  reference.reduction = "lognorm.pca"
+)
+predictions <- TransferData(
+  anchorset = pools.anchors,
+  refdata = carla$cell_annotation_update,
+  dims = 1:30
+)
+pool.query <- AddMetaData(pool.query, metadata = predictions)
+pool.query
+```
+
+```{r}
+VlnPlot(pool.query, features = "prediction.score.max")  # or the metadata field name created by TransferData
+```
+
+```{r}
+sce$predicted_cell_type <- pool.query$predicted.id
+table(sce$predicted_cell_type)
+```
+
+```{r}
+tmp_df <- cbind(
+  colData(sce),
+  reducedDim(sce, "UMAP")
+) |> as_tibble()
+n <- nlevels(carla$cell_annotation_update)
+cols <- grDevices::hcl(
+  h = seq(15, 375, length = n + 1)[1:n],
+  l = 65,
+  c = 100
+)
+names(cols) <- levels(carla$cell_annotation_update)
+ggplot() +
+  geom_point(
+    aes(x = UMAP1, y = UMAP2),
+    tmp_df |> filter(demuxlet == "AMB"),
+    colour = "grey") +
+  geom_point(
+    aes(x = UMAP1, y = UMAP2, colour = predicted_cell_type),
+    tmp_df |> filter(!demuxlet %in% c("AMB", "DBL"))
+    ) +
+  geom_point(
+    aes(x = UMAP1, y = UMAP2), tmp_df |> filter(demuxlet == "DBL"),
+    colour = "red",
+    shape = "x",
+    size = 3) +
+  scale_colour_manual(values = cols) +
+  guides(
+    colour = guide_legend(override.aes = list(size = 3))
+  ) +
+  labs(
+    title = sample_id
+  ) +
+  theme_classic()
+```
+
+```{r}
+table(sce$predicted_cell_type, sce$demuxlet) |>
+  as.data.frame() |> 
+  pivot_wider(names_from = Var2, values_from = Freq) |> View()
 ```
