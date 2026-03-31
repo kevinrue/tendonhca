@@ -10,7 +10,8 @@ editor: visual
 
 ## Dependencies
 
-```{r}
+```{r library}
+#| message: false
 library(dplyr)
 library(ggplot2)
 library(readr)
@@ -19,7 +20,9 @@ library(DropletUtils)
 
 ## Helper functions
 
-```{r}
+Load demuxlet data
+
+```{r load_demuxlet}
 load_demuxlet <- function(sample_id) {
   message("Loading demuxlet data for sample: ", sample_id)
   base_path <- "../results/popscle_demuxlet/%s.best"
@@ -28,22 +31,23 @@ load_demuxlet <- function(sample_id) {
   demuxlet_data$sample_id <- sample_id
   demuxlet_data
 }
-demuxlet_data <- load_demuxlet(sample_id = "A")
-demuxlet_data
+# demuxlet_data <- load_demuxlet(sample_id = "A")
+# demuxlet_data
 ```
 
 Load cellranger filtered matrix
 
-```{r}
+```{r load_cellranger_matrix}
 load_cellranger_matrix <- function(sample_id) {
   message("Loading cellranger data for sample: ", sample_id)
   base_path <- "../../single_nuc_cellranger/results/cellranger/%s/outs/per_sample_outs/%s/count/sample_filtered_feature_bc_matrix/"
   cellranger_path <- sprintf(base_path, sample_id, sample_id)
+  names(cellranger_path) <- sample_id
   sce <- read10xCounts(cellranger_path, col.names = TRUE)
   sce
 }
-sce <- load_cellranger_matrix("A")
-sce
+# sce <- load_cellranger_matrix("A")
+# sce
 ```
 
 Add UMI sum to demuxlet data.
@@ -51,21 +55,28 @@ Add UMI sum to demuxlet data.
 ```{r}
 # colData(sce)
 # all(demuxlet_data$BARCODE %in% sce$Barcode)
-stopifnot(all(demuxlet_data$BARCODE == sce$Barcode))
-demuxlet_data$umi_sum <- colSums(counts(sce))
-demuxlet_data
+# stopifnot(all(demuxlet_data$BARCODE == sce$Barcode))
+# demuxlet_data$umi_sum <- colSums(counts(sce))
+# demuxlet_data
 ```
 
 ## Load and combine results from all samples
 
-Test for one sample
-
 ```{r}
+gtf_file <- "/ceph/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/genes/genes.gtf"
+gtf_gene_data <- BiocIO::import(gtf_file, feature.type = "gene")
+mt_gene_ids <- mcols(subset(gtf_gene_data, seqnames == "chrM", "gene_id"))[["gene_id"]]
+cat(mt_gene_ids, sep = "\n")
+```
+
+```{r load_sample_data}
 load_sample_data <- function(sample_id) {
   demuxlet_data <- load_demuxlet(sample_id = sample_id)
   sce <- load_cellranger_matrix(sample_id)
   stopifnot(all(demuxlet_data$BARCODE == sce$Barcode))
   demuxlet_data$umi_sum <- colSums(counts(sce))
+  demuxlet_data$n_features <- colSums(counts(sce) > 0)
+  demuxlet_data$pct_mt <- colSums(counts(sce)[mt_gene_ids, ]) / demuxlet_data$umi_sum
   demuxlet_data
 }
 demuxlet_data <- load_sample_data("A")
@@ -89,7 +100,7 @@ table(demuxlet_data$sample_id)
 
 ## Add ground truth
 
-```{r}
+```{r ground_truth}
 ground_truth <- tibble(
   sample_id = c(
     "A",
@@ -114,13 +125,13 @@ ground_truth <- tibble(
 ground_truth
 ```
 
-```{r}
+```{r add_ground_truth}
 demuxlet_data <- demuxlet_data |> 
   left_join(ground_truth, by = "sample_id")
 demuxlet_data
 ```
 
-```{r}
+```{r prediction_type}
 demuxlet_data$prediction_type <- factor(NA, c("AMB", "DBL", "SNG.correct", "SNG.wrong"))
 demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "AMB"] <- "AMB"
 demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "DBL"] <- "DBL"
@@ -129,13 +140,24 @@ demuxlet_data$prediction_type[demuxlet_data$DROPLET.TYPE == "SNG" & demuxlet_dat
 table(demuxlet_data$prediction_type, useNA = "ifany")
 ```
 
-## Analyse UMI sum relative to ground truth
+## Apply typical quality filters
 
 ```{r}
+demuxlet_data <- demuxlet_data |> 
+  filter(
+    umi_sum >= 300 &
+      n_features >= 300 &
+      pct_mt <= 0.05
+  )
+```
+
+## Analyse UMI sum relative to ground truth
+
+```{r ggplot_prediction_type_umi_sum}
 #| fig-width: 10
 #| fig-height: 8
 ggplot(demuxlet_data, aes(x = prediction_type, y = umi_sum)) +
-  geom_jitter(width = 0.2, size = 0.1) +
+  geom_jitter(width = 0.2, size = 0.1, colour = "grey") +
   geom_violin(fill = NA, scale = "width", draw_quantiles = 0.5) +
   facet_wrap(~sample_name) +
   scale_y_log10(limits = c(NA, NA)) +
@@ -144,7 +166,7 @@ ggplot(demuxlet_data, aes(x = prediction_type, y = umi_sum)) +
 
 Tabulate the numbers
 
-```{r}
+```{r prediction_stats}
 prediction_stats <- with(demuxlet_data, table(sample_name, prediction_type))
 prediction_stats
 ```
