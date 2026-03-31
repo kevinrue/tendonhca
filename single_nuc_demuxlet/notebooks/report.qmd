@@ -12,9 +12,11 @@ editor: visual
 
 ```{r library}
 #| message: false
+library(BiocIO)
 library(dplyr)
 library(ggplot2)
 library(readr)
+library(rtracklayer)
 library(DropletUtils)
 ```
 
@@ -64,7 +66,7 @@ Add UMI sum to demuxlet data.
 
 ```{r}
 gtf_file <- "/ceph/project/tendonhca/shared/spatial/analysis/refdata-gex-GRCh38-2020-A/genes/genes.gtf"
-gtf_gene_data <- BiocIO::import(gtf_file, feature.type = "gene")
+gtf_gene_data <- import(gtf_file, feature.type = "gene")
 mt_gene_ids <- mcols(subset(gtf_gene_data, seqnames == "chrM", "gene_id"))[["gene_id"]]
 cat(mt_gene_ids, sep = "\n")
 ```
